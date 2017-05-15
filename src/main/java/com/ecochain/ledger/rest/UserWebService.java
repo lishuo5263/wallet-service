@@ -4,6 +4,8 @@ import com.ecochain.ledger.model.User;
 import com.ecochain.ledger.service.UserService;
 import com.github.pagehelper.PageHelper;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,12 @@ public class UserWebService {
     }
 
     @PostMapping("/getAllUserInfo")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "blogArticleBeen", value = "文档对象", required = true, paramType = "body", dataType = "BlogArticleBeen"),
+            @ApiImplicitParam(name = "path", value = "url上的数据", required = true, paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "query", value = "query类型参数", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "apiKey", value = "header中的数据", required = true, paramType = "header", dataType = "String")
+    })
     @ApiOperation(nickname = "用于测试getAllUserInfo1", value = "获取所有用户信息", notes = "获取所有用户信息！！")
     public List getAllUserInfo() {
         List<User> user = userService.getAllUserInfo();

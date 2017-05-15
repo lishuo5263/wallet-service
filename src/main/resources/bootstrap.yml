@@ -1,0 +1,20 @@
+server:
+    contextPath: /wallet-service
+
+management:
+  context-path: /admin
+  
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+  health:
+    sensitive: false
+    
+logging:
+  level:
+    com.netflix.discovery: 'DEBUG'
+    org.springframework.cloud: 'DEBUG'
+    
+

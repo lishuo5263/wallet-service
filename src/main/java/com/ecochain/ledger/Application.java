@@ -1,20 +1,11 @@
 package com.ecochain.ledger;
 
 
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
-import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.sql.DataSource;
 
 
 @EnableAutoConfiguration
@@ -24,7 +15,7 @@ public class Application {
 
     private static Logger logger = Logger.getLogger(Application.class);
 
-    @Bean
+  /*  @Bean
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         return new org.apache.tomcat.jdbc.pool.DataSource();
@@ -38,7 +29,7 @@ public class Application {
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
-        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
+        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:/mybatis*//*.xml"));
 
         return sqlSessionFactoryBean.getObject();
     }
@@ -46,7 +37,7 @@ public class Application {
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource());
-    }
+    }*/
 
 
     public static void main(String[] args) {

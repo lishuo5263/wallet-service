@@ -2,31 +2,35 @@ package com.ecochain.ledger.web.rest;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.alibaba.fastjson.JSON;
+
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.constants.CookieConstant;
-import com.ecochain.ledger.page.Page;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.SendVodeService;
+import com.ecochain.ledger.service.UserDetailsService;
+import com.ecochain.ledger.service.UserLoginService;
+import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.util.AjaxResponse;
 import com.ecochain.ledger.util.Base64;
-import com.ecochain.ledger.util.CacheManager;
 import com.ecochain.ledger.util.InternetUtil;
 import com.ecochain.ledger.util.MD5Util;
-import com.ecochain.ledger.util.PageData;
 import com.ecochain.ledger.util.RequestUtils;
-import com.ecochain.ledger.util.SessionUtil;
-import com.qkl.util.help.StringUtil;
-import com.qkl.util.help.Validator;
+import com.ecochain.ledger.util.StringUtil;
+import com.ecochain.ledger.util.Validator;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
@@ -34,13 +38,19 @@ import com.sun.jna.Native;
  * 总入口
  */
 @Controller
-@RequestMapping(value = "user")
-public class UserWebService extends BaseWebService {
+@RequestMapping(value = "/api/user")
+public class UsersWebService extends BaseWebService {
 
-    @Autowired
+   /* @Autowired
     private SessionUtil sessionUtil;
     @Autowired
-    private CacheManager cacheManager;
+    private CacheManager cacheManager;*/
+    @Autowired
+    private UserLoginService userLoginService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private SendVodeService sendVodeService;
     
     @Resource(name="userDetailsService")
     private UserDetailsService userDetailsService;
@@ -130,7 +140,6 @@ public class UserWebService extends BaseWebService {
             }
             pd.put("account", account);
             password = MD5Util.getMd5Code(password);
-//      String passwd = new SimpleHash("SHA-1", password, password).toString();  //密码加密
             pd.put("password", password);
             pd = userDetailsService.getUserByAccAndPass(pd,Constant.VERSION_NO);
             if(pd != null){
@@ -141,7 +150,7 @@ public class UserWebService extends BaseWebService {
                     
                     PageData userInfo = userDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"),Constant.VERSION_NO);
                     String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-                    sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
+//                    sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
                     data.put("CSESSIONID", Base64.getBase64(sessionId));
                     data.put("role_id", userInfo.getString("role_id"));
                     ar.setData(data);
@@ -289,7 +298,7 @@ public class UserWebService extends BaseWebService {
             logger.info("=================掉动态库结束=============返回值getPriPubKey="+getPriPubKey);*/
             PageData userInfo = userDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-            sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
+//            sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
             data.put("CSESSIONID", Base64.getBase64(sessionId));
             data.put("role_id", pd.getString("role_id"));
             ar.setData(data);
@@ -315,8 +324,9 @@ public class UserWebService extends BaseWebService {
         Map<String,Object> data = new HashMap<String,Object>();
         try {
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-            String userstr = sessionUtil.getAttibuteForUser(sessionId);
-            JSONObject user = JSONObject.parseObject(userstr);
+//            String userstr = sessionUtil.getAttibuteForUser(sessionId);
+//            JSONObject user = JSONObject.parseObject(userstr);
+            JSONObject user = new JSONObject(); 
             PageData userInfo = userDetailsService.getUserInfoByUserId(user.getInteger("user_id"), Constant.VERSION_NO);
             data.put("userInfo", userInfo);
             ar.setData(data);
@@ -350,12 +360,118 @@ public class UserWebService extends BaseWebService {
     @ResponseBody
     public AjaxResponse logout(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
-        sessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+//        sessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
         ar.setSuccess(true);
         ar.setMessage("退出成功！");
         return ar; 
     }
     
+    /**
+     * @describe:忘记密码
+     * @author: zhangchunming
+     * @date: 2016年10月26日下午1:40:57
+     * @param request
+     * @param response
+     * @return: AjaxResponse
+     */
+    @RequestMapping(value="/forgetpwd", method=RequestMethod.POST)
+    @ResponseBody
+    public AjaxResponse forgetpwd(HttpServletRequest request,HttpServletResponse response){
+        AjaxResponse ar = new AjaxResponse();
+        try {
+            String account  =request.getParameter("account");
+//            String phone  =request.getParameter("phone");
+            String passWord  =request.getParameter("password");
+            String cfPassWord  =request.getParameter("cfPassWord");
+            String vcode  =request.getParameter("vcode");
+            if(StringUtil.isEmpty(account)){
+                ar.setSuccess(false);
+                ar.setMessage("登陆账号不能为空，请重新输入");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            /*if(!Validator.isMobile(phone)){
+                ar.setSuccess(false);
+                ar.setMessage("手机号为11位数字，请重新输入");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }*/
+            if(StringUtil.isEmpty(vcode.trim())){
+                ar.setSuccess(false);
+                ar.setMessage("验证码不能为空！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            if(StringUtil.isEmpty(passWord)||StringUtil.isEmpty(cfPassWord)){
+                ar.setSuccess(false);
+                ar.setMessage("密码不能为空!");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            } 
+            if(passWord.length()<6||passWord.length()>16){
+                ar.setSuccess(false);
+                ar.setMessage("密码应为6-16位数，请重新设置");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            /*if(!Validator.isPasswordByLetterAndNum(passWord)){
+                ar.setSuccess(false);
+                ar.setMessage("密码应包含字母和数字哦，请重新设置");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }*/
+
+            if(!passWord.equals(cfPassWord)){
+                ar.setSuccess(false);
+                ar.setMessage("两次密码输入不一致，请重新输入！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            if(!userLoginService.findIsExist(account, Constant.VERSION_NO)){
+                ar.setSuccess(false);
+                ar.setMessage("账号不存在，请重新输入！");
+                ar.setErrorCode(CodeConstant.USER_NO_EXISTS);
+                return ar;
+            }
+            PageData userInfo = userService.getPhoneByAccount(account, Constant.VERSION_NO);
+            if(!"1".equals(userInfo.getString("user_type"))&&!"2".equals(userInfo.getString("user_type"))){//目前只支持普通会员和创业会员使用忘记密码功能
+                ar.setSuccess(false);
+                ar.setMessage("目前只有普通会员和创业会员才可以使用忘记密码功能哦！");
+                ar.setErrorCode(CodeConstant.ERROR_DISABLE);
+                return ar;
+            }
+            if(StringUtil.isEmpty(userInfo.getString("mobile_phone"))){
+                ar.setSuccess(false);
+                ar.setMessage("您的账号未绑定手机号，忘记密码功能无法使用，请重新注册！");
+                ar.setErrorCode(CodeConstant.USERMOBILE_NOEXISTS);
+                return ar;
+            }
+            //半小时之内的短信验证码有效
+            String tVcode =sendVodeService.findVcodeByPhone(userInfo.getString("mobile_phone"), Constant.VERSION_NO); 
+            if(tVcode ==null||!vcode.trim().equals(tVcode.trim())){
+                ar.setSuccess(false);
+                ar.setMessage("验证码输入不正确！");
+                ar.setErrorCode(CodeConstant.ERROR_VCODE);
+                return ar;
+            }
+            if(!userLoginService.modifyPwd(account, MD5Util.getMd5Code(passWord),Constant.VERSION_NO)){         
+                ar.setSuccess(false);
+                ar.setMessage("设置密码失败！");
+                ar.setErrorCode(CodeConstant.UPDATE_FAIL);
+                return ar;
+            }
+                ar.setSuccess(true);
+                ar.setMessage("设置密码成功！");
+                return ar;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
+        return ar;
+    }
     public static void main(String[] args) {
       //初始  
         /*BigInteger num = new BigInteger("0");  

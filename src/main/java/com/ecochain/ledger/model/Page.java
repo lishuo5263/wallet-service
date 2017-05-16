@@ -1,8 +1,7 @@
-package com.ecochain.ledger.page;
+package com.ecochain.ledger.model;
 
 
 import com.ecochain.ledger.util.Const;
-import com.ecochain.ledger.util.PageData;
 import com.ecochain.ledger.util.Tools;
 
 public class Page {

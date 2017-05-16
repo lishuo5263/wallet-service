@@ -8,10 +8,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.ecochain.ledger.page.Page;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.util.AjaxResponse;
 import com.ecochain.ledger.util.Logger;
-import com.ecochain.ledger.util.PageData;
 import com.ecochain.ledger.util.UuidUtil;
 
 

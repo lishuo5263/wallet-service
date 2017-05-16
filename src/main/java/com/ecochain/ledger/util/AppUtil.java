@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.codehaus.jackson.map.util.JSONPObject;
 
+import com.ecochain.ledger.model.PageData;
+
 public class AppUtil  {
 	
 	protected static Logger logger = Logger.getLogger(AppUtil.class);

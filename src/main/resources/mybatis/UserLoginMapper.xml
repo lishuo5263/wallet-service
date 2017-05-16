@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserLoginMapper" >
+  <sql id="Base_Column_List" >
+    id, user_id, account, password,lastlogin_time,lastlogin_ip,lastlogin_port,status
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_login
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from user_login
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into user_login (user_id, account, 
+      password,lastlogin_time,lastlogin_ip,lastlogin_port,status)
+    values (#{user_id,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR},now(),#{lastlogin_ip,jdbcType=VARCHAR},#{lastlogin_port,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into user_login
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="user_id != null" >
+        user_id,
+      </if>
+      <if test="account != null" >
+        account,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+        lastlogin_time,
+      <if test="lastlogin_ip != null" >
+        lastlogin_ip,
+      </if>
+      <if test="lastlogin_port != null" >
+        lastlogin_port,
+      </if>
+      <if test="status != null" >
+        `status`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="user_id != null" >
+        #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="account != null" >
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+        now(),
+      <if test="lastlogin_ip != null" >
+        #{lastlogin_ip,jdbcType=VARCHAR},
+      </if>
+      <if test="lastlogin_port != null" >
+        #{lastlogin_port,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update user_login
+    <set >
+      <if test="user_id != null" >
+        user_id = #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="account != null" >
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="lastlogin_ip != null" >
+        lastlogin_ip = #{lastlogin_ip,jdbcType=VARCHAR},
+      </if>
+      <if test="lastlogin_port != null" >
+        lastlogin_port = #{lastlogin_port,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update user_login
+    set user_id = #{user_id,jdbcType=INTEGER},
+      account = #{account,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      lastlogin_ip = #{lastlogin_ip,jdbcType=VARCHAR},
+      lastlogin_port = #{lastlogin_port,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getUserByAccount" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    select * from user_login 
+    where 1=1
+    and account = #{account} 
+  </select>
+  <select id="getUserLoginByAccount" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+    select * from user_login 
+    where 1=1
+    and account = #{account} 
+  </select>
+  <update id="updateLoginTimeById" parameterType="com.ecochain.ledger.model.PageData">
+        update user_login 
+        set 
+	        lastlogin_time = now(),
+	        login_error_times =  0,
+	        lastlogin_ip = #{lastlogin_ip,jdbcType=VARCHAR},
+	        lastlogin_port = #{lastlogin_port,jdbcType=VARCHAR}
+        where 
+            id = #{id}
+  </update>
+  <select id="findIsExist" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from user_login where account = #{account}
+  </select>
+<!--   更新错误登陆次数 -->
+  <update id="updateErrorTimesById" parameterType="java.lang.Integer">
+        update user_login
+        set
+            lastlogin_error_time = now(),
+	        login_error_times = login_error_times + 1
+        where
+            id = #{id}
+  </update>
+  <select id="getErrorTimes" parameterType="java.lang.String" resultType="java.lang.Integer">
+     select login_error_times from user_login where account = #{account}
+  </select>
+  <update id="modifyPwd" parameterType="com.ecochain.ledger.model.PageData">
+    update user_login 
+    set 
+        password  = #{password}
+    where 
+        account = #{account}
+  </update>
+  <update id="modifyPhone" parameterType="com.ecochain.ledger.model.PageData">
+	    update user_login
+	    set
+	        account = #{phone}
+	    where 
+	        account = #{oldPhone}
+  </update>
+  <update id="modifypwdByUserId" parameterType="com.ecochain.ledger.model.PageData">
+	    update user_login
+	    set
+	        password = #{password}
+	    where 
+	        user_id = #{user_id}
+  </update>
+  <select id="getUserLoginByUserId" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+      select * from user_login where user_id = #{user_id}
+  </select>
+  <select id="getUserInfoByAccount" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+        select a.user_type,a.usercode,a.mobile_phone,a.user_name,b.account,b.user_id 
+        from users_details a, user_login b 
+		where 1=1 
+		and a.id = b.user_id
+		and b.account = #{account}
+  </select>
+  <select id="getUserInfoByUserId" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+        select a.user_type,a.usercode,a.mobile_phone,a.user_name,b.account,b.user_id 
+        from users_details a, user_login b 
+        where 1=1 
+        and a.id = b.user_id
+        and b.user_id = #{user_id}
+  </select>
+  <select id="getUserByAccAndPass" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+        select * from user_login where account = #{account} and password = #{password}
+  </select>
+
+  <select id="findAcceptInfo" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+     select ul.account,ul.user_id,ud.public_key from user_login ul,user_details ud where  ul.user_id=ud.id and  ul.account = #{real_account}
+  </select>
+
+</mapper>

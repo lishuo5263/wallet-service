@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysMaxnumMapper">
+
+    <select id="findMaxnum" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData" >
+		select 
+		version,code,notype
+        from system_sys_maxnum  where notype = #{notype}
+	</select> 
+	
+	  <update id="modifyMaxnum" parameterType="com.ecochain.ledger.model.PageData" >    
+	     update system_sys_maxnum 
+	     set 
+	       code = #{code},
+	       version = ifnull(version,0) + 1
+	     where  1=1
+	     and notype = #{notype}    
+	     and version = #{version}
+     </update>
+</mapper>     

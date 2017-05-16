@@ -1,8 +1,7 @@
-package com.ecochain.ledger.util;
+/*package com.ecochain.ledger.util;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-
 public class SessionUtil{
 
     @Autowired
@@ -141,3 +140,4 @@ public class SessionUtil{
 		return cookieValue;
 	}
 }
+*/

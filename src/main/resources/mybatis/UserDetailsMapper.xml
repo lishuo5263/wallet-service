@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserDetailsMapper" >
+  <sql id="Base_Column_List" >
+    id, nickname, realname, mobile, mail,public_key,seeds, address,role_id,reg_time,create_time, remark, remark1, remark2, remark3, 
+    remark4, remark5, remark6, remark7, remark8, remark9, remark10
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_details
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from user_details
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" useGeneratedKeys="true" keyProperty="user_id">
+    insert into user_details (nickname, realname, 
+      mobile, mail, public_key,seeds,address, role_id,reg_time,create_time,
+      remark, remark1, remark2, 
+      remark3, remark4, remark5, 
+      remark6, remark7, remark8, 
+      remark9, remark10)
+    values (#{nickname,jdbcType=VARCHAR}, #{realname,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{mail,jdbcType=VARCHAR}, #{public_key,jdbcType=VARCHAR},#{seeds,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR},#{role_id,jdbcType=VARCHAR} now(),now(),
+      #{remark,jdbcType=VARCHAR}, #{remark1,jdbcType=VARCHAR}, #{remark2,jdbcType=VARCHAR}, 
+      #{remark3,jdbcType=VARCHAR}, #{remark4,jdbcType=VARCHAR}, #{remark5,jdbcType=VARCHAR}, 
+      #{remark6,jdbcType=VARCHAR}, #{remark7,jdbcType=VARCHAR}, #{remark8,jdbcType=VARCHAR}, 
+      #{remark9,jdbcType=VARCHAR}, #{remark10,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" useGeneratedKeys="true" keyProperty="user_id">
+    insert into user_details
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="realname != null" >
+        realname,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="mail != null" >
+        mail,
+      </if>
+      <if test="public_key != null" >
+        public_key,
+      </if>
+      <if test="seeds != null" >
+        seeds,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="role_id != null" >
+        role_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="remark1 != null" >
+        remark1,
+      </if>
+      <if test="remark2 != null" >
+        remark2,
+      </if>
+      <if test="remark3 != null" >
+        remark3,
+      </if>
+      <if test="remark4 != null" >
+        remark4,
+      </if>
+      <if test="remark5 != null" >
+        remark5,
+      </if>
+      <if test="remark6 != null" >
+        remark6,
+      </if>
+      <if test="remark7 != null" >
+        remark7,
+      </if>
+      <if test="remark8 != null" >
+        remark8,
+      </if>
+      <if test="remark9 != null" >
+        remark9,
+      </if>
+      <if test="remark10 != null" >
+        remark10,
+      </if>
+      reg_time,
+      create_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="nickname != null" >
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="realname != null" >
+        #{realname,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="mail != null" >
+        #{mail,jdbcType=VARCHAR},
+      </if>
+      <if test="public_key != null" >
+        #{public_key,jdbcType=VARCHAR},
+      </if>
+      <if test="seeds != null" >
+        #{seeds,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="role_id != null" >
+        #{role_id,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="remark1 != null" >
+        #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark3 != null" >
+        #{remark3,jdbcType=VARCHAR},
+      </if>
+      <if test="remark4 != null" >
+        #{remark4,jdbcType=VARCHAR},
+      </if>
+      <if test="remark5 != null" >
+        #{remark5,jdbcType=VARCHAR},
+      </if>
+      <if test="remark6 != null" >
+        #{remark6,jdbcType=VARCHAR},
+      </if>
+      <if test="remark7 != null" >
+        #{remark7,jdbcType=VARCHAR},
+      </if>
+      <if test="remark8 != null" >
+        #{remark8,jdbcType=VARCHAR},
+      </if>
+      <if test="remark9 != null" >
+        #{remark9,jdbcType=VARCHAR},
+      </if>
+      <if test="remark10 != null" >
+        #{remark10,jdbcType=VARCHAR},
+      </if>
+      now(),
+      now()
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update user_details
+    <set >
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="realname != null" >
+        realname = #{realname,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="mail != null" >
+        mail = #{mail,jdbcType=VARCHAR},
+      </if>
+      <if test="public_key != null" >
+        public_key = #{public_key,jdbcType=VARCHAR},
+      </if>
+      <if test="seeds != null" >
+        seeds = #{seeds,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="role_id != null" >
+        role_id = #{role_id,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="remark1 != null" >
+        remark1 = #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        remark2 = #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark3 != null" >
+        remark3 = #{remark3,jdbcType=VARCHAR},
+      </if>
+      <if test="remark4 != null" >
+        remark4 = #{remark4,jdbcType=VARCHAR},
+      </if>
+      <if test="remark5 != null" >
+        remark5 = #{remark5,jdbcType=VARCHAR},
+      </if>
+      <if test="remark6 != null" >
+        remark6 = #{remark6,jdbcType=VARCHAR},
+      </if>
+      <if test="remark7 != null" >
+        remark7 = #{remark7,jdbcType=VARCHAR},
+      </if>
+      <if test="remark8 != null" >
+        remark8 = #{remark8,jdbcType=VARCHAR},
+      </if>
+      <if test="remark9 != null" >
+        remark9 = #{remark9,jdbcType=VARCHAR},
+      </if>
+      <if test="remark10 != null" >
+        remark10 = #{remark10,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update user_details
+    set nickname = #{nickname,jdbcType=VARCHAR},
+      realname = #{realname,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      mail = #{mail,jdbcType=VARCHAR},
+      public_key = #{public_key,jdbcType=VARCHAR},
+      seeds = #{seeds,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      role_id = #{role_id,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      remark1 = #{remark1,jdbcType=VARCHAR},
+      remark2 = #{remark2,jdbcType=VARCHAR},
+      remark3 = #{remark3,jdbcType=VARCHAR},
+      remark4 = #{remark4,jdbcType=VARCHAR},
+      remark5 = #{remark5,jdbcType=VARCHAR},
+      remark6 = #{remark6,jdbcType=VARCHAR},
+      remark7 = #{remark7,jdbcType=VARCHAR},
+      remark8 = #{remark8,jdbcType=VARCHAR},
+      remark9 = #{remark9,jdbcType=VARCHAR},
+      remark10 = #{remark10,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getUserInfoByUserId" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
+      select b.user_id,b.account,a.mail,a.public_key,a.address,a.role_id,a.seeds from user_details a,user_login b 
+      where 1=1
+      and a.id = b.user_id
+      and a.id = #{user_id}
+  </select>
+  <select id="findIsExist" parameterType="java.lang.String" resultType="java.lang.Integer">
+      select count(1) from user_login where account = #{account}
+  </select>
+  <select id="getUserCount" resultType="java.lang.Integer">
+      select count(1) from user_details
+  </select>
+  
+  <select id="getUserInfoByAccount" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+      select b.user_id,b.account,a.mail,a.public_key,a.address,a.role_id,a.seeds from user_details a,user_login b 
+      where 1=1
+      and a.id = b.user_id
+      and b.account = #{account}
+  </select>
+</mapper>

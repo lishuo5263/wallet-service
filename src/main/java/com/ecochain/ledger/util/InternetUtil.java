@@ -1,10 +1,8 @@
 package com.ecochain.ledger.util;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import javax.servlet.http.HttpServletRequest;
-
 public class InternetUtil {
 
     private static Logger log = Logger.getLogger(InternetUtil.class);

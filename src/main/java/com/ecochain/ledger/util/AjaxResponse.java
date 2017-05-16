@@ -1,8 +1,9 @@
 package com.ecochain.ledger.util;
 
+import com.ecochain.ledger.model.Page;
+
 import java.io.Serializable;
 
-import com.ecochain.ledger.page.Page;
 
 /**
  * 封装ajax返回

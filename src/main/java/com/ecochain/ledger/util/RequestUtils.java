@@ -1,12 +1,12 @@
 package com.ecochain.ledger.util;
 
-import java.io.IOException;
-import java.util.UUID;
+import com.ecochain.ledger.constants.CookieConstant;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.ecochain.ledger.constants.CookieConstant;
-
+import java.io.IOException;
+import java.util.UUID;
 
 
 /**

@@ -1,24 +1,14 @@
 package com.ecochain.ledger.util;
 
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-
-import sun.io.ByteToCharConverter;
-import sun.io.CharToByteConverter;
+import java.util.*;
 
 /**
  * <p>公共方法类</p>
@@ -73,14 +63,14 @@ public class StringUtil
 	}
 
 	public static void main(String[] args) {
-		System.out.println(ChineseStringToAscii("汉字"));
+		/*System.out.println(ChineseStringToAscii("汉字"));*/
 	}
 	
 	/**
 	 * 将中文转化成AscII码以便存入数据库
 	 * @param s  中文字符串
 	 * @return 16进制字符串
-	 */
+	 *//*
 	public static String ChineseStringToAscii(String s)
 	{
 		try
@@ -98,11 +88,11 @@ public class StringUtil
 			return s;
 		}
 	}
-	/**
+	*//**
 	 * 将UTF-8转化成AscII码以便存入数据库
 	 * @param s 中文字符串
 	 * @return 16进制字符串
-	 */
+	 *//*
 	public static String ChineseStringToUTF(String s)
 	{
 		try
@@ -119,14 +109,14 @@ public class StringUtil
 			System.out.println(e);
 			return s;
 		}
-	}
+	}*/
 
 	/**
 	 * 将AscII字符转换成汉字
 	 * @param s -  ASCII字符串
 	 * @return 汉字
 	 */
-	public static String AsciiToChineseString(String s)
+	/*public static String AsciiToChineseString(String s)
 	{
 		char[] orig = s.toCharArray();
 		byte[] dest = new byte[orig.length];
@@ -142,7 +132,7 @@ public class StringUtil
 			System.out.println(e);
 			return s;
 		}
-	}
+	}*/
 
 //	/**
 //	 * 使用正则表达式进行字符串内容替换
@@ -254,7 +244,7 @@ public class StringUtil
 	
 	/**
 	 * 判断一个字符串是否为 NUll 或为空,不为空并且长度大于0返回true
-	 * @param inStr inStr
+	 * @param  str
 	 * @return boolean
 	 */	
 	public static boolean checkNotNull(String str){
@@ -944,7 +934,7 @@ public class StringUtil
 	
 	/**
 	 * 编码转换，从unicode转换为GBK
-	 * @param str 输入字符串
+	 * @param l_S_Source 输入字符串
 	 * @return str编码转换后的字符串
 	 * @throws UnsupportedEncodingException
 	 */
@@ -960,7 +950,7 @@ public class StringUtil
 	}
 	/**
 	 * 编码转换，从GBK转换为unicode
-	 * @param str 输入字符串
+	 * @param l_S_Source 输入字符串
 	 * @return str 编码转换后的字符串
 	 * @throws UnsupportedEncodingException
 	 */
@@ -1272,7 +1262,7 @@ public class StringUtil
 
 	/**
 	 * 判断一个数字是否为 NUll 或为0
-	 * @param Integer integer
+	 * @param  integer
 	 * @return boolean
 	 */	
 	public static boolean checkNotNull(Integer integer){
@@ -1285,7 +1275,7 @@ public class StringUtil
 	
 	/**
 	 * 判断一个数字是否为 NUll 或为0
-	 * @param Long l
+	 * @param  l
 	 * @return boolean
 	 */	
 	public static boolean checkNotNull(Long l){

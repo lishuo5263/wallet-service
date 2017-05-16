@@ -259,4 +259,8 @@
       and a.id = b.user_id
       and b.account = #{account}
   </select>
+  
+  <select id="listPageUsers" parameterType="com.ecochain.ledger.model.Page" >
+      select * from users_details 
+  </select>
 </mapper>

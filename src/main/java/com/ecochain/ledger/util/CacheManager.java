@@ -1,4 +1,4 @@
-/*package com.ecochain.ledger.util;
+package com.ecochain.ledger.util;
 
 
 import java.io.ByteArrayInputStream;
@@ -10,15 +10,16 @@ import java.io.ObjectOutputStream;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
-*//**
+/**
  * 缓存操作
  * 
  * @author liuyang
  *
- *//*
+ */
 @Component
 public class CacheManager {
 	private static Logger logger = Logger.getLogger(CacheManager.class);
@@ -41,12 +42,12 @@ public class CacheManager {
 		jedisPool.returnResource(jedis);
 	}
 
-	*//**
+	/**
 	 * 获取对象
 	 * 
 	 * @param key
 	 * @return Object
-	 *//*
+	 */
 	public Object get(String key) {
 		Object obj = null;
 		ShardedJedis jedis = jedisPool.getResource();
@@ -61,12 +62,12 @@ public class CacheManager {
 		return obj;
 	}
 
-	*//**
+	/**
 	 * 判断对象是否存在
 	 * 
 	 * @param key
 	 * @return true or false
-	 *//*
+	 */
 	public boolean isExist(String key) {
 		ShardedJedis jedis = jedisPool.getResource();
 		try {
@@ -80,7 +81,7 @@ public class CacheManager {
 		}
 	}
 
-	*//**
+	/**
 	 * 保存对象
 	 * 
 	 * @param key
@@ -89,7 +90,7 @@ public class CacheManager {
 	 *            值
 	 * @param outTime
 	 *            超时时间
-	 *//*
+	 */
 	public boolean set(String key, Object obj, int outTime) {
 		ShardedJedis jedis = jedisPool.getResource();
 		boolean flag = true;
@@ -110,12 +111,12 @@ public class CacheManager {
 		return flag;
 	}
 
-	*//**
+	/**
 	 * 删除对象
 	 * 
 	 * @param key
 	 * @return Long
-	 *//*
+	 */
 	public Long del(String key) {
 		ShardedJedis jedis = jedisPool.getResource();
 		try {
@@ -131,12 +132,12 @@ public class CacheManager {
 		}
 	}
 
-	*//**
+	/**
 	 * 字节转化为对象
 	 * 
 	 * @param bytes
 	 * @return Object
-	 *//*
+	 */
 	public static Object byte2Object(byte[] bytes) {
 		if (bytes == null || bytes.length == 0) {
 			return null;
@@ -155,12 +156,12 @@ public class CacheManager {
 		return null;
 	}
 
-	*//**
+	/**
 	 * 对象转化为字节
 	 * 
 	 * @param value
 	 * @return byte[]
-	 *//*
+	 */
 	public static byte[] object2Bytes(Object value) {
 		if (value == null) {
 			return null;
@@ -189,4 +190,3 @@ public class CacheManager {
 		return key.getBytes();
 	}
 }
-*/

@@ -98,4 +98,7 @@ public interface UserDetailsService {
      * @return: boolean
      */
     boolean modifyPhone(PageData pd,String versionNo)throws Exception;
+    
+    /*public List<PageData> listPageUser(PageData pd)throws Exception;*/
+    
 }

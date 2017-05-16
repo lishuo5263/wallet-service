@@ -11,7 +11,7 @@ import com.ecochain.ledger.util.Logger;
 
 @EnableAutoConfiguration
 @SpringBootApplication
-@MapperScan(basePackages = "com.qkl.mapper")
+@MapperScan(basePackages = "com.ecochain.ledger.mapper")
 public class Application {
 
     private static Logger logger = Logger.getLogger(Application.class);

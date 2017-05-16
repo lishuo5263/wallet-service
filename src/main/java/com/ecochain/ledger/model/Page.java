@@ -1,10 +1,9 @@
 package com.ecochain.ledger.model;
 
-
 import com.ecochain.ledger.util.Const;
 import com.ecochain.ledger.util.Tools;
 
-public class Page {
+public class Page extends BaseEntity{
 	
 	private int showCount; //每页显示记录数
 	private int totalPage;		//总页数

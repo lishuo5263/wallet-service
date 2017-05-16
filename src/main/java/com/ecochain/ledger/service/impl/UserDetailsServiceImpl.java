@@ -1,5 +1,7 @@
 package com.ecochain.ledger.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -116,4 +118,13 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     public boolean modifyPhone(PageData pd, String versionNo) throws Exception {
         return (Integer)dao.update("com.qkl.wlsc.provider.dao.UsersDetailsMapper.modifyPhone", pd)>0;
     }
+
+   /* @Override
+    public List<PageData> listPageUser(PageData pd) throws Exception {
+        if (country.getPage() != null && country.getRows() != null) {
+            PageHelper.startPage(country.getPage(), country.getRows());
+        }
+        List<Country> list = (List<Country>)dao.findForList("CountryMapper.listPageCountrys", country);
+        return list;
+    }*/
 }

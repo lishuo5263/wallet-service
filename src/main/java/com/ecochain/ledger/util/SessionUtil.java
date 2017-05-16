@@ -1,7 +1,9 @@
-/*package com.ecochain.ledger.util;
+package com.ecochain.ledger.util;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+
+
 public class SessionUtil{
 
     @Autowired
@@ -24,7 +26,7 @@ public class SessionUtil{
 	//把用户名入到 Redis中   1小时
 	public  void setAttributeForUser(String name, String value) {
 //		redisStringTemplate.setex(name+":"+LoginConstant.USER_NAME, sexp*60, value);
-	    if(name.contains("APP")){
+	    if(name.contains("app")){
 	        cacheManager.set(name+":"+LoginConstant.USER_NAME, value, sexp*60*2*24*30);
 	    }else{
 	        cacheManager.set(name+":"+LoginConstant.USER_NAME, value, sexp*60);
@@ -37,7 +39,7 @@ public class SessionUtil{
             return "";
         }
         String value = (String)cacheManager.get(name + ":" + LoginConstant.USER_NAME);
-        if(name.contains("APP")){
+        if(name.contains("app")){
           //重新设置时间 
             if(null != value){
                 //一个月
@@ -140,4 +142,3 @@ public class SessionUtil{
 		return cookieValue;
 	}
 }
-*/

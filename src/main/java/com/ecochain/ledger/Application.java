@@ -1,11 +1,12 @@
 package com.ecochain.ledger;
 
 
-import org.apache.log4j.Logger;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.ecochain.ledger.util.Logger;
 
 
 @EnableAutoConfiguration

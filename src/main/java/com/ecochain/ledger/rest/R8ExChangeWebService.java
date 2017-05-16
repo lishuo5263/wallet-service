@@ -1,6 +1,7 @@
 package com.ecochain.ledger.rest;
 
 import com.ecochain.ledger.model.R8ExChangeDTO;
+import com.ecochain.ledger.util.JedisUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
@@ -38,6 +39,9 @@ public class R8ExChangeWebService {
     @ApiOperation(nickname = "getThreeBabyRate", value = "获取数字资产当前价值", notes = "getCurrencyRate")
     @ApiImplicitParam(name = "currency", value = "币种类型 如SAN BTC LTC ", required = true, paramType = "path", dataType = "String")
     public ResponseEntity<R8ExChangeDTO> getThreeBabyRate(@PathVariable("currency") String currency) {
+        //JedisUtil jedisUtil=new JedisUtil();
+        //System.out.println(JedisUtil.getJedisPool().getResource().get("220100"));
+        System.out.println(JedisUtil.get("220100"));
         Map result = new HashMap();
         R8ExChangeDTO response=new R8ExChangeDTO();
         try {

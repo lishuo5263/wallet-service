@@ -6,7 +6,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
 /**
@@ -14,18 +13,18 @@ import java.util.*;
  */
 public class JedisUtil {
     private final static Logger logger = LoggerFactory.getLogger(JedisUtil.class);
-    @Resource(name="jedisPooll")
     private static JedisPool pool;
     private Jedis jedis;
 
-    /*private JedisUtil() {
-    }
+   /* private JedisUtil() {
+        super();
+    }*/
 
     static {
         InputStream is = null;
         try {
             Properties constant = new Properties();
-            is = JedisUtil.class.getClassLoader().getResourceAsStream("dubbo.properties");
+            is = JedisUtil.class.getClassLoader().getResourceAsStream("application.properties");
             if (is != null) {
                 constant.load(is);
             }
@@ -34,11 +33,11 @@ public class JedisUtil {
             //poolConfig.setMaxTotal(Integer.valueOf(constant.getProperty("wlsc.redis.maxTotal", "100")));
             poolConfig.setTimeBetweenEvictionRunsMillis(-1);
             poolConfig.setTestOnBorrow(true);
-            String host = constant.getProperty("wlsc.redis.host");
-            int port = Integer.valueOf(constant.getProperty("wlsc.redis.port"));
-            int timeout = Integer.valueOf(constant.getProperty("wlsc.redis.timeout"));
-            String pwd = constant.getProperty("wlsc.redis.pass");
-            int db = Integer.valueOf(constant.getProperty("wlsc.redis.db", "0"));
+            String host = constant.getProperty("spring.redis.hostName");
+            int port = Integer.valueOf(constant.getProperty("spring.redis.port"));
+            int timeout = Integer.valueOf(constant.getProperty("spring.redis.timeout"));
+            String pwd = constant.getProperty("spring.redis.password");
+            int db = Integer.valueOf(constant.getProperty("spring.redis.pool.minIdle=0", "0"));
             if (pwd == null || pwd.isEmpty()) {
                 pool = new JedisPool(poolConfig, host, port, timeout);
             } else {
@@ -57,7 +56,7 @@ public class JedisUtil {
                 }
             }
         }
-    }*/
+    }
 
     public static JedisPool getJedisPool() {
         return pool;

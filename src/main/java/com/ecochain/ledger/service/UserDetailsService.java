@@ -1,5 +1,7 @@
 package com.ecochain.ledger.service;
 
+import java.util.List;
+
 import com.ecochain.ledger.model.PageData;
 
 public interface UserDetailsService {
@@ -99,6 +101,6 @@ public interface UserDetailsService {
      */
     boolean modifyPhone(PageData pd,String versionNo)throws Exception;
     
-    /*public List<PageData> listPageUser(PageData pd)throws Exception;*/
+    public List<PageData> listPageUsers(PageData pd)throws Exception;
     
 }

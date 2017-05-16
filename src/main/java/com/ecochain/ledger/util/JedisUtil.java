@@ -130,6 +130,21 @@ public class JedisUtil {
         return flag;
     }
 
+    public static boolean exists(String key){
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return  jedis.exists(key);
+        } catch (Exception e) {
+            logger.error("set ex error.", e);
+            pool.returnBrokenResource(jedis);
+            return false;
+        } finally {
+            pool.returnResource(jedis);
+        }
+    }
+    
+    
     public static void set(String key, String value, int expireTimeInSec) {
         Jedis jedis = null;
         try {

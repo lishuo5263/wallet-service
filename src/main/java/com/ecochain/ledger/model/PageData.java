@@ -7,12 +7,19 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
 public class PageData extends HashMap implements Map{
 	
 	private static final long serialVersionUID = 1L;
 	
+	
+    
 	Map map = null;
 	HttpServletRequest request;
 	
@@ -45,7 +52,14 @@ public class PageData extends HashMap implements Map{
 			}else{
 				value = valueObj.toString(); 
 			}
-			returnMap.put(name, value); 
+			if("page".equalsIgnoreCase(name)){
+			    setPage(Integer.valueOf(value));
+			}else if("rows".equalsIgnoreCase(name)){
+			    setRows(Integer.valueOf(value));
+			}else{
+			    returnMap.put(name, value); 
+			}
+			
 		}
 		map = returnMap;
 	}
@@ -126,4 +140,40 @@ public class PageData extends HashMap implements Map{
 		return map.values();
 	}
 	
+	
+	
+	@Id
+    @Column(name = "Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Transient
+    private Integer page = 1;
+
+    @Transient
+    private Integer rows = 10;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
 }

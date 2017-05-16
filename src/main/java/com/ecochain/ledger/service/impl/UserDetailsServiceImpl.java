@@ -14,6 +14,7 @@ import com.ecochain.ledger.service.UserDetailsService;
 import com.ecochain.ledger.util.Logger;
 import com.ecochain.ledger.util.StringUtil;
 import com.ecochain.ledger.web.rest.UsersWebService.Clibrary;
+import com.github.pagehelper.PageHelper;
 
 @Service("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService{
@@ -116,15 +117,15 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Override
     public boolean modifyPhone(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("com.qkl.wlsc.provider.dao.UsersDetailsMapper.modifyPhone", pd)>0;
+        return (Integer)dao.update("UserDetailsMapper.modifyPhone", pd)>0;
     }
 
-   /* @Override
-    public List<PageData> listPageUser(PageData pd) throws Exception {
-        if (country.getPage() != null && country.getRows() != null) {
-            PageHelper.startPage(country.getPage(), country.getRows());
+    @Override
+    public List<PageData> listPageUsers(PageData pd) throws Exception {
+        if (pd.getPage() != null && pd.getRows() != null) {
+            PageHelper.startPage(pd.getPage(), pd.getRows());
         }
-        List<Country> list = (List<Country>)dao.findForList("CountryMapper.listPageCountrys", country);
+        List<PageData> list = (List<PageData>)dao.findForList("UserDetailsMapper.listPageUsers", pd);
         return list;
-    }*/
+    }
 }

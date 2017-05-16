@@ -1,6 +1,7 @@
 package com.ecochain.ledger.web.rest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -31,6 +32,7 @@ import com.ecochain.ledger.util.MD5Util;
 import com.ecochain.ledger.util.RequestUtils;
 import com.ecochain.ledger.util.StringUtil;
 import com.ecochain.ledger.util.Validator;
+import com.github.pagehelper.PageInfo;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
@@ -109,6 +111,22 @@ public class UsersWebService extends BaseWebService {
             e.printStackTrace();
             ar = fastReturn("系统异常,资产转入转出失败！", false, "系统异常,资产转入转出失败！", CodeConstant.SYS_ERROR);
         }
+        return ar;
+    }
+    
+    @RequestMapping(value="/listPageUser",method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxResponse listPageUser(HttpServletRequest request)throws Exception{
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = this.getPageData();
+        Map<String,Object> data = new HashMap<String,Object>();
+        List<PageData> listPageUser = userDetailsService.listPageUsers(pd);
+        data.put("pageInfo", new PageInfo<PageData>(listPageUser));
+        /*data.put("pd", pd);
+        data.put("page", pd.getPage());
+        data.put("rows", pd.getRows());*/
+        ar.setSuccess(true);
+        ar.setData(data);
         return ar;
     }
 	

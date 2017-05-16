@@ -18,7 +18,7 @@ import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.AccDetailService;
 import com.ecochain.ledger.service.PayOrderService;
 import com.ecochain.ledger.service.SysGenCodeService;
-import com.ecochain.ledger.service.UserDetailsService;
+import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.service.UserWalletService;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     private UserLoginService userLoginService;
     
     @Resource(name = "userDetailsService")
-    private UserDetailsService userDetailsService;
+    private UsersDetailsService userDetailsService;
     
     @Resource(name = "userWalletService")
     private UserWalletService userWalletService;

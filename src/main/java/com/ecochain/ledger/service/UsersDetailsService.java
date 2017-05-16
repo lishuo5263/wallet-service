@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ecochain.ledger.model.PageData;
 
-public interface UserDetailsService {
+public interface UsersDetailsService {
     
     boolean insertSelective(PageData pd ,String versionNo) throws Exception;
     

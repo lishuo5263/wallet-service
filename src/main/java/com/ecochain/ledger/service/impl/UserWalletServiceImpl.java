@@ -15,7 +15,7 @@ import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.AccDetailService;
 import com.ecochain.ledger.service.PayOrderService;
 import com.ecochain.ledger.service.SysGenCodeService;
-import com.ecochain.ledger.service.UserDetailsService;
+import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserWalletService;
 import com.ecochain.ledger.util.DateUtil;
@@ -31,7 +31,7 @@ public class UserWalletServiceImpl implements UserWalletService {
     @Resource(name = "daoSupport")
     private DaoSupport dao;
     @Resource
-    private UserDetailsService userDetailsService;
+    private UsersDetailsService userDetailsService;
     @Resource
     private PayOrderService payOrderService;
     @Resource

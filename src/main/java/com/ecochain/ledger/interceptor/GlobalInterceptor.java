@@ -25,12 +25,10 @@ public class GlobalInterceptor implements HandlerInterceptor{
 	private static Logger log = Logger.getLogger(GlobalInterceptor.class);
 	/*@Autowired
     private CacheManager cacheManager;*/
-	@Autowired
-	private SessionUtil sessionUtil;
 	@Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
-		
+	    response.setCharacterEncoding("utf-8");
 //		String versioncode = request.getParameter("versioncode");
 		String platform = request.getParameter("platform");
 		String code = request.getParameter("code");
@@ -64,7 +62,7 @@ public class GlobalInterceptor implements HandlerInterceptor{
     				LoginVerify loginVerify = method.getMethod().getAnnotation(LoginVerify.class);
     				if(loginVerify != null){
     				    String user = null;
-    				    user = sessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+    				    user = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
     					if(StringUtil.isEmpty(user)){
     					    ar.setErrorCode(CodeConstant.UNLOGIN);
                             ar.setMessage("未登录");
@@ -75,7 +73,7 @@ public class GlobalInterceptor implements HandlerInterceptor{
     					}
     				}
     				String user = null;
-                    user = sessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+                    user = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
                     if(StringUtil.isEmpty(user)){
                         ar.setErrorCode(CodeConstant.UNLOGIN);
                         ar.setMessage("未登录");

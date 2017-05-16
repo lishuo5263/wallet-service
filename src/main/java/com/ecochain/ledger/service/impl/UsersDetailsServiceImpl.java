@@ -10,14 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.UserDetailsService;
+import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.util.Logger;
 import com.ecochain.ledger.util.StringUtil;
 import com.ecochain.ledger.web.rest.UsersWebService.Clibrary;
 import com.github.pagehelper.PageHelper;
 
 @Service("userDetailsService")
-public class UserDetailsServiceImpl implements UserDetailsService{
+public class UsersDetailsServiceImpl implements UsersDetailsService{
 
     private Logger logger = Logger.getLogger(this.getClass());
     @Resource(name = "daoSupport")
@@ -35,19 +35,19 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Override
     public PageData getUserInfoByUserId(Integer user_id, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("UserDetailsMapper.getUserInfoByUserId", user_id);
+        return (PageData) dao.findForObject("UsersDetailsMapper.getUserInfoByUserId", user_id);
     }
 
     @Override
     public boolean findIsExist(String account, String versionNo) throws Exception {
-        return (Integer)dao.findForObject("UserDetailsMapper.findIsExist", account)>0;
+        return (Integer)dao.findForObject("UsersDetailsMapper.findIsExist", account)>0;
     }
 
     @Override
     @Transactional(propagation =Propagation.REQUIRED)
     public boolean addUser(PageData pd, String versionNo) throws Exception {
         //添加用户详细表
-        dao.save("UserDetailsMapper.insertSelective", pd);
+        dao.save("UsersDetailsMapper.insertSelective", pd);
         //添加用户登陆表
         dao.save("UserLoginMapper.insertSelective", pd);
         
@@ -92,12 +92,12 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Override
     public Integer getUserCount() throws Exception {
-        return (Integer)dao.findForObject("UserDetailsMapper.getUserCount", null);
+        return (Integer)dao.findForObject("UsersDetailsMapper.getUserCount", null);
     }
 
     @Override
     public PageData getUserInfoByAccount(String account, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("UserDetailsMapper.getUserInfoByAccount", account);
+        return (PageData) dao.findForObject("UsersDetailsMapper.getUserInfoByAccount", account);
     }
     
     public PageData findAcceptInfo(PageData pd) throws Exception {
@@ -106,7 +106,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Override
     public boolean updateByIdSelective(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("UserDetailsMapper.updateByIdSelective", pd)>0;
+        return (Integer)dao.update("UsersDetailsMapper.updateByIdSelective", pd)>0;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Override
     public boolean modifyPhone(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("UserDetailsMapper.modifyPhone", pd)>0;
+        return (Integer)dao.update("UsersDetailsMapper.modifyPhone", pd)>0;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         if (pd.getPage() != null && pd.getRows() != null) {
             PageHelper.startPage(pd.getPage(), pd.getRows());
         }
-        List<PageData> list = (List<PageData>)dao.findForList("UserDetailsMapper.listPageUsers", pd);
+        List<PageData> list = (List<PageData>)dao.findForList("UsersDetailsMapper.listPageUsers", pd);
         return list;
     }
 }

@@ -22,7 +22,7 @@ import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.SendVodeService;
-import com.ecochain.ledger.service.UserDetailsService;
+import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.util.AjaxResponse;
@@ -54,8 +54,8 @@ public class UsersWebService extends BaseWebService {
     @Autowired
     private SendVodeService sendVodeService;
     
-    @Resource(name="userDetailsService")
-    private UserDetailsService userDetailsService;
+    @Resource(name="usersDetailsService")
+    private UsersDetailsService usersDetailsService;
     
     /* ==================================================登录过滤========================================================== */
     
@@ -77,7 +77,7 @@ public class UsersWebService extends BaseWebService {
         }
         pd.put("USERNAME", USERNAME);
         pd.put("IP", ip);
-        userDetailsService.saveIP(pd);
+        usersDetailsService.saveIP(pd);
     }  */
     
 
@@ -96,7 +96,7 @@ public class UsersWebService extends BaseWebService {
         pd = this.getPageData();
         try {
             if(StringUtil.isNotEmpty(pd.getString("real_account"))){
-                PageData pageData =this.userDetailsService.findAcceptInfo(pd);
+                PageData pageData =this.usersDetailsService.findAcceptInfo(pd);
                 if(pageData==null ||pageData.get("user_id")==null){
                     return fastReturn("接口参数异常,账户"+pd.getString("real_account")+"缺少rela_user_id,资产转入转出失败！", false, "接口参数异常,账户"+pd.getString("real_account")+"缺少rela_user_id,资产转入转出失败！", CodeConstant.NEED_ACCEPT_INTO);
                 }else if(pageData.get("public_key")==null){
@@ -120,7 +120,7 @@ public class UsersWebService extends BaseWebService {
         AjaxResponse ar = new AjaxResponse();
         PageData pd = this.getPageData();
         Map<String,Object> data = new HashMap<String,Object>();
-        List<PageData> listPageUser = userDetailsService.listPageUsers(pd);
+        List<PageData> listPageUser = usersDetailsService.listPageUsers(pd);
         data.put("pageInfo", new PageInfo<PageData>(listPageUser));
         /*data.put("pd", pd);
         data.put("page", pd.getPage());
@@ -159,14 +159,14 @@ public class UsersWebService extends BaseWebService {
             pd.put("account", account);
             password = MD5Util.getMd5Code(password);
             pd.put("password", password);
-            pd = userDetailsService.getUserByAccAndPass(pd,Constant.VERSION_NO);
+            pd = usersDetailsService.getUserByAccAndPass(pd,Constant.VERSION_NO);
             if(pd != null){
                 if("1".equals(pd.getString("status"))){
                     pd.put("lastlogin_ip", InternetUtil.getRemoteAddr(request));
                     pd.put("lastlogin_port", InternetUtil.getRemotePort(request));
-                    userDetailsService.updateLoginTimeById(pd,Constant.VERSION_NO);
+                    usersDetailsService.updateLoginTimeById(pd,Constant.VERSION_NO);
                     
-                    PageData userInfo = userDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"),Constant.VERSION_NO);
+                    PageData userInfo = usersDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"),Constant.VERSION_NO);
                     String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
 //                    sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
                     data.put("CSESSIONID", Base64.getBase64(sessionId));
@@ -250,7 +250,7 @@ public class UsersWebService extends BaseWebService {
             
             
             //判断用户是否已存在
-            if(userDetailsService.findIsExist(account,Constant.VERSION_NO)){
+            if(usersDetailsService.findIsExist(account,Constant.VERSION_NO)){
                 ar.setSuccess(false);
                 ar.setMessage("该账号已注册！");
                 ar.setErrorCode(CodeConstant.ACCOUNT_EXISTS);
@@ -269,7 +269,7 @@ public class UsersWebService extends BaseWebService {
             pd.put("public_key", jsonObj.getJSONObject("result").getString("PubKey"));
             pd.put("address", jsonObj.getJSONObject("result").getString("PubKey"));*/
             
-            if(!userDetailsService.addUser(pd,Constant.VERSION_NO)){            
+            if(!usersDetailsService.addUser(pd,Constant.VERSION_NO)){            
                 ar.setSuccess(false);
                 ar.setMessage("注册失败！");
                 ar.setErrorCode(CodeConstant.REGISTER_FAIL);
@@ -311,10 +311,10 @@ public class UsersWebService extends BaseWebService {
                 pd.put("address", pubkey.toString());
                 pd.put("id", pd.get("user_id"));
                 logger.info("调动态库pd value="+pd.toString());
-                userDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
+                usersDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
             }
             logger.info("=================掉动态库结束=============返回值getPriPubKey="+getPriPubKey);*/
-            PageData userInfo = userDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
+            PageData userInfo = usersDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
 //            sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
             data.put("CSESSIONID", Base64.getBase64(sessionId));
@@ -345,7 +345,7 @@ public class UsersWebService extends BaseWebService {
 //            String userstr = sessionUtil.getAttibuteForUser(sessionId);
 //            JSONObject user = JSONObject.parseObject(userstr);
             JSONObject user = new JSONObject(); 
-            PageData userInfo = userDetailsService.getUserInfoByUserId(user.getInteger("user_id"), Constant.VERSION_NO);
+            PageData userInfo = usersDetailsService.getUserInfoByUserId(user.getInteger("user_id"), Constant.VERSION_NO);
             data.put("userInfo", userInfo);
             ar.setData(data);
             ar.setSuccess(true);

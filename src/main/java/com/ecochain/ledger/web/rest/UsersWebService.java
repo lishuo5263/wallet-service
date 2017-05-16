@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
@@ -22,14 +23,15 @@ import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.SendVodeService;
-import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
+import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.util.AjaxResponse;
 import com.ecochain.ledger.util.Base64;
 import com.ecochain.ledger.util.InternetUtil;
 import com.ecochain.ledger.util.MD5Util;
 import com.ecochain.ledger.util.RequestUtils;
+import com.ecochain.ledger.util.SessionUtil;
 import com.ecochain.ledger.util.StringUtil;
 import com.ecochain.ledger.util.Validator;
 import com.github.pagehelper.PageInfo;
@@ -43,10 +45,6 @@ import com.sun.jna.Native;
 @RequestMapping(value = "/api/user")
 public class UsersWebService extends BaseWebService {
 
-   /* @Autowired
-    private SessionUtil sessionUtil;
-    @Autowired
-    private CacheManager cacheManager;*/
     @Autowired
     private UserLoginService userLoginService;
     @Autowired
@@ -54,8 +52,8 @@ public class UsersWebService extends BaseWebService {
     @Autowired
     private SendVodeService sendVodeService;
     
-    @Resource(name="usersDetailsService")
-    private UsersDetailsService usersDetailsService;
+    @Resource(name="userDetailsService")
+    private UsersDetailsService userDetailsService;
     
     /* ==================================================登录过滤========================================================== */
     
@@ -77,7 +75,7 @@ public class UsersWebService extends BaseWebService {
         }
         pd.put("USERNAME", USERNAME);
         pd.put("IP", ip);
-        usersDetailsService.saveIP(pd);
+        userDetailsService.saveIP(pd);
     }  */
     
 
@@ -96,7 +94,7 @@ public class UsersWebService extends BaseWebService {
         pd = this.getPageData();
         try {
             if(StringUtil.isNotEmpty(pd.getString("real_account"))){
-                PageData pageData =this.usersDetailsService.findAcceptInfo(pd);
+                PageData pageData =this.userDetailsService.findAcceptInfo(pd);
                 if(pageData==null ||pageData.get("user_id")==null){
                     return fastReturn("接口参数异常,账户"+pd.getString("real_account")+"缺少rela_user_id,资产转入转出失败！", false, "接口参数异常,账户"+pd.getString("real_account")+"缺少rela_user_id,资产转入转出失败！", CodeConstant.NEED_ACCEPT_INTO);
                 }else if(pageData.get("public_key")==null){
@@ -120,7 +118,7 @@ public class UsersWebService extends BaseWebService {
         AjaxResponse ar = new AjaxResponse();
         PageData pd = this.getPageData();
         Map<String,Object> data = new HashMap<String,Object>();
-        List<PageData> listPageUser = usersDetailsService.listPageUsers(pd);
+        List<PageData> listPageUser = userDetailsService.listPageUsers(pd);
         data.put("pageInfo", new PageInfo<PageData>(listPageUser));
         /*data.put("pd", pd);
         data.put("page", pd.getPage());
@@ -159,18 +157,17 @@ public class UsersWebService extends BaseWebService {
             pd.put("account", account);
             password = MD5Util.getMd5Code(password);
             pd.put("password", password);
-            pd = usersDetailsService.getUserByAccAndPass(pd,Constant.VERSION_NO);
+            pd = userDetailsService.getUserByAccAndPass(pd,Constant.VERSION_NO);
             if(pd != null){
                 if("1".equals(pd.getString("status"))){
                     pd.put("lastlogin_ip", InternetUtil.getRemoteAddr(request));
                     pd.put("lastlogin_port", InternetUtil.getRemotePort(request));
-                    usersDetailsService.updateLoginTimeById(pd,Constant.VERSION_NO);
+                    userDetailsService.updateLoginTimeById(pd,Constant.VERSION_NO);
                     
-                    PageData userInfo = usersDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"),Constant.VERSION_NO);
+                    PageData userInfo = userDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"),Constant.VERSION_NO);
                     String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-//                    sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
+                    SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
                     data.put("CSESSIONID", Base64.getBase64(sessionId));
-                    data.put("role_id", userInfo.getString("role_id"));
                     ar.setData(data);
                     ar.setSuccess(true);
                     ar.setMessage("登陆成功！");
@@ -250,7 +247,7 @@ public class UsersWebService extends BaseWebService {
             
             
             //判断用户是否已存在
-            if(usersDetailsService.findIsExist(account,Constant.VERSION_NO)){
+            if(userDetailsService.findIsExist(account,Constant.VERSION_NO)){
                 ar.setSuccess(false);
                 ar.setMessage("该账号已注册！");
                 ar.setErrorCode(CodeConstant.ACCOUNT_EXISTS);
@@ -269,7 +266,7 @@ public class UsersWebService extends BaseWebService {
             pd.put("public_key", jsonObj.getJSONObject("result").getString("PubKey"));
             pd.put("address", jsonObj.getJSONObject("result").getString("PubKey"));*/
             
-            if(!usersDetailsService.addUser(pd,Constant.VERSION_NO)){            
+            if(!userDetailsService.addUser(pd,Constant.VERSION_NO)){            
                 ar.setSuccess(false);
                 ar.setMessage("注册失败！");
                 ar.setErrorCode(CodeConstant.REGISTER_FAIL);
@@ -311,12 +308,12 @@ public class UsersWebService extends BaseWebService {
                 pd.put("address", pubkey.toString());
                 pd.put("id", pd.get("user_id"));
                 logger.info("调动态库pd value="+pd.toString());
-                usersDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
+                userDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
             }
             logger.info("=================掉动态库结束=============返回值getPriPubKey="+getPriPubKey);*/
-            PageData userInfo = usersDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
+            PageData userInfo = userDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-//            sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
+            SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
             data.put("CSESSIONID", Base64.getBase64(sessionId));
             data.put("role_id", pd.getString("role_id"));
             ar.setData(data);
@@ -342,10 +339,9 @@ public class UsersWebService extends BaseWebService {
         Map<String,Object> data = new HashMap<String,Object>();
         try {
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-//            String userstr = sessionUtil.getAttibuteForUser(sessionId);
-//            JSONObject user = JSONObject.parseObject(userstr);
-            JSONObject user = new JSONObject(); 
-            PageData userInfo = usersDetailsService.getUserInfoByUserId(user.getInteger("user_id"), Constant.VERSION_NO);
+            String userstr = SessionUtil.getAttibuteForUser(sessionId);
+            JSONObject user = JSONObject.parseObject(userstr);
+            PageData userInfo = userDetailsService.getUserInfoByUserId(user.getInteger("user_id"), Constant.VERSION_NO);
             data.put("userInfo", userInfo);
             ar.setData(data);
             ar.setSuccess(true);
@@ -378,7 +374,7 @@ public class UsersWebService extends BaseWebService {
     @ResponseBody
     public AjaxResponse logout(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
-//        sessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+        SessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
         ar.setSuccess(true);
         ar.setMessage("退出成功！");
         return ar; 

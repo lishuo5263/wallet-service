@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.qkl.wlsc.provider.dao.UsersDetailsMapper" >
-  <resultMap id="BaseResultMap" type="com.qkl.api.po.UsersDetails" >
+<mapper namespace="UsersDetailsMapper" >
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.UsersDetails" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="user_img" property="userImg" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
@@ -22,7 +22,7 @@
     id, user_img, email, user_name, grade_id, reg_time, salt, parent_usercode,user_type, 
     usercode, alias, mobile_phone, rcode,pay_rcode,public_key,address,seeds
   </sql>
-  <select id="selectById" resultType="pd" parameterType="java.lang.Integer" >
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
     select 
     a.id, a.user_img, a.email, a.user_name, a.grade_id, a.reg_time, a.salt, a.parent_usercode,a.user_type, 
     a.usercode, a.alias, a.mobile_phone, a.rcode,a.pay_rcode,b.account,a.public_key,a.address,a.seeds
@@ -41,7 +41,7 @@
     delete from users_details
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="pd" useGeneratedKeys="true" keyProperty="user_id">
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" useGeneratedKeys="true" keyProperty="user_id">
     insert into users_details (user_img, email, 
       user_name, grade_id, reg_time, salt, 
       parent_usercode, usercode, alias, 
@@ -53,7 +53,7 @@
       #{mobile_phone,jdbcType=VARCHAR}, #{rcode,jdbcType=VARCHAR},#{user_type,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="pd" useGeneratedKeys="true" keyProperty="user_id">
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" useGeneratedKeys="true" keyProperty="user_id">
     insert into users_details
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="user_img != null" >
@@ -128,7 +128,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByIdSelective" parameterType="pd" >
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
     update users_details
     <set >
       <if test="user_img != null" >
@@ -176,7 +176,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateById" parameterType="pd" >
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
     update users_details
     set user_img = #{user_img,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
@@ -198,20 +198,20 @@
     select count(1) from users_details where usercode = #{usercode}
   </select>
   
-  <select id="findbyUserCode" parameterType="java.lang.String" resultType="pd">
+  <select id="findbyUserCode" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
     select * from users_details where usercode = #{usercode}
   </select>
-  <select id="findbyPhone" parameterType="java.lang.String" resultType="pd">
+  <select id="findbyPhone" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
     select a.*,b.account from users_details a,user_login b where a.id = b.user_id and  b.account = #{mobile_phone}
   </select>
-  <update id="modifyPhone" parameterType="pd">
+  <update id="modifyPhone" parameterType="com.ecochain.ledger.model.PageData">
     update users_details
     set
         mobile_phone = #{phone}
     where 
         mobile_phone = #{oldPhone}
   </update>
-  <update id="realName" parameterType="pd">
+  <update id="realName" parameterType="com.ecochain.ledger.model.PageData">
     update users_details
     set
         user_name = #{user_name},
@@ -219,7 +219,7 @@
     where 
         id = #{user_id}
   </update>
-  <select id="getUserInfo" parameterType="java.lang.Integer" resultType="pd">
+  <select id="getUserInfo" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
     select a.id,a.public_key,a.address,a.seeds,round(b.future_currency,2)future_currency,CONCAT(LEFT(c.account,3),'*****',RIGHT(c.account,3))account,a.user_type
     from 
         users_details a JOIN user_wallet b  ON a.id = b.user_id  
@@ -228,7 +228,7 @@
     and a.id = #{user_id}
   </select>
  <!--  查询我的推介 -->
- <select id="listPageMyRef" parameterType="page" resultType="pd">
+<!--  <select id="listPageMyRef" parameterType="page" resultType="com.ecochain.ledger.model.PageData">
     select 
     case when c.account REGEXP "^[1][35678][0-9]{9}$" THEN CONCAT(substring(c.account,1,3),'*****',substring(c.account,9,11)) WHEN CHAR_LENGTH(c.account)>5 THEN CONCAT(substring(c.account,1,5),'...') ELSE c.account END account, 
     case when c.account REGEXP "^[1][35678][0-9]{9}$" THEN CONCAT(substring(c.account,1,3),'*****',substring(c.account,9,11)) WHEN CHAR_LENGTH(c.account)>5 THEN CONCAT(substring(c.account,1,5),'...') ELSE c.account END mobile_phone, 
@@ -268,9 +268,9 @@
       and   c.account like concat('%', #{pd.account}, '%')  
     </if>
    order by a.reg_time desc
- </select>
+ </select> -->
 <!--  我的推介的一级、二级、三级数量 -->
- <select id="getMyRefNum" parameterType="java.lang.Integer" resultType="pd">
+ <!-- <select id="getMyRefNum" parameterType="java.lang.Integer" resultType="pd">
     select 
         sum(tt)  tNum,
         sum(lva) aNum,
@@ -284,14 +284,14 @@
         case when rela_level='C' then 1 else 0 end as lvc
          from user_friendship 
         where user_id =#{user_id}) a 
-  </select>
-  <update id="updateUserTypeByUserId" parameterType="pd">
+  </select> -->
+  <update id="updateUserTypeByUserId" parameterType="com.ecochain.ledger.model.PageData">
     update users_details
     set user_type = #{upgrade_type}
     where id = #{user_id}
   </update>
   <!--更新图片 -->
-  <update id="updatePicByUserId" parameterType="pd">
+  <update id="updatePicByUserId" parameterType="com.ecochain.ledger.model.PageData">
     update users_details
     <set >
       <if test="user_img != null" >
@@ -310,7 +310,7 @@
 	and (usercode is null or usercode = '' or usercode ='0' )
   </select>
 <!--   更新邀请码 -->
-  <update id="updateUserCode" parameterType="pd">
+  <update id="updateUserCode" parameterType="com.ecochain.ledger.model.PageData">
     update users_details
     <set >
       <if test="usercode != null" >
@@ -326,10 +326,10 @@
     where 1=1
     and id = #{id}
   </update>
-  <update id="bindPhone" parameterType="pd" >
+  <update id="bindPhone" parameterType="com.ecochain.ledger.model.PageData" >
     update users_details set mobile_phone = #{phone} where id = #{user_id}
   </update>
-  <select id="getPhoneByAccount" parameterType="java.lang.String" resultType="pd">
+  <select id="getPhoneByAccount" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
         select user_type,mobile_phone from users_details a,user_login b where a.id = b.user_id and b.account = #{account} 
   </select>
   <select id="getPhoneListByUserType" parameterType="java.lang.String" resultType="java.lang.String">
@@ -339,7 +339,7 @@
     </foreach>
   </select>
     <!--按地区查询手机号列表 -->
-  <select id="getPhoneListByArea" parameterType="pd" resultType="java.lang.String">
+  <select id="getPhoneListByArea" parameterType="com.ecochain.ledger.model.PageData" resultType="java.lang.String">
         select a.mobile_phone from users_details a,mobile_attribution b
 		where 1=1
 		and substring(a.mobile_phone,1,7) = b.mobile_num
@@ -348,7 +348,13 @@
            and b.mobile_area like concat('%', #{city}, '%')
         </if>
   </select>
+   <select id="getUserInfoByUserId" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
+      select b.user_id,b.account,a.email,a.public_key,a.address,a.seeds,a.user_type from users_details a,user_login b 
+      where 1=1
+      and a.id = b.user_id
+      and a.id = #{user_id}
+  </select>
   <select id="listPageUsers" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
-      select * from user_details 
+      select * from users_details 
   </select>
 </mapper>

@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AccDetailMapper" >
+  <sql id="Base_Column_List" >
+    id, user_id, acc_no, rela_user_id, rela_userlevel, wlbi_amnt, wlbao_amnt, rmb_amnt, 
+    caldate, cntflag, status, syscode, otherno, other_amnt, other_source, create_time, 
+    modify_time, operator,bsrate,sanhq
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from acc_detail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from acc_detail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into acc_detail (user_id, acc_no, 
+      rela_user_id, rela_userlevel, wlbi_amnt, 
+      wlbao_amnt, rmb_amnt, caldate, 
+      cntflag, status, syscode, 
+      otherno, other_amnt, other_source, 
+      create_time, operator,bsrate,sanhq
+      )
+    values (#{user_id}, #{acc_no}, 
+      #{rela_user_id}, #{rela_userlevel}, #{wlbi_amnt}, 
+      #{wlbao_amnt}, #{rmb_amnt}, now(), '1', #{status},
+       #{syscode}, #{otherno}, #{other_amnt}, 
+       #{other_source}, now(), #{operator},#{bsrate},#{sanhq}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into acc_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="user_id != null" >
+        user_id,
+      </if>
+      <if test="user_type != null" >
+        user_type,
+      </if>
+      <if test="acc_no != null" >
+        acc_no,
+      </if>
+      <if test="rela_user_id != null" >
+        rela_user_id,
+      </if>
+      <if test="rela_userlevel != null" >
+        rela_userlevel,
+      </if>
+      <if test="wlbi_amnt != null" >
+        wlbi_amnt,
+      </if>
+      <if test="wlbao_amnt != null" >
+        wlbao_amnt,
+      </if>
+      <if test="rmb_amnt != null" >
+        rmb_amnt,
+      </if>
+      <if test="caldate != null" >
+        caldate,
+      </if>
+      <if test="cntflag != null" >
+        cntflag,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="syscode != null" >
+        syscode,
+      </if>
+      <if test="otherno != null" >
+        otherno,
+      </if>
+      <if test="other_amnt != null" >
+        other_amnt,
+      </if>
+      <if test="other_source != null" >
+        other_source,
+      </if>
+        create_time,
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="bsrate != null" >
+        bsrate,
+      </if>
+      <if test="sanhq != null" >
+        sanhq,
+      </if>
+      <if test="hash != null" >
+        hash,
+      </if>
+      <if test="remark1 != null" >
+        remark1,
+      </if>
+      <if test="remark2 != null" >
+        remark2,
+      </if>
+      <if test="remark3 != null" >
+        remark3,
+      </if>
+      <if test="remark4 != null" >
+        remark4,
+      </if>
+      <if test="remark5 != null" >
+        remark5,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="user_id != null" >
+        #{user_id},
+      </if>
+      <if test="user_type != null" >
+        #{user_type},
+      </if>
+      <if test="acc_no != null" >
+        #{acc_no},
+      </if>
+      <if test="rela_user_id != null" >
+        #{rela_user_id},
+      </if>
+      <if test="rela_userlevel != null" >
+        #{rela_userlevel},
+      </if>
+      <if test="wlbi_amnt != null" >
+        #{wlbi_amnt},
+      </if>
+      <if test="wlbao_amnt != null" >
+        #{wlbao_amnt},
+      </if>
+      <if test="rmb_amnt != null" >
+        #{rmb_amnt},
+      </if>
+      <if test="caldate != null" >
+        #{caldate},
+      </if>
+      <if test="cntflag != null" >
+        #{cntflag},
+      </if>
+      <if test="status != null" >
+        #{status},
+      </if>
+      <if test="syscode != null" >
+        #{syscode},
+      </if>
+      <if test="otherno != null" >
+        #{otherno},
+      </if>
+      <if test="other_amnt != null" >
+        #{other_amnt},
+      </if>
+      <if test="other_source != null" >
+        #{other_source},
+      </if>
+        now(),
+      <if test="operator != null" >
+        #{operator},
+      </if>
+      <if test="bsrate != null" >
+        #{bsrate},
+      </if>
+      <if test="sanhq != null" >
+        #{sanhq},
+      </if>
+      <if test="hash != null" >
+        #{hash},
+      </if>
+      <if test="remark1 != null" >
+        #{remark1},
+      </if>
+      <if test="remark2 != null" >
+        #{remark2},
+      </if>
+      <if test="remark3 != null" >
+        #{remark3},
+      </if>
+      <if test="remark4 != null" >
+        #{remark4},
+      </if>
+      <if test="remark5 != null" >
+        #{remark5},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update acc_detail
+    <set >
+      <if test="user_id != null" >
+        user_id = #{user_id},
+      </if>
+      <if test="acc_no != null" >
+        acc_no = #{acc_no},
+      </if>
+      <if test="rela_user_id != null" >
+        rela_user_id = #{rela_user_id},
+      </if>
+      <if test="rela_userlevel != null" >
+        rela_userlevel = #{rela_userlevel},
+      </if>
+      <if test="wlbi_amnt != null" >
+        wlbi_amnt = #{wlbi_amnt},
+      </if>
+      <if test="wlbao_amnt != null" >
+        wlbao_amnt = #{wlbao_amnt},
+      </if>
+      <if test="rmb_amnt != null" >
+        rmb_amnt = #{rmb_amnt},
+      </if>
+      <if test="caldate != null" >
+        caldate = #{caldate},
+      </if>
+      <if test="cntflag != null" >
+        cntflag = #{cntflag},
+      </if>
+      <if test="status != null" >
+        `status `= #{status},
+      </if>
+      <if test="syscode != null" >
+        syscode = #{syscode},
+      </if>
+      <if test="otherno != null" >
+        otherno = #{otherno},
+      </if>
+      <if test="other_amnt != null" >
+        other_amnt = #{other_amnt},
+      </if>
+      <if test="other_source != null" >
+        other_source = #{other_source},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator},
+      </if>
+      <if test="bsrate != null" >
+        bsrate = #{bsrate},
+      </if>
+      <if test="sanhq != null" >
+        sanhq = #{sanhq},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update acc_detail
+    set user_id = #{user_id},
+      acc_no = #{acc_no},
+      rela_user_id = #{rela_user_id},
+      rela_userlevel = #{rela_userlevel},
+      wlbi_amnt = #{wlbi_amnt},
+      wlbao_amnt = #{wlbao_amnt},
+      rmb_amnt = #{rmb_amnt},
+      caldate = #{caldate},
+      cntflag = #{cntflag},
+      `status `= #{status},
+      syscode = #{syscode},
+      otherno = #{otherno},
+      other_amnt = #{other_amnt},
+      other_source = #{other_source},
+      operator = #{operator},
+      bsrate = #{bsrate},
+      sanhq = #{sanhq}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="listPageAcc" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+  select otherno,caldate,acc_type,acc_name,wlbi_amnt,wlbao_amnt,rmb_amnt,remark1,currency from 
+	 ( 
+	   select a.otherno,substring(a.create_time,1,19)caldate,b.acc_type,b.acc_name,
+	      case when a.wlbi_amnt &gt;0 and b.derection = '1'  then CONCAT('+',round(a.wlbi_amnt,2)) when a.wlbi_amnt = 0 or a.wlbi_amnt is null THEN'0' ELSE CONCAT('-',round(a.wlbi_amnt,2))   END as wlbi_amnt,
+          case when a.wlbao_amnt &gt;0 and b.derection = '1' then CONCAT('+',a.wlbao_amnt) when a.wlbao_amnt  = 0 or a.wlbao_amnt is null THEN '0'  ELSE  CONCAT('-',a.wlbao_amnt)  END as wlbao_amnt,
+          case when a.rmb_amnt &gt;0 and b.derection = '1' then CONCAT('+',round(a.rmb_amnt,2)) when a.rmb_amnt  = 0 or a.rmb_amnt is null THEN '0'  ELSE CONCAT('-',round(a.rmb_amnt,2))  END as rmb_amnt,
+	      a.remark1,
+	      case when a.wlbi_amnt &lt;&gt; 0 then '1' when a.wlbao_amnt &lt;&gt; 0 then '2' when a.rmb_amnt &lt;&gt; 0 then '3'  end currency
+        from acc_detail a,acc_def b
+        where 1=1
+        and a.user_id = #{user_id}
+        and a.acc_no = b.acc_no
+        and a.`status` = '4'
+    <if test="startTime != null and startTime != ''" >
+      and   a.create_time &gt;= #{startTime}
+    </if>
+    <if test="endTime != null and endTime != ''" >
+      and   date(a.create_time) &lt;= #{endTime}
+    </if>
+    <!-- <if test="pd.acc_type != null and pd.acc_type != ''" >
+      and   b.acc_type = #{pd.acc_type}
+    </if> -->
+    <if test="acc_type != null and acc_type != '' and acc_type != 1 and acc_type != 15 and acc_type != 24" >
+      and   b.acc_type = #{acc_type}
+    </if>
+    <if test="acc_type == 1 or acc_type == 15 or acc_type == 24" >
+      and   b.acc_type in ('1','15','24')
+    </if>
+    <if test="startMoney != null and startMoney != ''" >
+       and   (a.wlbi_amnt &gt;= #{startMoney} or a.wlbao_amnt &gt;= #{startMoney} or a.rmb_amnt &gt;= #{startMoney})
+    </if>
+    <if test="endMoney != null and endMoney != ''" >
+       and   (a.wlbi_amnt &lt;= #{endMoney} or a.wlbao_amnt  &lt;= #{endMoney} or a.rmb_amnt  &lt;= #{endMoney})
+    </if>
+    <if test="otherno != null and otherno != ''" >
+      and   a.otherno = #{otherno}
+    </if>
+    <if test="search_date == 'day'" >
+      and   date(a.create_time) = date(now())
+    </if>
+    <if test="search_date == 'week'" >
+      and   a.create_time between date_sub(now(),interval 1 week) and now()
+    </if>
+    <if test="search_date == 'month'" >
+      and   a.create_time between date_sub(now(),interval 1 month) and now()
+    </if>
+    <if test="currency == 1" >
+      and   a.wlbi_amnt &lt;&gt; 0
+    </if>
+    <if test="currency == 2" >
+      and   a.wlbao_amnt &lt;&gt; 0
+    </if>
+    <if test="currency == 3" >
+      and   a.rmb_amnt &lt;&gt; 0
+    </if>
+    <if test="currency == null or currency == '' or currency == 0 " >
+      and   (a.wlbi_amnt &lt;&gt; 0 or   a.wlbao_amnt &lt;&gt; 0 or   a.rmb_amnt &lt;&gt; 0 )
+    </if>
+    <if test="remark1 != null and remark1 != ''" >
+      and   a.remark1 like  concat('%', #{remark1}, '%')  
+    </if>
+    )t order by t.caldate desc 
+  </select>
+  <select id="getAccList" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    select otherno,caldate,acc_name,wlbi_amnt,wlbao_amnt,rmb_amnt,remark1,currency from 
+     ( 
+       select a.otherno,substring(a.create_time,1,19)caldate,b.acc_type,b.acc_name,
+          case when a.wlbi_amnt &gt;0 and b.derection = '1'  then CONCAT('+',round(a.wlbi_amnt,2)) when a.wlbi_amnt = 0 or a.wlbi_amnt is null THEN'0' ELSE CONCAT('-',round(a.wlbi_amnt,2))   END as wlbi_amnt,
+          case when a.wlbao_amnt &gt;0 and b.derection = '1' then CONCAT('+',a.wlbao_amnt) when a.wlbao_amnt  = 0 or a.wlbao_amnt is null THEN '0'  ELSE  CONCAT('-',a.wlbao_amnt)  END as wlbao_amnt,
+          case when a.rmb_amnt &gt;0 and b.derection = '1' then CONCAT('+',round(a.rmb_amnt,2)) when a.rmb_amnt  = 0 or a.rmb_amnt is null THEN '0'  ELSE CONCAT('-',round(a.rmb_amnt,2))  END as rmb_amnt,
+          a.remark1,
+          case when a.wlbi_amnt &lt;&gt; 0 then '1' when a.wlbao_amnt &lt;&gt; 0 then '2' when a.rmb_amnt &lt;&gt; 0 then '3'  end currency
+        from acc_detail a,acc_def b
+        where 1=1
+        and a.user_id = #{user_id}
+        and a.acc_no = b.acc_no
+        and a.`status` = '4'
+    <if test="startTime != null and startTime != ''" >
+      and   a.create_time &gt;= #{startTime}
+    </if>
+    <if test="endTime != null and endTime != ''" >
+      and   date(a.create_time) &lt;= #{endTime}
+    </if>
+    <if test="acc_type != null and acc_type != '' and acc_type != 1 and acc_type != 15 and acc_type != 24" >
+       and   b.acc_type = #{acc_type}
+     </if>
+     <if test="acc_type == 1 or acc_type == 15 or acc_type == 24" >
+       and   b.acc_type in ('1','15','24')
+     </if>
+    <if test="startMoney != null and startMoney != ''" >
+       and   (a.wlbi_amnt &gt;= #{startMoney} or a.wlbao_amnt &gt;= #{startMoney} or a.rmb_amnt &gt;= #{startMoney})
+    </if>
+    <if test="endMoney != null and endMoney != ''" >
+       and   (a.wlbi_amnt &lt;= #{endMoney} or a.wlbao_amnt  &lt;= #{endMoney} or a.rmb_amnt  &lt;= #{endMoney})
+    </if>
+    <if test="otherno != null and otherno != ''" >
+      and   a.otherno = #{otherno}
+    </if>
+    <if test="search_date == 'day'" >
+      and   date(a.create_time) = date(now())
+    </if>
+    <if test="search_date == 'week'" >
+      and   a.create_time between date_sub(now(),interval 1 week) and now()
+    </if>
+    <if test="search_date == 'month'" >
+      and   a.create_time between date_sub(now(),interval 1 month) and now()
+    </if>
+    <if test="currency == 1" >
+      and   a.wlbi_amnt &lt;&gt; 0
+    </if>
+    <if test="currency == 2" >
+      and   a.wlbao_amnt &lt;&gt; 0
+    </if>
+    <if test="currency == 3" >
+      and   a.rmb_amnt &lt;&gt; 0
+    </if>
+    <if test="currency == null or currency == '' or currency == 0 " >
+      and   (a.wlbi_amnt &lt;&gt; 0 or   a.wlbao_amnt &lt;&gt; 0 or   a.rmb_amnt &lt;&gt; 0 )
+    </if>
+    <if test="remark1 != null and remark1 != ''" >
+      and   a.remark1 like  concat('%', #{remark1}, '%')  
+    </if>
+    )t order by t.caldate desc 
+  </select>
+  <select id="getSubTotal" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    SELECT
+    CASE
+	WHEN wlbi_amnt_total &gt; 0 THEN
+	    CONCAT('+', wlbi_amnt_total)
+	ELSE
+	wlbi_amnt_total
+	END wlbi_amnt_total,
+	 CASE
+	WHEN wlbao_amnt_total &gt; 0 THEN
+	    CONCAT('+', wlbao_amnt_total)
+	ELSE wlbao_amnt_total
+	END wlbao_amnt_total,
+	 CASE
+	WHEN rmb_amnt_total &gt; 0 THEN
+	    CONCAT('+', rmb_amnt_total)
+	ELSE rmb_amnt_total
+	END as rmb_amnt_total
+	
+	FROM
+	    (
+	        SELECT
+	            round(sum(wlbi_amnt),2) wlbi_amnt_total,
+	            round(sum(wlbao_amnt),4) wlbao_amnt_total,
+	            round(sum(rmb_amnt),2) rmb_amnt_total
+	        FROM
+	            (
+	                select a.otherno,substring(a.create_time,1,19)caldate,
+			          case when a.wlbi_amnt &gt;0 and b.derection = '1'  then CONCAT('+',round(a.wlbi_amnt,2)) when a.wlbi_amnt = 0 or a.wlbi_amnt is null THEN'0' ELSE CONCAT('-',round(a.wlbi_amnt,2))   END as wlbi_amnt,
+			          case when a.wlbao_amnt &gt;0 and b.derection = '1' then CONCAT('+',a.wlbao_amnt) when a.wlbao_amnt  = 0 or a.wlbao_amnt is null THEN '0'  ELSE  CONCAT('-',a.wlbao_amnt)  END as wlbao_amnt,
+			          case when a.rmb_amnt &gt;0 and b.derection = '1' then CONCAT('+',round(a.rmb_amnt,2)) when a.rmb_amnt  = 0 or a.rmb_amnt is null THEN '0'  ELSE CONCAT('-',round(a.rmb_amnt,2))  END as rmb_amnt
+			        from acc_detail a,acc_def b
+			        where 1=1
+			        and a.user_id = #{user_id}
+			        and a.acc_no = b.acc_no
+			        and a.`status` = '4'
+				    <if test="startTime != null and startTime != ''" >
+				      and   a.create_time &gt;= #{startTime}
+				    </if>
+				    <if test="endTime != null and endTime != ''" >
+				      and   date(a.create_time) &lt;= #{endTime}
+				    </if>
+				    <if test="acc_type != null and acc_type != '' and acc_type != 1 and acc_type != 15 and acc_type != 24" >
+				      and   b.acc_type = #{acc_type}
+				    </if>
+				    <if test="acc_type == 1 or acc_type == 15 or acc_type == 24" >
+                      and   b.acc_type in ('1','15','24')
+                    </if>
+				    <if test="startMoney != null and startMoney != ''" >
+				       and   (a.wlbi_amnt &gt;= #{startMoney} or a.wlbao_amnt &gt;= #{startMoney} or a.rmb_amnt &gt;= #{startMoney})
+				    </if>
+				    <if test="endMoney != null and endMoney != ''" >
+				       and   (a.wlbi_amnt &lt;= #{endMoney} or a.wlbao_amnt  &lt;= #{endMoney} or a.rmb_amnt  &lt;= #{endMoney})
+				    </if>
+				    <if test="otherno != null and otherno != ''" >
+				      and   a.otherno = #{otherno}
+				    </if>
+				    <if test="search_date == 'day'" >
+				      and   date(a.create_time) = date(now())
+				    </if>
+				    <if test="search_date == 'week'" >
+				      and   a.create_time between date_sub(now(),interval 1 week) and now()
+				    </if>
+				    <if test="search_date == 'month'" >
+				      and   a.create_time between date_sub(now(),interval 1 month) and now()
+				    </if>
+				    <if test="currency == 1" >
+				      and   a.wlbi_amnt &lt;&gt; 0
+				    </if>
+				    <if test="currency == 2" >
+				      and   a.wlbao_amnt &lt;&gt; 0
+				    </if>
+				    <if test="currency == 3" >
+				      and   a.rmb_amnt &lt;&gt; 0
+				    </if>
+				    <if test="currency == null or currency == '' or currency == 0 " >
+				      and   (a.wlbi_amnt &lt;&gt; 0 or   a.wlbao_amnt &lt;&gt; 0 or   a.rmb_amnt &lt;&gt; 0 )
+				    </if>
+				    <if test="remark1 != null and remark1 != ''" >
+				      and   a.remark1 like  concat('%', #{remark1}, '%')  
+				    </if>
+	       ) t1
+	    ) t2
+  </select>
+  <select id="getAccTypeList" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    select acc_type,acc_name as description
+    from acc_def
+    where 1=1
+    and user_type like concat('%', #{user_type}, '%')  
+    and is_show = '1'
+    GROUP  BY acc_name
+    ORDER BY id ASC
+  </select>
+  <!--定时器账户汇总 -->
+  <update id="accDetailSummary" parameterType="com.ecochain.ledger.model.PageData">
+         update user_wallet w,
+        (select d1.user_id,SUM(d1.wlbi_amnt) smwlbi,sum(d1.wlbao_amnt) smwlbao,sum(d1.rmb_amnt) smrmb ,sum(d1.sanrelarmb_amnt)sumsanrelarmb
+        from acc_detail  d1 
+        where d1.`status`='3' 
+        and d1.acc_no in(select acc_no from acc_def where sumflag = '1')
+        group by d1.user_id) d
+        set w.future_currency = w.future_currency+ ifnull(d.smwlbi,0),
+            w.future_treasure =w.future_treasure+ifnull(d.smwlbao,0),
+            w.money = w.money+ifnull(d.smrmb,0),
+                        w.sanrelarmb_amnt = w.sanrelarmb_amnt +IFNULL(d.sumsanrelarmb,0),
+            w.modify_time =now()
+        where w.user_id = d.user_id
+  </update>
+  <!--定时器账户汇总修改账户流水状态 -->
+  <update id="updateCntflag" parameterType="com.ecochain.ledger.model.PageData">
+    update acc_detail 
+    set 
+	    `status` ='4' ,
+	    cntflag = 1,
+	    caldate = now()
+    where 1=1
+    and acc_no in(select acc_no from acc_def where sumflag = '1') 
+    and `status` ='3'
+  </update>
+  
+   <update id="accSummarycz" parameterType="com.ecochain.ledger.model.PageData">
+         update user_wallet w,
+        (select d1.user_id,SUM(d1.wlbi_amnt) smwlbi,sum(d1.wlbao_amnt) smwlbao,sum(d1.rmb_amnt) smrmb ,sum(d1.sanrelarmb_amnt)sumsanrelarmb
+        from acc_detail  d1 
+        where 1=1
+        and d1.acc_no in ('27','28') and otherno =#{pay_no} and status='9' 
+        group by d1.user_id) d
+        set w.future_currency = w.future_currency+ ifnull(d.smwlbi,0),
+            w.future_treasure =w.future_treasure+ifnull(d.smwlbao,0),
+            w.money = w.money+ifnull(d.smrmb,0),
+                        w.sanrelarmb_amnt = w.sanrelarmb_amnt +IFNULL(d.sumsanrelarmb,0),
+            w.modify_time =now()
+        where w.user_id = d.user_id
+  </update>
+  
+  <update id="updateSummarycz" parameterType="com.ecochain.ledger.model.PageData">
+    update acc_detail 
+    set 
+	    `status` ='4' ,
+	    cntflag = 1,
+	    caldate = now()
+    where 1=1
+    and acc_no in ('27','28') 
+    and `status` ='9'
+    and otherno =#{pay_no}
+  </update>
+  
+  <update id="accSummaryupgrade" parameterType="com.ecochain.ledger.model.PageData">
+         update user_wallet w,
+        (select d1.user_id,SUM(d1.wlbi_amnt) smwlbi,sum(d1.wlbao_amnt) smwlbao,sum(d1.rmb_amnt) smrmb ,sum(d1.sanrelarmb_amnt)sumsanrelarmb
+        from acc_detail  d1 
+        where 1=1
+        and d1.acc_no in ('11') and otherno =#{user_id}  and status='9' 
+        group by d1.user_id) d
+        set w.future_currency = w.future_currency+ ifnull(d.smwlbi,0),
+            w.future_treasure =w.future_treasure+ifnull(d.smwlbao,0),
+            w.money = w.money+ifnull(d.smrmb,0),
+                        w.sanrelarmb_amnt = w.sanrelarmb_amnt +IFNULL(d.sumsanrelarmb,0),
+            w.modify_time =now()
+        where w.user_id = d.user_id
+  </update>
+  
+  <update id="updateSummaryupgrade" parameterType="com.ecochain.ledger.model.PageData">
+    update acc_detail 
+    set 
+	    `status` ='4' ,
+	    cntflag = 1,
+	    caldate = now()
+    where 1=1
+    and acc_no in ('11') 
+    and `status` ='9'
+    and otherno =#{user_id} 
+  </update>
+  
+  
+
+    <insert id="insertStoreDownReturn" parameterType="com.ecochain.ledger.model.PageData" >
+      insert into acc_detail
+        (
+        user_id,acc_no,rmb_amnt,user_type,cntflag,status,other_amnt,
+        other_source,
+        operator
+        )
+        select a.user_id,'94',a.txamnt,b.user_type,0,1,a.txamnt,
+            '实体店消费','sys'
+         FROM
+      pay_order a,store_info c,
+      users_details b
+        where 1=1
+        AND a.remark2 = c.store_id
+        and c.user_id= b.id
+        and a.pay_no=#{pay_no}
+        and a.status='1'
+        and a.fee_type='6'
+    </insert>
+    <insert id="addSupplierSalesAchievement" parameterType="com.ecochain.ledger.model.PageData" >
+        insert into acc_detail 
+        (user_id,acc_no,rmb_amnt,user_type,cntflag,caldate,`status`,otherno,other_amnt,other_source,operator)
+        select a.user_id,'09',c.cost_price,d.user_type,'1',now(),'4',b.shop_order_no,c.cost_price,'销售业绩（供应商）',d.mobile_phone
+        from shop_supplier a ,shop_order_goods b ,shop_goods c,users_details d
+        where 1=1
+        and a.id = b.supplier_id 
+        and b.goods_id = c.goods_id
+        and a.user_id  = d.id
+        and b.shop_order_no = #{shop_order_no}
+    </insert>
+    <!--分页查询转三界石记录 -->
+    <select id="listPageTransferSJS" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+        select a.otherno,a.acc_no,substring(a.create_time,1,19)caldate,a.wlbi_amnt,b.account from acc_detail a ,user_login b 
+		where 1=1
+		and a.rela_user_id = b.user_id
+		and a.acc_no = '08' 
+		and a.user_id = #{user_id}
+		order by a.create_time desc
+    </select>
+    <!--提现成功插账户流水 -->
+    <select id="addWithDrawalAccDetail" >
+        insert into acc_detail(user_id,acc_no,rmb_amnt,user_type,cntflag,caldate,`status`,otherno,other_amnt,other_source,operator,create_time)
+        select a.user_id,'07',a.txamnt,'','1',now(),'4',a.pay_no,a.txamnt,'人民币提现','',now() 
+        from pay_order a
+        where 1=1
+        and a.fee_type = '2'
+        and a.`status` = '1'
+        and a.confirm_time is null
+    </select>
+    
+    <select id="getHashList" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+        select `hash`,acc_no from acc_detail where `status` = '5' and cntflag = '0'
+    </select>
+    <update id="updateCntflagByHash" parameterType="com.ecochain.ledger.model.PageData">
+        update acc_detail 
+        set 
+            caldate = #{caldate} ,
+            cntflag = #{cntflag} ,
+            status = #{status}
+        WHERE `hash` in 
+        <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+          #{item}   
+        </foreach> 
+    </update>
+    <update id="accDetailHashSummary" parameterType="com.ecochain.ledger.model.PageData">
+         update user_wallet w,
+         (select d1.user_id,SUM(d1.wlbi_amnt) smwlbi from acc_detail  d1 
+<!--         where d1.`status`='5' and d1.acc_no = '06'  -->
+            WHERE `hash` in 
+            <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+              #{item}   
+            </foreach> 
+            group by d1.user_id) d
+        set w.future_currency = w.future_currency+ ifnull(d.smwlbi,0)
+        where w.user_id = d.user_id
+  </update>
+</mapper>

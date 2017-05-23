@@ -83,6 +83,8 @@ public class DruidAutoConfiguration {
         sqlSessionFactoryBean.setPlugins(new Interceptor[]{pagePlugin});*/
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:mybatis/*.xml"));
+        //配置别名
+        sqlSessionFactoryBean.setTypeAliasesPackage("com.ecochain.ledger.model");
         return sqlSessionFactoryBean.getObject();
     }
 

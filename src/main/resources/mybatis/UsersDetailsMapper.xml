@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="UsersDetailsMapper" >
+<mapper namespace="com.ecochain.ledger.mapper.UsersDetailsMapper" >
   <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.UsersDetails" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="user_img" property="userImg" jdbcType="VARCHAR" />
@@ -174,7 +174,7 @@
         address = #{address,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id}
   </update>
   <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
     update users_details
@@ -349,12 +349,16 @@
         </if>
   </select>
    <select id="getUserInfoByUserId" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
-      select b.user_id,b.account,a.email,a.public_key,a.address,a.seeds,a.user_type from users_details a,user_login b 
+      select b.user_id,b.account,a.email,a.public_key,a.address,a.seeds,a.user_type,a.id,a.mobile_phone from users_details a,user_login b 
       where 1=1
       and a.id = b.user_id
       and a.id = #{user_id}
   </select>
   <select id="listPageUsers" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
       select * from users_details 
+  </select>
+  <select id="getUserInfoByAccount" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+      select b.user_id,b.account,a.email,a.public_key,a.address,a.seeds,a.user_type,a.id,a.mobile_phone
+      from users_details a ,user_login b where a.id = b.user_id and b.account = #{account}
   </select>
 </mapper>

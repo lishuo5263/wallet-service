@@ -1,27 +1,20 @@
 package com.ecochain.ledger.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.mapper.ShopGoodsBrandDetailMapper;
-import com.ecochain.ledger.mapper.ShopGoodsBrandMapper;
-import com.ecochain.ledger.mapper.ShopGoodsCategoryMapper;
-import com.ecochain.ledger.mapper.ShopGoodsMapper;
-import com.ecochain.ledger.mapper.ShopGoodsSkuMapper;
-import com.ecochain.ledger.mapper.ShopSupplierMapper;
+import com.ecochain.ledger.mapper.*;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopGoods;
 import com.ecochain.ledger.service.ShopGoodsService;
 import com.ecochain.ledger.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LiShuo on 2016/10/24.
@@ -91,11 +84,11 @@ public class ShopGoodsServiceImpl implements ShopGoodsService {
             map.put("goodsListDetail",this.shopGoodsMapper.queryGoodsDetailInfoById(goodsId));//普通商品详情
         }
         querySku=(ArrayList)map.get("goodsListDetail");
-        if(querySku !=null && querySku.size() >0){
+        /*if(querySku !=null && querySku.size() >0){
             if(querySku.get(0).getIsSkuType()!=0){
                 map.put("goodsListSku",this.shopGoodsSkuMapper.searchGoodsSku(goodsId));//商品sku参数
             }
-        }
+        }*/
         map.put("goodsSupplierInfo",this.shopSupplierMapper.searchSupplierInfo(goodsId));//供应商名称
         map.put("goodsOtherBrand",this.shopGoodsBrandDetailMapper.searchGoodsOtherBrand(goodsId));//同类其他品牌名称查询
         map.put("goodsOtherInfo",this.shopGoodsMapper.searchGoodsOtherInfo(goodsId));//同类其他品牌商品查询
@@ -326,5 +319,10 @@ public class ShopGoodsServiceImpl implements ShopGoodsService {
     @Override
     public PageData getOneShopGoods() throws Exception {
         return (PageData)dao.findForObject("com.qkl.wlsc.provider.dao.ShopGoodsMapper.getOneShopGoods", null);
+    }
+
+    @Override
+    public List queryRMBGoodsDetailInfoByGoodsId(String goodsId) {
+        return this.shopGoodsMapper.queryRMBGoodsDetailInfoByGoodsId(goodsId);
     }
 }

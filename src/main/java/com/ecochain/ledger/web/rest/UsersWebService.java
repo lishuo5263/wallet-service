@@ -1,5 +1,11 @@
 package com.ecochain.ledger.web.rest;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,13 +15,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.annotation.LoginVerify;
 import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.constants.Constant;
@@ -23,6 +31,7 @@ import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.SendVodeService;
+import com.ecochain.ledger.service.ShopOrderInfoService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.service.UsersDetailsService;
@@ -41,8 +50,9 @@ import com.sun.jna.Native;
 /*
  * 总入口
  */
-@Controller
+@RestController
 @RequestMapping(value = "/api/user")
+@Api(value = "用户Service")
 public class UsersWebService extends BaseWebService {
 
     @Autowired
@@ -51,6 +61,8 @@ public class UsersWebService extends BaseWebService {
     private UserService userService;
     @Autowired
     private SendVodeService sendVodeService;
+    @Autowired
+    private ShopOrderInfoService shopOrderInfoService;
     
     @Resource(name="userDetailsService")
     private UsersDetailsService userDetailsService;
@@ -132,8 +144,12 @@ public class UsersWebService extends BaseWebService {
 	/**
 	 * 请求登录，验证用户
 	 */
-	@RequestMapping(value="/login", method=RequestMethod.POST)
-	@ResponseBody
+	@PostMapping("/login")
+	@ApiOperation(nickname = "登陆接口", value = "用户登陆", notes = "用户登陆！")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "query", dataType = "String")
+	})
 	public AjaxResponse login(HttpServletRequest request,HttpServletResponse response){
 	    AjaxResponse ar = new AjaxResponse();
 		Map<String,Object> data  = new HashMap<String,Object>();
@@ -201,8 +217,12 @@ public class UsersWebService extends BaseWebService {
      * @param response
      * @return: AjaxResponse
      */
-    @RequestMapping(value="/register", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping("/register")
+    @ApiOperation(nickname = "用户注册", value = "用户注册", notes = "用户注册")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "account", value = "登陆账号，仅支持手机号注册", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "密码，6-16位数字", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse register(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data  = new HashMap<String,Object>();
@@ -212,40 +232,39 @@ public class UsersWebService extends BaseWebService {
             logger.info("--------------register  pd value is "+pd.toString());
             String account = StringUtil.isEmpty(pd.getString("account"))?null:pd.getString("account").trim();
             String password = StringUtil.isEmpty(pd.getString("password"))?null:pd.getString("password").trim();
-            String mail = StringUtil.isEmpty(pd.getString("mail"))?null:pd.getString("mail").trim();
             if(StringUtil.isEmpty(account)){
                 ar.setSuccess(false);
-                ar.setMessage("请输入用户名！");
+                ar.setMessage("请输入登陆账号！");
                 ar.setErrorCode(CodeConstant.USER_NO_EXISTS);
                 return ar;
             }
-            if(!Validator.isAccountByLetterAndNum(account)){
+            if(!Validator.isMobile(account)){
+                ar.setSuccess(false);
+                ar.setMessage("账号格式不正确！");
+                ar.setErrorCode(CodeConstant.MOBILE_ERROR);
+                return ar;
+            }
+            /*if(!Validator.isAccountByLetterAndNum(account)){
                 ar.setSuccess(false);
                 ar.setMessage("用户名应包含字母和数字哦，请重新设置！");
                 ar.setErrorCode(CodeConstant.ERROE_PASSWORD_LETTER_NUM);
                 return ar;
-            }
-            if(StringUtil.isEmpty(mail)){
-                ar.setSuccess(false);
-                ar.setMessage("请输入邮箱！");
-                ar.setErrorCode(CodeConstant.MAIL_NULL);
-                return ar;
-            }
+            }*/
             if(StringUtil.isEmpty(password)){
                 ar.setSuccess(false);
                 ar.setMessage("请输入密码！");
                 ar.setErrorCode(CodeConstant.ERROE_PASSWORD_NULL);
                 return ar;
             }
-            password = MD5Util.getMd5Code(password);
-            /*if(password.length()<6||password.length()>16){
+            
+            if(password.length()<6||password.length()>16){
                 ar.setSuccess(false);
                 ar.setMessage("密码应为6-16位数，请重新设置");
                 ar.setErrorCode(CodeConstant.ERROE_PASSWORD_6_16);
                 return ar;
-            }*/
+            }
             
-            
+            password = MD5Util.getMd5Code(password);
             //判断用户是否已存在
             if(userDetailsService.findIsExist(account,Constant.VERSION_NO)){
                 ar.setSuccess(false);
@@ -253,8 +272,10 @@ public class UsersWebService extends BaseWebService {
                 ar.setErrorCode(CodeConstant.ACCOUNT_EXISTS);
                 return ar;
             }
-            pd.put("role_id", "2");
             pd.put("account", account);
+            pd.put("user_type", 1);//买家
+            pd.put("mobile_phone", account);//买家
+            pd.put("user_name", account);//买家
             pd.put("status", "1");//会员状态默认启用
             pd.put("password", password);
             pd.put("lastlogin_ip", InternetUtil.getRemoteAddr(request));
@@ -273,49 +294,10 @@ public class UsersWebService extends BaseWebService {
                 return ar;
             }
             
-            /*StringBuffer buf = new StringBuffer();
-            while(buf.length()<32){
-                buf.append(pd.get("user_id")+pd.getString("account"));
-            }
-            char[] seeds = buf.substring(0, 32).toCharArray();
-            char[] pubkey = new char[64];
-            char[] prikey = new char[64];
-            char[] errmsg = new char[64];
-            String seedsStr = buf.substring(0, 32)+"\0";
-            byte[] seedsByte = seedsStr.getBytes();
-            byte[] pubkeyByte = new byte[64];
-            byte[] prikeyByte = new byte[64];
-            byte[] errmsgByte = new byte[64];
-            
-            String pubkey = "";
-            String prikey = "";
-            String errmsg = "";
-//            System.setProperty("jna.encoding", "UTF-8");
-//            int getPriPubKey = 11;
-            logger.info("=================掉动态库开始========================");
-            System.out.println("运行结果："+Clibrary.INSTANCE.TestLib(1,2,'+'));
-            logger.info("=================动态库测试========================");
-            Clibrary.INSTANCE.InitCrypt();
-            int getPriPubKey = Clibrary.INSTANCE.GetPriPubKey(seedsByte,pubkeyByte,prikeyByte,errmsgByte);
-            pubkey = new String(pubkeyByte);
-            prikey = new String(prikeyByte);
-            errmsg = new String(errmsgByte);
-            Clibrary.INSTANCE.StopCrypt();
-            if(getPriPubKey==0){
-                System.out.println("pubkey="+pubkey+",prikey="+prikey+",errmsg="+errmsg);
-                pd.put("seeds", seedsStr);
-                pd.put("public_key", pubkey.toString());
-                pd.put("address", pubkey.toString());
-                pd.put("id", pd.get("user_id"));
-                logger.info("调动态库pd value="+pd.toString());
-                userDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
-            }
-            logger.info("=================掉动态库结束=============返回值getPriPubKey="+getPriPubKey);*/
             PageData userInfo = userDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
             SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
             data.put("CSESSIONID", Base64.getBase64(sessionId));
-            data.put("role_id", pd.getString("role_id"));
             ar.setData(data);
             ar.setSuccess(true);
             ar.setMessage("注册成功！");
@@ -332,8 +314,12 @@ public class UsersWebService extends BaseWebService {
     /**
      * 访问系统首页
      */
-    @RequestMapping(value="/index", method=RequestMethod.POST)
-    @ResponseBody
+    @LoginVerify
+    @PostMapping("/index")
+    @ApiOperation(nickname = "获取用户信息", value = "获取用户信息", notes = "获取用户信息")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse index(HttpServletRequest request){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String,Object>();
@@ -370,8 +356,11 @@ public class UsersWebService extends BaseWebService {
      * @param request
      * @return
      */
-    @RequestMapping(value="/logout")
-    @ResponseBody
+    @PostMapping(value="/logout")
+    @ApiOperation(nickname = "退出登陆", value = "退出登陆", notes = "退出登陆！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "登陆token", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse logout(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
         SessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
@@ -388,8 +377,14 @@ public class UsersWebService extends BaseWebService {
      * @param response
      * @return: AjaxResponse
      */
-    @RequestMapping(value="/forgetpwd", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping("/forgetpwd")
+    @ApiOperation(nickname = "忘记密码", value = "忘记密码，输入新密码", notes = "忘记密码，输入新密码！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "新密码", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "cfPassWord", value = "确认密码", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "vcode", value = "验证码", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse forgetpwd(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         try {
@@ -486,6 +481,141 @@ public class UsersWebService extends BaseWebService {
         }
         return ar;
     }
+    
+    
+    /**
+     * @describe:跳往会员中兴
+     * @author: zhangchunming
+     * @date: 2017年4月26日下午3:03:06
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @PostMapping("/toMemberCenter")
+    @ApiOperation(nickname = "个人中心", value = "个人中心，查询用户信息", notes = "个人中心，查询用户信息！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse toMemberCenter(HttpServletRequest request){
+        logBefore(logger,"去往用户中兴");
+        AjaxResponse ar = new AjaxResponse();
+        Map<String,Object> data = new HashMap<String,Object>();
+        try {
+            PageData pd = new PageData();
+            pd  = this.getPageData();
+            //从session中查询用户信息
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            Integer user_id = user.getInteger("id");
+            
+            //获取用户信息
+            pd.put("user_id", user_id);
+            PageData userInfo = userDetailsService.getUserInfoByUserId(user_id, Constant.VERSION_NO);
+            data.put("userInfo", userInfo);
+                
+            //商城订单列表
+            
+            PageData oneSupplier = null;
+            if ("4".equals(user.getString("user_type"))) {//供应商
+                //根据user_id查询供应商信息
+//                supplierList = shopOrderInfoService.getSupplierByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
+                oneSupplier = shopOrderInfoService.getOneSupplierByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
+                if (oneSupplier == null) {
+                    logger.error("--------查询商城订单列表-----------根据user_id查找不到供应商信息！");
+                    ar.setSuccess(false);
+                    ar.setMessage("查找不到供应商信息！");
+                    ar.setErrorCode(CodeConstant.NO_EXISTS);
+                    return ar;
+                }
+                /*for(PageData supplier:supplierList){
+                    supplierIdList.add((Integer)supplier.get("id"));
+                }
+                pd.put("supplierList", supplierList);*/
+                pd.put("supplier_id", String.valueOf(oneSupplier.get("id")));
+            } else {
+                pd.put("user_id", String.valueOf(user.get("id")));
+                pd.put("user_type", String.valueOf(user.getString("user_type")));
+            }
+            
+            PageData orderPD = new PageData();
+            List<PageData> shopOrderList = null;
+            if("6".equals(user.getString("user_type"))||"7".equals(user.getString("user_type"))){//6-国内物流 7-境外物流
+                //分页查询商城订单列表
+                orderPD.put("user_type", user.getString("user_type"));
+            }else if("4".equals(user.getString("user_type"))){//卖家
+                //分页查询商城订单列表
+                orderPD.put("supplier_id", String.valueOf(user.get("id")));
+            }else if("1".equals(user.getString("user_type"))){//买家
+                orderPD.put("user_id", String.valueOf(user.get("id")));
+            }
+            shopOrderList =  shopOrderInfoService.listShopOrderByPage(orderPD);//查询所有订单
+            if (shopOrderList != null && shopOrderList.size()>0) {
+                List<String> orderIdList = new ArrayList<String>();
+                for (PageData shopOrder : shopOrderList) {
+                    orderIdList.add(String.valueOf(shopOrder.get("order_id")));
+                }
+                PageData shopOrder = new PageData();
+                if ("4".equals(user.getString("user_type"))) {//供应商
+//                    shopOrder.put("supplierIdList", supplierIdList);
+                    shopOrder.put("supplier_id", String.valueOf(oneSupplier.get("id")));
+                } else {
+                    shopOrder.put("user_id", String.valueOf(user.get("id")));
+                }
+                shopOrder.put("orderIdList", orderIdList);
+                List<PageData> shopGoods = shopOrderInfoService.getGoodsByOrderId(shopOrder, Constant.VERSION_NO);
+
+                if (shopGoods != null && shopGoods.size() > 0) {
+                    for (PageData newShopOrder : shopOrderList) {
+                        List<PageData> shopGoodsList = new ArrayList<PageData>();
+                        for (PageData newShopGoods : shopGoods) {
+                            if (newShopGoods.getString("shop_order_id").equals(String.valueOf(newShopOrder.get("order_id")))) {
+                                shopGoodsList.add(newShopGoods);
+                            }
+                        }
+                        newShopOrder.put("shopGoodsList", shopGoodsList);
+                    }
+                }
+            }
+            data.put("shopOrderList", shopOrderList);
+            ar.setData(data);
+            ar.setSuccess(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
+        logAfter(logger);
+        return ar;
+    }
+    
+    @LoginVerify
+    @PostMapping("/getUserInfo")
+    @ApiOperation(nickname = "获取用户基本信息", value = "获取用户基本信息", notes = "获取用户基本信息")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse getUserInfo(HttpServletRequest request){
+        logBefore(logger,"获取用户信息");
+        AjaxResponse ar = new AjaxResponse();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            PageData userInfo = userDetailsService.getUserInfoByUserId(user.getInteger("id"), Constant.VERSION_NO);
+            ar.setSuccess(true);
+            ar.setData(userInfo);
+            ar.setMessage("获取用户信息成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
+        logAfter(logger);
+        return ar;
+    }
+    
+    
     public static void main(String[] args) {
       //初始  
         /*BigInteger num = new BigInteger("0");  

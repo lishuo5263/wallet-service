@@ -1,11 +1,10 @@
 package com.ecochain.ledger.mapper;
 
-import java.util.List;
-import java.util.Map;
-
+import com.ecochain.ledger.model.ShopOrderGoods;
 import org.apache.ibatis.annotations.Param;
 
-import com.ecochain.ledger.model.ShopOrderGoods;
+import java.util.List;
+import java.util.Map;
 
 public interface ShopOrderGoodsMapper {
     int deleteByPrimaryKey(Integer recId);

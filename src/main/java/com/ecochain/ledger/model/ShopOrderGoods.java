@@ -26,6 +26,8 @@ public class ShopOrderGoods implements Serializable {
 
     private String isPromote; //是否火爆商品 1是 0否
 
+    private String tradeHash;
+
     private String consignee;
 
     private String zipCode;
@@ -100,6 +102,8 @@ public class ShopOrderGoods implements Serializable {
     private Date addTime;
 
     private Date shippingTime;
+
+    private String data;
 
     public String getActivityId() {
         return activityId;
@@ -453,11 +457,27 @@ public class ShopOrderGoods implements Serializable {
         this.isPromote = isPromote;
     }
 
+    public String getTradeHash() {
+        return tradeHash;
+    }
+
+    public void setTradeHash(String tradeHash) {
+        this.tradeHash = tradeHash;
+    }
+
     public Integer getIsMutilPrice() {
         return isMutilPrice;
     }
 
     public void setIsMutilPrice(Integer isMutilPrice) {
         this.isMutilPrice = isMutilPrice;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

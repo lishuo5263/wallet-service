@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserAddressMapper">
+  <sql id="Base_Column_List">
+    address_id, address_name, user_id, consignee, email, country, province, city, district, 
+    address, zipcode, tel, mobile, `default`, add_time, update_time
+  </sql>
+  <select id="selectById" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
+    select 
+    <include refid="Base_Column_List" />
+    from user_address
+    where address_id = #{address_id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from user_address
+    where address_id = #{address_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData">
+    insert into user_address (address_name, user_id, 
+      consignee, email, country, 
+      province, city, district, 
+      address, zipcode, tel, 
+      mobile, `default`, add_time, 
+      update_time)
+    values (#{address_name,jdbcType=VARCHAR}, #{user_id,jdbcType=INTEGER}, 
+      #{consignee,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{country,jdbcType=SMALLINT}, 
+      #{province,jdbcType=SMALLINT}, #{city,jdbcType=SMALLINT}, #{district,jdbcType=SMALLINT}, 
+      #{address,jdbcType=VARCHAR}, #{zipcode,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{default,jdbcType=SMALLINT}, #{add_time,jdbcType=TIMESTAMP}, 
+      #{update_time,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData">
+    insert into user_address
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="address_name != null">
+        address_name,
+      </if>
+      <if test="user_id != null">
+        user_id,
+      </if>
+      <if test="consignee != null">
+        consignee,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="country != null">
+        country,
+      </if>
+      <if test="province != null">
+        province,
+      </if>
+      <if test="city != null">
+        city,
+      </if>
+      <if test="district != null">
+        district,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="zipcode != null">
+        zipcode,
+      </if>
+      <if test="tel != null">
+        tel,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="default != null">
+        `default`,
+      </if>
+        add_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="address_name != null">
+        #{address_name,jdbcType=VARCHAR},
+      </if>
+      <if test="user_id != null">
+        #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="consignee != null">
+        #{consignee,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="country != null">
+        #{country,jdbcType=SMALLINT},
+      </if>
+      <if test="province != null">
+        #{province,jdbcType=SMALLINT},
+      </if>
+      <if test="city != null">
+        #{city,jdbcType=SMALLINT},
+      </if>
+      <if test="district != null">
+        #{district,jdbcType=SMALLINT},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null">
+        #{zipcode,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="default != null">
+        #{default,jdbcType=SMALLINT},
+      </if>
+        now(),
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData">
+    update user_address
+    <set>
+      <if test="address_name != null">
+        address_name = #{address_name,jdbcType=VARCHAR},
+      </if>
+      <if test="consignee != null">
+        consignee = #{consignee,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="country != null">
+        country = #{country,jdbcType=SMALLINT},
+      </if>
+      <if test="province != null">
+        province = #{province,jdbcType=SMALLINT},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=SMALLINT},
+      </if>
+      <if test="district != null">
+        district = #{district,jdbcType=SMALLINT},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null">
+        zipcode = #{zipcode,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="default != null">
+        `default` = #{default,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where 1=1
+    and address_id = #{address_id}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData">
+    update user_address
+    set address_name = #{address_name,jdbcType=VARCHAR},
+      user_id = #{user_id,jdbcType=INTEGER},
+      consignee = #{consignee,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      country = #{country,jdbcType=SMALLINT},
+      province = #{province,jdbcType=SMALLINT},
+      city = #{city,jdbcType=SMALLINT},
+      district = #{district,jdbcType=SMALLINT},
+      address = #{address,jdbcType=VARCHAR},
+      zipcode = #{zipcode,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      `default` = #{default,jdbcType=SMALLINT},
+    where 1=1
+    and address_id = #{address_id,jdbcType=INTEGER}
+  </update>
+  <update id="setDefault" parameterType="com.ecochain.ledger.model.PageData">
+    update user_address
+    set `default` = 1
+    where 1=1
+    and user_id = #{user_id}
+    and address_id = #{address_id}
+    and `default` = 0
+  </update>
+  <update id="calcelDefault" parameterType="com.ecochain.ledger.model.PageData">
+    update user_address
+    set `default` = 0
+    where 1=1
+    and user_id = #{user_id}
+    and `default` = 1
+  </update>
+  <select id="getUserAddressList" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    select a.address_id,a.consignee,a.`default`,a.email,a.mobile,a.tel,a.zipcode,a.address,substring(a.add_time,1,19)add_time,b.province,c.city,d.area
+	from user_address a join system_provinces b on a.province = b.provinceid 
+	left join system_cities c on a.city = c.cityid 
+	left join system_areas d on a.district = d.areaid
+	where 1=1
+	and a.user_id = #{user_id}
+	order by a.`default` desc , a.add_time desc
+  </select>
+  <select id="getOneAddress" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+	    select 
+	       a.address_id,a.consignee,a.`default`,a.email,a.mobile,a.tel,
+	       a.zipcode,a.province,a.city,a.district,a.address,substring(a.add_time,1,19)add_time
+	    from 
+		    user_address a
+	    where 1=1
+	    and a.user_id = #{user_id}
+	    and a.address_id = #{address_id}
+  </select>
+  <select id="getOneAddressById" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+        select 
+           a.address_id,a.consignee,a.`default`,a.mobile,a.address,
+           a.zipcode,b.province,c.city,d.area
+        from 
+            user_address a 
+			LEFT JOIN system_provinces b on a.province = b.provinceid
+			LEFT JOIN system_cities c on a.city = c.cityid
+			LEFT JOIN system_areas d on a.district = d.areaid
+        where 1=1
+        and a.address_id = #{address_id}
+  </select>
+</mapper>

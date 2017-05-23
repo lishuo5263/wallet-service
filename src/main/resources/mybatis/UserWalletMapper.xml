@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserWalletMapper">
+  <sql id="Base_Column_List">
+    id, user_id, future_currency, future_treasure, money, last_caldate, syscode, froze_wlbi_amnt, 
+    froze_wlbao_amnt, froze_rmb_amnt, create_time, modify_time, operator, version_id
+  </sql>
+  <select id="selectById" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
+    select 
+    <include refid="Base_Column_List" />
+    from user_wallet
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from user_wallet
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData">
+    insert into user_wallet (user_id, future_currency, 
+      future_treasure, money, last_caldate, 
+      syscode, froze_wlbi_amnt, froze_wlbao_amnt, 
+      froze_rmb_amnt, create_time,
+      operator, version_id)
+    values (#{user_id,jdbcType=INTEGER}, #{future_currency,jdbcType=DECIMAL}, 
+      #{future_treasure,jdbcType=DECIMAL}, #{money,jdbcType=DECIMAL}, #{last_caldate,jdbcType=TIMESTAMP}, 
+      #{syscode,jdbcType=VARCHAR}, #{froze_wlbi_amnt,jdbcType=DECIMAL}, #{froze_wlbao_amnt,jdbcType=DECIMAL}, 
+      #{froze_rmb_amnt,jdbcType=DECIMAL}, now(), 
+      #{operator,jdbcType=VARCHAR}, #{version_id,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData">
+    insert into user_wallet
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="user_id != null">
+        user_id,
+      </if>
+      <if test="future_currency != null">
+        future_currency,
+      </if>
+      <if test="future_treasure != null">
+        future_treasure,
+      </if>
+      <if test="money != null">
+        money,
+      </if>
+      <if test="last_caldate != null">
+        last_caldate,
+      </if>
+      <if test="syscode != null">
+        syscode,
+      </if>
+      <if test="froze_wlbi_amnt != null">
+        froze_wlbi_amnt,
+      </if>
+      <if test="froze_wlbao_amnt != null">
+        froze_wlbao_amnt,
+      </if>
+      <if test="froze_rmb_amnt != null">
+        froze_rmb_amnt,
+      </if>
+        create_time,
+      <if test="operator != null">
+        operator,
+      </if>
+      <if test="version_id != null">
+        version_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="user_id != null">
+        #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="future_currency != null">
+        #{future_currency,jdbcType=DECIMAL},
+      </if>
+      <if test="future_treasure != null">
+        #{future_treasure,jdbcType=DECIMAL},
+      </if>
+      <if test="money != null">
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="last_caldate != null">
+        #{last_caldate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="syscode != null">
+        #{syscode,jdbcType=VARCHAR},
+      </if>
+      <if test="froze_wlbi_amnt != null">
+        #{froze_wlbi_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="froze_wlbao_amnt != null">
+        #{froze_wlbao_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="froze_rmb_amnt != null">
+        #{froze_rmb_amnt,jdbcType=DECIMAL},
+      </if>
+        now(),
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="version_id != null">
+        #{version_id,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    <set>
+      <if test="user_id != null">
+        user_id = #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="future_currency != null">
+        future_currency = #{future_currency,jdbcType=DECIMAL},
+      </if>
+      <if test="future_treasure != null">
+        future_treasure = #{future_treasure,jdbcType=DECIMAL},
+      </if>
+      <if test="money != null">
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="last_caldate != null">
+        last_caldate = #{last_caldate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="syscode != null">
+        syscode = #{syscode,jdbcType=VARCHAR},
+      </if>
+      <if test="froze_wlbi_amnt != null">
+        froze_wlbi_amnt = #{froze_wlbi_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="froze_wlbao_amnt != null">
+        froze_wlbao_amnt = #{froze_wlbao_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="froze_rmb_amnt != null">
+        froze_rmb_amnt = #{froze_rmb_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="create_time != null">
+        create_time = #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modify_time != null">
+        modify_time = #{modify_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="version_id != null">
+        version_id = #{version_id,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    set user_id = #{user_id,jdbcType=INTEGER},
+      future_currency = #{future_currency,jdbcType=DECIMAL},
+      future_treasure = #{future_treasure,jdbcType=DECIMAL},
+      money = #{money,jdbcType=DECIMAL},
+      last_caldate = #{last_caldate,jdbcType=TIMESTAMP},
+      syscode = #{syscode,jdbcType=VARCHAR},
+      froze_wlbi_amnt = #{froze_wlbi_amnt,jdbcType=DECIMAL},
+      froze_wlbao_amnt = #{froze_wlbao_amnt,jdbcType=DECIMAL},
+      froze_rmb_amnt = #{froze_rmb_amnt,jdbcType=DECIMAL},
+      operator = #{operator,jdbcType=VARCHAR},
+      version_id = #{version_id,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getWalletByUserId" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.String">
+<!--     select * from user_wallet where user_id = #{user_id} -->
+	select  user_id,future_currency,future_treasure,ROUND(money,2)money,sanrelarmb_amnt,
+	        last_caldate,froze_rmb_amnt,froze_wlbao_amnt,froze_wlbi_amnt 
+	from user_wallet 
+	where user_id = #{user_id}
+  </select>
+    <!--   从钱包减钱（三界宝、三界通、人民币） -->
+  <update id="updateSub" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    <set>
+      <if test="future_currency != null">
+        future_currency = future_currency - #{future_currency},
+      </if>
+      <if test="future_treasure != null">
+        future_treasure = future_treasure - #{future_treasure},
+      </if>
+      <if test="money != null">
+        money = money - #{money},
+      </if>
+      <if test="froze_wlbi_amnt != null">
+        froze_wlbi_amnt = froze_wlbi_amnt - #{froze_wlbi_amnt},
+      </if>
+      <if test="froze_wlbao_amnt != null">
+        froze_wlbao_amnt = froze_wlbao_amnt - #{froze_wlbao_amnt},
+      </if>
+      <if test="froze_rmb_amnt != null">
+        froze_rmb_amnt = froze_rmb_amnt - #{froze_rmb_amnt},
+      </if>
+        last_caldate = now(),
+      <if test="operator != null">
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where 1=1
+    and user_id = #{user_id}
+    <if test="future_currency != null">
+       and future_currency &gt;= #{future_currency}
+     </if>
+     <if test="future_treasure != null">
+       and future_treasure &gt;= #{future_treasure}
+     </if>
+     <if test="money != null">
+       and money &gt;= #{money}
+     </if>
+     <if test="froze_wlbi_amnt != null">
+       and froze_wlbi_amnt &gt;= #{froze_wlbi_amnt}
+     </if>
+     <if test="froze_wlbao_amnt != null">
+       and froze_wlbao_amnt &gt;= #{froze_wlbao_amnt}
+     </if>
+     <if test="froze_rmb_amnt != null">
+       and froze_rmb_amnt &gt;= #{froze_rmb_amnt}
+     </if>
+  </update>
+    <!--   向钱包加钱（三界宝、三界通、人民币） -->
+  <update id="updateAdd" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    <set>
+      <if test="future_currency != null">
+        future_currency = future_currency + #{future_currency},
+      </if>
+      <if test="future_treasure != null">
+        future_treasure = future_treasure + #{future_treasure},
+      </if>
+      <if test="money != null">
+        money = money + #{money},
+      </if>
+      <if test="froze_wlbi_amnt != null">
+        froze_wlbi_amnt = froze_wlbi_amnt + #{froze_wlbi_amnt},
+      </if>
+      <if test="froze_wlbao_amnt != null">
+        froze_wlbao_amnt = froze_wlbao_amnt + #{froze_wlbao_amnt},
+      </if>
+      <if test="froze_rmb_amnt != null">
+        froze_rmb_amnt = froze_rmb_amnt + #{froze_rmb_amnt},
+      </if>
+        last_caldate = now(),
+      <if test="operator != null">
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where 1=1
+    and user_id = #{user_id}
+  </update>
+  
+  <update id="updatebouns" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet w,
+	(select d1.user_id,SUM(d1.wlbi_amnt) smwlbi,sum(d1.wlbao_amnt) smwlbao,sum(d1.rmb_amnt) smrmb 
+	from acc_detail  d1 
+	where d1.STATUS='3' 
+	and d1.acc_no =#{acc_no}
+	group by d1.user_id) d
+	set w.future_currency = d.smwlbi,
+	    w.future_treasure =d.smwlbao,
+	    w.money = d.smrmb,
+	    w.modify_time =now()
+	where w.user_id = d.user_id
+  </update>
+  <!--商城支付扣除三界通 -->
+  <update id="payNowBySJT" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    set future_currency = future_currency - #{order_amount},
+        froze_wlbi_amnt = froze_wlbi_amnt + #{order_amount}
+    where 1=1
+    and user_id = #{user_id}
+    and future_currency &gt;= #{order_amount}
+  </update>
+  <!--商城确认收货扣除冻结三界通 -->
+  <update id="payNowByFrozeSJT" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    set froze_wlbi_amnt = froze_wlbi_amnt - #{order_amount}
+    where 1=1
+    and user_id = #{user_id}
+    and froze_wlbi_amnt &gt;= #{order_amount}
+  </update>
+  <!--店铺支付扣除人民币 -->
+  <update id="payNowByRMB" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    set money = money - #{order_amount},
+        froze_rmb_amnt = froze_rmb_amnt + #{order_amount}
+    where 1=1
+    and user_id = #{user_id}
+    and money &gt;= #{order_amount}
+  </update>
+  <!--店铺确认消费扣除冻结人民币 -->
+  <update id="payNowByFrozeRMB" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet
+    set froze_rmb_amnt = froze_rmb_amnt - #{order_amount}
+    where 1=1
+    and user_id = #{user_id}
+    and froze_rmb_amnt &gt;= #{order_amount}
+  </update>
+  <!--增加冻结人民币金额给供应商 -->
+  <update id="addFrozeMoneyToSupplier" parameterType="com.ecochain.ledger.model.PageData">
+    <!-- update user_wallet
+    set froze_rmb_amnt = froze_rmb_amnt + #{order_amount}
+    where 1=1
+    and user_id in (select user_id from shop_supplier where id in (select supplier_id from shop_order_goods where shop_order_no = #{shop_order_no})) -->
+    
+    update user_wallet a,shop_supplier b ,shop_order_goods c ,shop_goods d
+    SET a.froze_rmb_amnt = a.froze_rmb_amnt + d.cost_price
+    where 1=1
+    and a.user_id  = b.user_id
+	and b.id = c.supplier_id
+	and c.goods_id = d.goods_id
+	and c.shop_order_no = #{shop_order_no}
+    
+  </update>
+  <!--增加冻结人民币金额给店铺 -->
+  <update id="addFrozeWlbToStore" parameterType="com.ecochain.ledger.model.PageData">
+    
+    <!-- update user_wallet a,store_info b,store_order_info c ,store_goods d
+    SET a.froze_rmb_amnt = a.froze_rmb_amnt + d.promote_price
+    where 1=1
+    and a.user_id  = b.user_id
+    and b.store_id = c.store_id
+    and c.store_goods_id = d.store_goods_id
+    and c.store_order_sn = #{store_order_sn} -->
+    update user_wallet a,store_info b,store_order_info c 
+    SET a.froze_wlbi_amnt = a.froze_wlbi_amnt + c.order_amount
+    where 1=1
+    and a.user_id  = b.user_id
+    and b.store_id = c.store_id
+    and c.store_order_sn = #{store_order_sn}
+  </update>
+  <!--确认收货打人民币金额给供应商 -->
+  <update id="addMoneyToSupplier" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet a,shop_supplier b ,shop_order_goods c ,shop_goods d
+    set 
+	    a.froze_rmb_amnt = a.froze_rmb_amnt - d.cost_price,
+	    a.money = a.money + d.cost_price
+    where 1=1
+    and a.user_id  = b.user_id
+    and b.id = c.supplier_id
+    and c.goods_id = d.goods_id
+    and a.froze_rmb_amnt &gt;= d.cost_price
+    and c.shop_order_no = #{shop_order_no}
+  </update>
+  <!--确认消费三界石币给店铺 -->
+  <update id="addWlbToStore" parameterType="com.ecochain.ledger.model.PageData">
+    <!-- update user_wallet a,store_info b, store_order_info c,store_goods d
+    set 
+	    a.froze_rmb_amnt = a.froze_rmb_amnt - d.promote_price,
+	    a.money = a.money + d.promote_price
+    where 1=1
+    and a.user_id  = b.user_id
+    and b.store_id = c.store_id
+    and c.store_goods_id = d.store_goods_id
+    and a.froze_rmb_amnt &gt;= d.promote_price
+    and c.store_order_sn = #{store_order_sn} -->
+    update user_wallet
+    set 
+        froze_wlbi_amnt = froze_wlbi_amnt - #{other_amnt},
+        future_currency = future_currency + #{other_amnt}
+     where 1=1
+     and user_id = #{user_id}
+     and froze_wlbi_amnt &gt;= #{other_amnt}
+  </update>
+  <!--  申请转账  -->
+    <update id="transfering" parameterType="com.ecochain.ledger.model.PageData">
+        UPDATE user_wallet t
+        SET
+        t.future_treasure = t.future_treasure - #{money},
+        t.froze_wlbao_amnt = ifnull(t.froze_wlbao_amnt,0) + #{money}
+        where t.user_id = #{user_id}
+        and t.future_treasure &gt;= #{money}
+    </update>
+    <!--     转账成功 -->
+    <update id="transferSuccess" parameterType="com.ecochain.ledger.model.PageData">
+        UPDATE user_wallet t
+        SET t.froze_wlbao_amnt = t.froze_wlbao_amnt - #{value}
+        where t.user_id = #{user_id}
+        and t.froze_wlbao_amnt &gt;=#{value}
+    </update>
+    <!--     转账失败 -->
+    <update id="transferfail" parameterType="com.ecochain.ledger.model.PageData">
+         UPDATE user_wallet t
+         SET
+         t.future_treasure = t.future_treasure + #{value},
+         t.froze_wlbao_amnt = t.froze_wlbao_amnt - #{value}
+         where t.user_id = #{user_id}
+         and t.froze_wlbao_amnt &gt;=#{value}
+    </update>
+
+  <!--线下交易给店铺人民币 -->
+  <update id="updateUserWallet" parameterType="map">
+    update  user_wallet set money=money+#{money} where user_id=(select user_id from store_info where store_id=#{storeId} limit 1)
+  </update>
+  <select id="isExistSupplierInfo" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from user_wallet a,shop_supplier b ,shop_order_goods c ,shop_goods d
+    where 1=1
+    and a.user_id  = b.user_id
+    and b.id = c.supplier_id
+    and c.goods_id = d.goods_id
+    and c.shop_order_no = #{shop_order_no}
+  </select>
+  <select id="isExistStoreInfo" parameterType="java.lang.String" resultType="java.lang.Integer">
+    <!-- select count(1) from user_wallet a,store_info b,store_order_info c ,store_goods d
+    where 1=1
+    and a.user_id  = b.user_id
+    and b.store_id = c.store_id
+    and c.store_goods_id = d.store_goods_id
+    and c.store_order_sn = #{store_order_sn} -->
+    select count(1) from user_wallet a,store_info b,store_order_info c 
+    where 1=1
+    and a.user_id  = b.user_id
+    and b.store_id = c.store_id
+    and c.store_order_sn = #{store_order_sn}
+  </select>
+  <select id="getWalletByAccount" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+     select a.*,b.account from user_wallet a,user_login b where a.user_id = b.user_id and b.account = #{account}
+  </select>
+   <!--   从钱包减钱（三界宝、三界通、人民币） -->
+  <update id="updateSubByAccount" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet a ,user_login b
+    <set>
+      <if test="future_currency != null">
+        a.future_currency = a.future_currency - #{future_currency},
+      </if>
+      <if test="future_treasure != null">
+        a.future_treasure = a.future_treasure - #{future_treasure},
+      </if>
+      <if test="money != null">
+        a.money = a.money - #{money},
+      </if>
+      <if test="froze_wlbi_amnt != null">
+        a.froze_wlbi_amnt = a.froze_wlbi_amnt - #{froze_wlbi_amnt},
+      </if>
+      <if test="froze_wlbao_amnt != null">
+        a.froze_wlbao_amnt = a.froze_wlbao_amnt - #{froze_wlbao_amnt},
+      </if>
+      <if test="froze_rmb_amnt != null">
+        a.froze_rmb_amnt = a.froze_rmb_amnt - #{froze_rmb_amnt},
+      </if>
+        a.last_caldate = now(),
+      <if test="operator != null">
+        a.operator = #{operator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where 1=1
+    and a.user_id = b.user_id
+    and b.account = #{account}
+    <if test="future_currency != null">
+       and a.future_currency &gt;= #{future_currency}
+     </if>
+     <if test="future_treasure != null">
+       and a.future_treasure &gt;= #{future_treasure}
+     </if>
+     <if test="money != null">
+       and a.money &gt;= #{money}
+     </if>
+     <if test="froze_wlbi_amnt != null">
+       and a.froze_wlbi_amnt &gt;= #{froze_wlbi_amnt}
+     </if>
+     <if test="froze_wlbao_amnt != null">
+       and a.froze_wlbao_amnt &gt;= #{froze_wlbao_amnt}
+     </if>
+     <if test="froze_rmb_amnt != null">
+       and a.froze_rmb_amnt &gt;= #{froze_rmb_amnt}
+     </if>
+  </update>
+  <update id="exchangeSJS2RMB" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet 
+	set 
+	    future_currency = future_currency - #{exchange_num} ,
+	    money = money + #{result_num}
+	where 1=1
+	and user_id = #{user_id}
+	and future_currency &gt;= #{exchange_num}
+  </update>
+  <update id="exchangeRMB2SJS" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet 
+    set 
+        future_currency = future_currency + #{result_num} ,
+        money = money - #{exchange_num}
+    where 1=1
+    and user_id = #{user_id}
+    and money &gt;= #{exchange_num}
+  </update>
+    <!--申请提现扣减人民币到冻结余额 -->
+  <update id="withDrawalSubMoney" parameterType="com.ecochain.ledger.model.PageData">
+    update user_wallet 
+	set money = money - #{money},
+        froze_rmb_amnt = froze_rmb_amnt + #{money}
+	where 1 = 1
+	and user_id = #{user_id}
+	and money &gt;= #{money}
+  </update>
+    <!--提现审核成功，扣减冻结人民币余额 -->
+  <update id="withDrawalSubFrozeMoney">
+    update user_wallet a,pay_order b 
+	set a.froze_rmb_amnt = a.froze_rmb_amnt - b.txamnt
+	where 1 = 1
+	and a.user_id = b.user_id
+	and b.fee_type = '2'
+	and b.`status` = '1'
+	and b.confirm_time is NULL
+	and a.froze_rmb_amnt &gt;= b.txamnt
+  </update>
+    <!--提现失败或者被拒绝，需将冻结余额加回到余额中 -->
+  <update id="withDrawalAddMoney">
+    update user_wallet a,pay_order b 
+    set a.money = a.money + b.txamnt,
+        a.froze_rmb_amnt = a.froze_rmb_amnt - b.txamnt,
+        b.confirm_time = NOW()
+    where 1 = 1
+    and a.user_id = b.user_id
+    and b.fee_type = '2'
+    and b.`status` = '2'
+    and b.confirm_time is NULL
+    and a.froze_rmb_amnt &gt;= b.txamnt
+  </update>
+</mapper>

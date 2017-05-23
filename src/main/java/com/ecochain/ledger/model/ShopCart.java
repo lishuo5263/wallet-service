@@ -3,6 +3,7 @@ package com.ecochain.ledger.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
 /**
  * Created by LiShuo on 2016/10/25.
  */

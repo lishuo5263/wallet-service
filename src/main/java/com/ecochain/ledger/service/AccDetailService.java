@@ -1,9 +1,9 @@
 package com.ecochain.ledger.service;
 
-import java.util.List;
-
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
+
+import java.util.List;
 
 public interface AccDetailService {
     boolean insertSelective(PageData pd,String versionNo) throws Exception;
@@ -13,7 +13,7 @@ public interface AccDetailService {
     PageData selectById(Integer id,String versionNo) throws Exception;
 
     boolean updateByIdSelective(PageData pd,String versionNo) throws Exception;
-    
+
     /**
      * @describe:分页查询我的账房
      * @author: zhangchunming
@@ -62,7 +62,7 @@ public interface AccDetailService {
      * @return: List<PageData>
      */
     List<PageData> getAccTypeList(PageData pd,String versionNo) throws Exception;
-    
+
     /**
      * @describe:账户汇总
      * @author: zhangchunming
@@ -73,7 +73,7 @@ public interface AccDetailService {
      * @return: boolean
      */
     boolean accDetailSummary(PageData pd,String versionNo) throws Exception;
-    
+
     /**
      * @describe:获取未统计的hash集合
      * @author: zhangchunming
@@ -84,7 +84,7 @@ public interface AccDetailService {
      * @return: boolean
      */
     List<PageData> getHashList(PageData pd,String versionNo) throws Exception;
-    
+
     /**
      * @describe:账户汇总更新统计标识
      * @author: zhangchunming
@@ -123,7 +123,7 @@ public interface AccDetailService {
      * @return: boolean
      */
     boolean addWithDrawalAccDetail()throws Exception;
-    
+
     /**
      * @describe:商城支付模块，根据hash更新订单支付状态
      * @author: zhangchunming

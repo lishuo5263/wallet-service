@@ -15,7 +15,7 @@ public class JedisUtil {
     private final static Logger logger = LoggerFactory.getLogger(JedisUtil.class);
     private static JedisPool pool;
     private Jedis jedis;
-
+    private static int defaultTimeOut = 60*60*24;//默认时间一天
    /* private JedisUtil() {
         super();
     }*/
@@ -143,8 +143,84 @@ public class JedisUtil {
             pool.returnResource(jedis);
         }
     }
-    
-    
+
+    public static byte[] getKey(String key) {
+        return key.getBytes();
+    }
+
+    /**
+     * 对象转化为字节
+     *
+     * @param value
+     * @return byte[]
+     */
+    public static byte[] object2Bytes(Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream outputStream;
+        try {
+            outputStream = new ObjectOutputStream(arrayOutputStream);
+
+            outputStream.writeObject(value);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                arrayOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return arrayOutputStream.toByteArray();
+    }
+
+    /**
+     * 字节转化为对象
+     *
+     * @param bytes
+     * @return Object
+     */
+    public static Object byte2Object(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        try {
+            ObjectInputStream inputStream;
+            inputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
+            Object obj = inputStream.readObject();
+            return obj;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static boolean set(String key, Object obj, int outTime) {
+        Jedis jedis = pool.getResource();
+        boolean flag = true;
+        try {
+            jedis.set(getKey(key), object2Bytes(obj));
+            if (outTime != 0) {
+                jedis.expire(getKey(key), outTime);
+            }else{
+                jedis.expire(getKey(key), defaultTimeOut);
+            }
+        } catch (Exception e) {
+            flag = false;
+            logger.error("===save key===" + key + "==="
+                    + e.getLocalizedMessage());
+        } finally {
+            pool.returnResource(jedis);
+        }
+        return flag;
+    }
+
     public static void set(String key, String value, int expireTimeInSec) {
         Jedis jedis = null;
         try {
@@ -188,7 +264,7 @@ public class JedisUtil {
         }
     }
 
-    public static String get(String key) {
+    public static Object get(String key) {
         Jedis jedis = null;
         String value = null;
         try {
@@ -201,6 +277,20 @@ public class JedisUtil {
             pool.returnResource(jedis);
         }
         return value;
+    }
+
+    public static Object getInfo(String key) {
+        Object obj = null;
+        Jedis jedis = pool.getResource();
+        try {
+            obj = byte2Object(jedis.get(getKey(key)));
+        } catch (Exception e) {
+            logger.error(e.getLocalizedMessage());
+            return null;
+        } finally {
+            pool.returnResource(jedis);
+        }
+        return obj;
     }
 
     public static Object getObj(String key) {

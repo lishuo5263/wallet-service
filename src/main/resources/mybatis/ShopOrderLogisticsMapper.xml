@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopOrderLogisticsMapper" >
+  <sql id="Base_Column_List" >
+    id, rec_id, shop_order_no, logistics_no, logistics_name, createtime
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_order_logistics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from shop_order_logistics
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into shop_order_logistics (rec_id, shop_order_no, 
+      logistics_no, logistics_name, createtime
+      )
+    values (#{rec_id,jdbcType=INTEGER}, #{shop_order_no,jdbcType=VARCHAR}, 
+      #{logistics_no,jdbcType=VARCHAR}, #{logistics_name,jdbcType=VARCHAR}, now()
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into shop_order_logistics
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="rec_id != null" >
+        rec_id,
+      </if>
+      <if test="shop_order_no != null" >
+        shop_order_no,
+      </if>
+      <if test="logistics_no != null" >
+        logistics_no,
+      </if>
+      <if test="logistics_name != null" >
+        logistics_name,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="logistics_hash != null" >
+        logistics_hash
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="rec_id != null" >
+        #{rec_id,jdbcType=INTEGER},
+      </if>
+      <if test="shop_order_no != null" >
+        #{shop_order_no,jdbcType=VARCHAR},
+      </if>
+      <if test="logistics_no != null" >
+        #{logistics_no,jdbcType=VARCHAR},
+      </if>
+      <if test="logistics_name != null" >
+        #{logistics_name,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        now(),
+      </if>
+      <if test="logistics_hash != null" >
+        #{logistics_hash,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update shop_order_logistics
+    <set >
+      <if test="rec_id != null" >
+        rec_id = #{rec_id,jdbcType=INTEGER},
+      </if>
+      <if test="shop_order_no != null" >
+        shop_order_no = #{shop_order_no,jdbcType=VARCHAR},
+      </if>
+      <if test="logistics_no != null" >
+        logistics_no = #{logistics_no,jdbcType=VARCHAR},
+      </if>
+      <if test="logistics_name != null" >
+        logistics_name = #{logistics_name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update shop_order_logistics
+    set rec_id = #{rec_id,jdbcType=INTEGER},
+      shop_order_no = #{shop_order_no,jdbcType=VARCHAR},
+      logistics_no = #{logistics_no,jdbcType=VARCHAR},
+      logistics_name = #{logistics_name,jdbcType=VARCHAR},
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

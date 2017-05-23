@@ -1,6 +1,7 @@
 package com.ecochain.ledger.model;
 
 import java.io.Serializable;
+
 /**
  * Created by LiShuo on 2016/11/5.
  */

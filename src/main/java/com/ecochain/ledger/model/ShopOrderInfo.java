@@ -4,6 +4,7 @@ package com.ecochain.ledger.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
 /**
  * Created by LiShuo on 2016/10/28.
  */
@@ -24,6 +25,8 @@ public class ShopOrderInfo implements Serializable {
     private Boolean payStatus;
 
     private String postscript;
+
+    private String tradeHash;
 
     private String shippingName;
 
@@ -177,5 +180,13 @@ public class ShopOrderInfo implements Serializable {
 
     public void setShippingTime(Date shippingTime) {
         this.shippingTime = shippingTime;
+    }
+
+    public String getTradeHash() {
+        return tradeHash;
+    }
+
+    public void setTradeHash(String tradeHash) {
+        this.tradeHash = tradeHash;
     }
 }

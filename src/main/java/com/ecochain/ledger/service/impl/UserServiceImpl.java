@@ -235,11 +235,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean bindPhone(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("com.qkl.wlsc.provider.dao.UsersDetailsMapper.bindPhone", pd)>0;
+        return (Integer)dao.update("UsersDetailsMapper.bindPhone", pd)>0;
     }
 
     @Override
     public PageData getPhoneByAccount(String account, String versionNo) throws Exception {
-        return (PageData)dao.findForObject("com.qkl.wlsc.provider.dao.UsersDetailsMapper.getPhoneByAccount", account);
+        return (PageData)dao.findForObject("UsersDetailsMapper.getPhoneByAccount", account);
     }
 }

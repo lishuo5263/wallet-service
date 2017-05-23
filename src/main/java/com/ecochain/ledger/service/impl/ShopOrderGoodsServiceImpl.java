@@ -1,16 +1,14 @@
 package com.ecochain.ledger.service.impl;
 
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.mapper.ShopGoodsMapper;
 import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.ShopOrderGoodsService;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * Created by LiShuo on 2016/10/28.
@@ -29,17 +27,17 @@ public class ShopOrderGoodsServiceImpl implements ShopOrderGoodsService {
 
     @Override
     public boolean updateLogistics(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("com.qkl.wlsc.provider.dao.ShopOrderGoodsMapper.updateLogistics", pd)>0;
+        return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.updateLogistics", pd)>0;
     }
 
     @Override
     public PageData getOrderGoods(PageData pd, String versionNo) throws Exception {
-        return (PageData)dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderGoodsMapper.getOrderGoods", pd);
+        return (PageData)dao.findForObject("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.getOrderGoods", pd);
     }
 
     @Override
     public boolean updateOrderGoodsStatus(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("com.qkl.wlsc.provider.dao.ShopOrderGoodsMapper.updateOrderGoodsStatus", pd)>0;
+        return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.updateOrderGoodsStatus", pd)>0;
     }
 
     @Override
@@ -54,17 +52,17 @@ public class ShopOrderGoodsServiceImpl implements ShopOrderGoodsService {
 
     @Override
     public PageData getOrderGoodsAndUserInfoById(String rec_id) throws Exception {
-        return (PageData)dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderGoodsMapper.getOrderGoodsAndUserInfoById", rec_id);
+        return (PageData)dao.findForObject("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.getOrderGoodsAndUserInfoById", rec_id);
     }
 
     @Override
     public String getOneGoodsNameByOrderNo(String shop_order_no) throws Exception {
-        return (String)dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderGoodsMapper.getOneGoodsNameByOrderNo", shop_order_no);
+        return (String)dao.findForObject("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.getOneGoodsNameByOrderNo", shop_order_no);
     }
 
     @Override
     public boolean updateOrderGoodsStatusByHash(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("com.qkl.wlsc.provider.dao.ShopOrderGoodsMapper.updateOrderGoodsStatusByHash", pd)>0;
+        return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.updateOrderGoodsStatusByHash", pd)>0;
     }
 
 }

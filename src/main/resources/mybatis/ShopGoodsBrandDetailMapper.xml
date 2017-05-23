@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopGoodsBrandDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.ShopGoodsBrandDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="brand_detail_id" property="brandDetailId" jdbcType="INTEGER" />
+    <result column="brand_detail_name" property="brandDetailName" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, brand_detail_id, brand_detail_name, add_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_goods_brand_detail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shop_goods_brand_detail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.ShopGoodsBrandDetail" >
+    insert into shop_goods_brand_detail (id, brand_detail_id, brand_detail_name, 
+      add_time)
+    values (#{id,jdbcType=INTEGER}, #{brandDetailId,jdbcType=INTEGER}, #{brandDetailName,jdbcType=VARCHAR}, 
+      #{addTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.ShopGoodsBrandDetail" >
+    insert into shop_goods_brand_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="brandDetailId != null" >
+        brand_detail_id,
+      </if>
+      <if test="brandDetailName != null" >
+        brand_detail_name,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="brandDetailId != null" >
+        #{brandDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="brandDetailName != null" >
+        #{brandDetailName,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ecochain.ledger.model.ShopGoodsBrandDetail" >
+    update shop_goods_brand_detail
+    <set >
+      <if test="brandDetailId != null" >
+        brand_detail_id = #{brandDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="brandDetailName != null" >
+        brand_detail_name = #{brandDetailName,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ecochain.ledger.model.ShopGoodsBrandDetail" >
+    update shop_goods_brand_detail
+    set brand_detail_id = #{brandDetailId,jdbcType=INTEGER},
+      brand_detail_name = #{brandDetailName,jdbcType=VARCHAR},
+      add_time = #{addTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="showGoodsBuylistPage" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select <include refid="Base_Column_List" />
+    from shop_goods_brand_detail where brand_detail_id=#{pd.brandId}
+  </select>
+
+  <select id="showGoodsBrandInfo" parameterType="list" resultType="map">
+    select <include refid="Base_Column_List" />
+    from shop_goods_brand_detail where brand_detail_id in(select brand_detail_id from shop_goods_brand_detail where id=#{brandId,jdbcType=INTEGER})
+  </select>
+
+  <select id="showGoodsAttr" parameterType="java.lang.String" resultType="map">
+    select sfk.id,sfk.topic,sfv.topic val,sfk.category_id from shop_features_keys sfk,shop_features_value sfv where sfk.id=sfv.features_keys_id and sfk.category_id=#{catId}
+  </select>
+
+  <select id="showGoods" parameterType="java.lang.String" resultType="map">
+    select <include refid="Base_Column_List" />
+     from shop_goods_brand_detail where brand_detail_id=#{brandId}
+  </select>
+
+  <select id="searchGoodsOtherBrand" resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT
+    sgbd.brand_detail_name,
+    sgbd.brand_detail_id
+    FROM
+    shop_goods sg,
+    shop_goods_brand_detail sgbd
+    WHERE
+    sg.goods_id = #{goodsId}
+    AND sgbd.id <![CDATA[ <>]]> sg.brand_detail_id
+    AND sg.brand_detail_id = sgbd.brand_detail_id
+    LIMIT 12
+  </select>
+</mapper>

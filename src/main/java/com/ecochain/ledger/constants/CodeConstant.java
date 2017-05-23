@@ -505,4 +505,14 @@ public interface CodeConstant {
 	 * 不可给自己转账
 	 */
 	public final short NOT_TRANSFER_SELF = -115;
+
+	/**
+	 * 数据库无此商品
+	 */
+	public final short ERROR_INFO_NOT_SAME = -116;
+
+	/**
+	 * 区块链接口发生错误
+	 */
+	public final short ERROR_BLOCKCHAIN =117;
 }

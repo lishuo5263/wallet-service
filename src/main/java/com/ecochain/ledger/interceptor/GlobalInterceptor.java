@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -72,16 +71,6 @@ public class GlobalInterceptor implements HandlerInterceptor{
                             return false;
     					}
     				}
-    				String user = null;
-                    user = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
-                    if(StringUtil.isEmpty(user)){
-                        ar.setErrorCode(CodeConstant.UNLOGIN);
-                        ar.setMessage("未登录");
-                        ar.setSuccess(false);
-                        response.getWriter().print(JSONObject.toJSONString(ar));
-                        response.getWriter().close();
-                        return false;
-                    }
     			}
     		}
         }

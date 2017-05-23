@@ -1,5 +1,6 @@
 package com.ecochain.ledger.model;
 
+
 import com.ecochain.ledger.util.Const;
 import com.ecochain.ledger.util.Tools;
 

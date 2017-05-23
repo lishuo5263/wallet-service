@@ -1,18 +1,9 @@
 package com.ecochain.ledger.model;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 public class PageData extends HashMap implements Map{
 	
@@ -34,11 +25,11 @@ public class PageData extends HashMap implements Map{
 		Map properties = request.getParameterMap();
 		Map returnMap = new HashMap(); 
 		Iterator entries = properties.entrySet().iterator(); 
-		Map.Entry entry; 
-		String name = "";  
-		String value = "";  
+		Entry entry;
+		String name = "";
+		String value = "";
 		while (entries.hasNext()) {
-			entry = (Map.Entry) entries.next(); 
+			entry = (Entry) entries.next();
 			name = (String) entry.getKey(); 
 			Object valueObj = entry.getValue(); 
 			if(null == valueObj){ 
@@ -142,10 +133,10 @@ public class PageData extends HashMap implements Map{
 	
 	
 	
-	@Id
+	/*@Id
     @Column(name = "Id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;*/
 
     @Transient
     private Integer page = 1;
@@ -153,13 +144,13 @@ public class PageData extends HashMap implements Map{
     @Transient
     private Integer rows = 10;
 
-    public Integer getId() {
+    /*public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
+    }*/
 
     public Integer getPage() {
         return page;

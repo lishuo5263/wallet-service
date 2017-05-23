@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopGoodsCategoryMapper" >
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.ShopGoodsCategory" >
+    <id column="cat_id" property="catId" jdbcType="SMALLINT" />
+    <result column="cat_name" property="catName" jdbcType="VARCHAR" />
+    <result column="grade" property="grade" jdbcType="SMALLINT" />
+    <result column="cat_desc" property="catDesc" jdbcType="VARCHAR" />
+    <result column="brand_id" property="brandId" jdbcType="VARCHAR" />
+    <result column="cat_img" property="catImg" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+    <result column="sort_order" property="sortOrder" jdbcType="BIT" />
+    <result column="show_in_nav" property="showInNav" jdbcType="BIT" />
+    <result column="is_show" property="isShow" jdbcType="BIT" />
+    <result column="is_level" property="isLevel" jdbcType="SMALLINT" />
+    <result column="level_one_name" property="levelOneName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cat_id, cat_name, grade, cat_desc, brand_id, cat_img, parent_id, sort_order, show_in_nav, 
+    is_show, is_level
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Short" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_goods_category
+    where cat_id = #{catId,jdbcType=SMALLINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Short" >
+    delete from shop_goods_category
+    where cat_id = #{catId,jdbcType=SMALLINT}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.ShopGoodsCategory" >
+    insert into shop_goods_category (cat_id, cat_name, grade, 
+      cat_desc, brand_id, cat_img, 
+      parent_id, sort_order, show_in_nav, 
+      is_show, is_level)
+    values (#{catId,jdbcType=SMALLINT}, #{catName,jdbcType=VARCHAR}, #{grade,jdbcType=SMALLINT}, 
+      #{catDesc,jdbcType=VARCHAR}, #{brandId,jdbcType=VARCHAR}, #{catImg,jdbcType=VARCHAR}, 
+      #{parentId,jdbcType=VARCHAR}, #{sortOrder,jdbcType=BIT}, #{showInNav,jdbcType=BIT}, 
+      #{isShow,jdbcType=BIT}, #{isLevel,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.ShopGoodsCategory" >
+    insert into shop_goods_category
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="catId != null" >
+        cat_id,
+      </if>
+      <if test="catName != null" >
+        cat_name,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="catDesc != null" >
+        cat_desc,
+      </if>
+      <if test="brandId != null" >
+        brand_id,
+      </if>
+      <if test="catImg != null" >
+        cat_img,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="sortOrder != null" >
+        sort_order,
+      </if>
+      <if test="showInNav != null" >
+        show_in_nav,
+      </if>
+      <if test="isShow != null" >
+        is_show,
+      </if>
+      <if test="isLevel != null" >
+        is_level,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="catId != null" >
+        #{catId,jdbcType=SMALLINT},
+      </if>
+      <if test="catName != null" >
+        #{catName,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=SMALLINT},
+      </if>
+      <if test="catDesc != null" >
+        #{catDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="brandId != null" >
+        #{brandId,jdbcType=VARCHAR},
+      </if>
+      <if test="catImg != null" >
+        #{catImg,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null" >
+        #{sortOrder,jdbcType=BIT},
+      </if>
+      <if test="showInNav != null" >
+        #{showInNav,jdbcType=BIT},
+      </if>
+      <if test="isShow != null" >
+        #{isShow,jdbcType=BIT},
+      </if>
+      <if test="isLevel != null" >
+        #{isLevel,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ecochain.ledger.model.ShopGoodsCategory" >
+    update shop_goods_category
+    <set >
+      <if test="catName != null" >
+        cat_name = #{catName,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        grade = #{grade,jdbcType=SMALLINT},
+      </if>
+      <if test="catDesc != null" >
+        cat_desc = #{catDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="brandId != null" >
+        brand_id = #{brandId,jdbcType=VARCHAR},
+      </if>
+      <if test="catImg != null" >
+        cat_img = #{catImg,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null" >
+        sort_order = #{sortOrder,jdbcType=BIT},
+      </if>
+      <if test="showInNav != null" >
+        show_in_nav = #{showInNav,jdbcType=BIT},
+      </if>
+      <if test="isShow != null" >
+        is_show = #{isShow,jdbcType=BIT},
+      </if>
+      <if test="isLevel != null" >
+        is_level = #{isLevel,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where cat_id = #{catId,jdbcType=SMALLINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ecochain.ledger.model.ShopGoodsCategory" >
+    update shop_goods_category
+    set cat_name = #{catName,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=SMALLINT},
+      cat_desc = #{catDesc,jdbcType=VARCHAR},
+      brand_id = #{brandId,jdbcType=VARCHAR},
+      cat_img = #{catImg,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=VARCHAR},
+      sort_order = #{sortOrder,jdbcType=BIT},
+      show_in_nav = #{showInNav,jdbcType=BIT},
+      is_show = #{isShow,jdbcType=BIT},
+      is_level = #{isLevel,jdbcType=SMALLINT}
+    where cat_id = #{catId,jdbcType=SMALLINT}
+  </update>
+  <select id="seleceUnionLevelOneName" resultType="java.util.HashMap" >
+  select is_level,group_concat(cat_name) union_cat_name,GROUP_CONCAT(cat_id) union_cat_id  from shop_goods_category where is_level >0  and parent_id =0 group by is_level
+  </select>
+
+  <select id="seleceLevelOneInfo"  resultType="java.util.HashMap" >
+  select cat_id,cat_name,brand_id,parent_id,is_level from shop_goods_category where parent_id=0 and is_show=1
+  </select>
+
+  <select id="seleceUnionLevelOneNameByLevel"  resultType="java.util.HashMap" parameterType="java.lang.Integer">
+  select * from shop_goods_category where is_level =#{isLevel}  and parent_id =0
+  </select>
+
+  <select id="seleceCatId"  resultType="java.util.HashMap" parameterType="java.lang.Integer">
+  select cat_id,cat_name,brand_id,parent_id,is_level from shop_goods_category where parent_id=#{parentId} and is_show=1
+  </select>
+
+  <select id="selectGoodsCount"  resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    select count(1) from shop_goods where cat_id =#{parentId}
+  </select>
+
+  <select id="seleceLevelTwoNameInfo" resultType="java.util.HashMap" >
+  select cat_id,cat_name,brand_id,parent_id,is_level from shop_goods_category sgc where sgc.parent_id in(select cat_id  from shop_goods_category where is_level >0 and parent_id =0 group by is_level)
+  </select>
+
+  <select id="seleceLevelOneCatId" resultType="java.util.HashMap" >
+     select cat_id from shop_goods_category where parent_id=0
+  </select>
+
+  <select id="seleceLevelOneHasSecondCount" resultType="java.util.HashMap" >
+    select count(1) count from shop_goods_category where parent_id =#{catId}
+  </select>
+
+  <select id="searchGoodsType" resultType="java.util.HashMap" parameterType="java.lang.String">
+  select cat_name from shop_goods_category sga where cat_id=(select parent_id from shop_goods_category sga where sga.cat_id=(select parent_id from shop_goods_category sga where sga.cat_id=#{catId}))
+      UNION
+  select cat_name from shop_goods_category sga where sga.cat_id=(select parent_id from shop_goods_category sga where sga.cat_id=#{catId})
+      UNION
+  select cat_name from shop_goods_category sga where sga.cat_id=#{catId}
+  </select>
+
+  <select id="searchGoodsSameType" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select cat_id,cat_name,brand_id from shop_goods_category where parent_id=(select parent_id from shop_goods_category sga where sga.cat_id=#{catId}) and cat_id  <![CDATA[ <> #{catId}]]>
+  </select>
+
+</mapper>

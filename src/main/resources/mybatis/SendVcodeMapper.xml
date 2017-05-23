@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SendVcodeMapper">
+
+     <select id="findVcodeByPhone" parameterType="java.lang.String" resultType="java.lang.String" >
+        select vcode 
+        from system_send_vcode  where phone = #{phone} order by send_time desc 
+        LIMIT 0,1
+     </select> 
+    <!--查询一分钟之内发送验证码次数 -->
+    <select id="findCountByMinute" parameterType="java.lang.String" resultType="java.lang.Integer" >
+		select count(1)
+        from system_send_vcode  
+        where 1=1
+        and phone = #{phone}
+        and send_time between date_sub(now(),interval 1 minute) and now()
+	</select> 
+    <!--查询当天发送验证码次数 -->
+	<select id="findCountByDay" parameterType="java.lang.String" resultType="java.lang.Integer" >
+        select count(1)
+        from system_send_vcode  
+        where 1=1
+        and phone = #{phone}
+        and date(send_time) = date(now())
+    </select> 
+	
+	
+	
+	 <insert id="addVcode" parameterType="com.ecochain.ledger.model.PageData" >
+		 insert into system_send_vcode (phone,vcode,send_time)
+		 values(
+		 #{phone},
+		 #{vcode},
+		 now()
+	 )	 
+	 </insert>
+     <!--查询30分钟内是否有发送验证码 -->
+	 <select id="isSendBy30Minute" parameterType="java.lang.String" resultType="java.lang.Integer" >
+        select count(1) cnt
+        from system_send_vcode  where phone = #{phone} 
+        and send_time > DATE_ADD(NOW(),INTERVAL -30  MINUTE)
+    </select> 
+    <!--查询30分钟之内发送验证码次数 -->
+    <select id="findCountBy30Minute" parameterType="java.lang.String" resultType="java.lang.Integer" >
+        select count(1)
+        from system_send_vcode  
+        where 1=1
+        and phone = #{phone}
+        and send_time between date_sub(now(),interval 30 minute) and now()
+    </select> 
+    <select id="smsCountIsOver" parameterType="com.ecochain.ledger.model.PageData" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            system_send_vcode
+        WHERE 1=1
+        and    phone = #{phone} and date(send_time) = date(now()) 
+        <!-- and (
+                (
+                    SELECT
+                        count(1)
+                    FROM
+                        system_send_vcode
+                    WHERE
+                        phone = #{phone} 
+                    AND send_time > DATE_ADD(NOW(), INTERVAL - 30 MINUTE)
+                )&gt;=10
+                OR  
+                (
+                    SELECT
+                        count(1)
+                    FROM
+                        system_send_vcode
+                    WHERE
+                        1 = 1
+                    AND phone = #{phone}
+                    AND date(send_time) = date(now())
+                )&gt;=15
+        ) -->
+        and (
+            SELECT
+                count(1)
+            FROM
+                system_send_vcode
+            WHERE
+                1 = 1
+            AND phone = #{phone}
+            AND date(send_time) = date(now())
+        )&gt;= #{sms_day_num}
+    </select>
+</mapper>     

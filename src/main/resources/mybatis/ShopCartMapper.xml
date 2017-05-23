@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopCartMapper" >
+  <resultMap id="UnionResultMap" type="com.ecochain.ledger.model.ShopGoods" >
+    <id column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="cat_id" property="catId" jdbcType="SMALLINT" />
+    <result column="goods_sn" property="goodsSn" jdbcType="VARCHAR" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="goods_name_style" property="goodsNameStyle" jdbcType="VARCHAR" />
+    <result column="goods_sales" property="goodsSales" jdbcType="INTEGER" />
+    <result column="brand_id" property="brandId" jdbcType="SMALLINT" />
+    <result column="brand_detail_id" property="brandDetailId" jdbcType="SMALLINT" />
+    <result column="goods_price" property="goodsPrice" jdbcType="DECIMAL" />
+    <result column="vip_price" property="vipPrice" jdbcType="DECIMAL" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="goods_brief" property="goodsBrief" jdbcType="VARCHAR" />
+    <result column="goods_thumb" property="goodsThumb" jdbcType="VARCHAR" />
+    <result column="goods_img" property="goodsImg" jdbcType="VARCHAR" />
+    <result column="original_img" property="originalImg" jdbcType="VARCHAR" />
+    <result column="is_sku_type" property="isSkuType" jdbcType="INTEGER" />
+    <result column="is_real" property="isReal" jdbcType="TINYINT" />
+    <result column="supplier_id" property="supplierId" jdbcType="VARCHAR" />
+    <result column="is_state" property="isState" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="is_delete" property="isDelete" jdbcType="INTEGER" />
+    <result column="is_best" property="isBest" jdbcType="INTEGER" />
+    <result column="is_new" property="isNew" jdbcType="INTEGER" />
+    <result column="is_hot" property="isHot" jdbcType="INTEGER" />
+    <result column="is_promote" property="isPromote" jdbcType="INTEGER" />
+    <result column="goods_type" property="goodsType" jdbcType="SMALLINT" />
+    <result column="give_integral" property="giveIntegral" jdbcType="INTEGER" />
+    <result column="rank_integral" property="rankIntegral" jdbcType="INTEGER" />
+    <result column="keywords" property="keywords" jdbcType="VARCHAR" />
+    <result column="region_id" property="regionId" jdbcType="SMALLINT" />
+    <result column="region_name" property="regionName" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="goods_desc" property="goodsDesc" jdbcType="VARCHAR" />
+    <result column="num" property="num" jdbcType="VARCHAR" />
+    <result column="sku_info" property="skuInfo" jdbcType="VARCHAR" />
+    <result column="sku_value" property="skuValue" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.ShopCart" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="goods_price" property="goodsPrice" jdbcType="DECIMAL" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="sku_id" property="skuId" jdbcType="INTEGER" />
+    <result column="sku_value" property="skuValue" jdbcType="VARCHAR" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, goods_id, goods_price,num, sku_id, addtime, user_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_cart
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shop_cart
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.ShopCart" >
+    insert into shop_cart (id, goods_id, goods_price,num, sku_id,sku_value, addtime, user_id,sku_info)
+    values (#{id,jdbcType=INTEGER}, #{goodsId,jdbcType=INTEGER}, #{goodsPrice,jdbcType=DECIMAL}, #{num,jdbcType=INTEGER},
+      #{skuId,jdbcType=INTEGER},#{skuValue,jdbcType=VARCHAR},  #{addtime,jdbcType=TIMESTAMP}, #{userId,jdbcType=INTEGER},#{skuInfo,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.ShopCart" >
+    insert into shop_cart
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="num != null" >
+        num,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="num != null" >
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ecochain.ledger.model.ShopCart" >
+    update shop_cart
+    <set >
+      <if test="goodsId != null" >
+        goods_id = #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsPrice != null" >
+        goods_price = #{goodsPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="num != null" >
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="skuValue != null" >
+        sku_value = #{skuValue,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where
+    user_id=#{userId,jdbcType=INTEGER} and goods_id=#{goodsId,jdbcType=INTEGER}
+    <if test="skuValue != null" >
+      and sku_value = #{skuValue,jdbcType=VARCHAR}
+    </if>
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ecochain.ledger.model.ShopCart" >
+    update shop_cart
+    set goods_id = #{goodsId,jdbcType=INTEGER},
+      num = #{num,jdbcType=INTEGER},
+      sku_id = #{skuId,jdbcType=INTEGER},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from shop_cart  where  ID in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <delete id="batchDeleteMyCart" parameterType="map">
+    delete from shop_cart  where 1=1  and goods_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and user_id=#{userId,jdbcType=INTEGER}
+    <choose>
+      <when test="#{skuValue} != null and #{skuValue} != '' ">
+        and sku_value IN
+        <foreach item="item" index="index" collection="list2" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </when >
+    </choose>
+  </delete>
+
+  <select id="queryCartGoods" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select * from shop_cart where user_id=#{0} and goods_id=#{1}
+    <choose>
+    <when test="#{2} != null and #{2} != '' ">
+      and sku_value=#{2}
+    </when >
+  </choose>
+  </select>
+
+  <select id="queryCartGoodsID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select id,user_id from shop_cart where id=#{0} and user_id=#{1}
+  </select>
+
+  <select id="queryCartAllGoodsID" parameterType="map" resultType="map">
+    select id from shop_cart where 1=1  and id in
+      <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+      and user_id=#{userId,jdbcType=INTEGER}
+  </select>
+
+  <select id="myCartToGenerateOrder" parameterType="map" resultMap="UnionResultMap">
+    select sg.*,sc.id,sc.user_id,sc.num,sc.sku_info,sc.sku_value  from shop_goods sg ,shop_cart sc where sg.goods_id=sc.goods_id  and id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and user_id=#{userId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

@@ -1,9 +1,9 @@
 package com.ecochain.ledger.mapper;
 
+import com.ecochain.ledger.model.ShopCart;
+
 import java.util.List;
 import java.util.Map;
-
-import com.ecochain.ledger.model.ShopCart;
 
 /**
  * Created by LiShuo on 2016/10/24.
@@ -21,9 +21,9 @@ public interface ShopCartMapper {
 
     int updateByPrimaryKey(ShopCart record);
 
-    ShopCart queryCartGoods(String userId,String goodsId,String skuValue);
+    ShopCart queryCartGoods(String userId, String goodsId, String skuValue);
 
-    ShopCart queryCartGoodsID(Integer userId,Integer goodsId);
+    ShopCart queryCartGoodsID(Integer userId, Integer goodsId);
 
     List queryCartAllGoodsID(Map map);
 

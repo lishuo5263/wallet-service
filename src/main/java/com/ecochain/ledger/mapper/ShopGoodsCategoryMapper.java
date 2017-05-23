@@ -1,9 +1,10 @@
 package com.ecochain.ledger.mapper;
 
+import com.ecochain.ledger.model.ShopGoodsCategory;
+
 import java.util.List;
 import java.util.Map;
 
-import com.ecochain.ledger.model.ShopGoodsCategory;
 /**
  * Created by LiShuo on 2016/10/24.
  */

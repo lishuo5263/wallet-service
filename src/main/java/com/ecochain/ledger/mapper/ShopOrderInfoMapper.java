@@ -1,10 +1,10 @@
 package com.ecochain.ledger.mapper;
 
-import java.util.List;
-import java.util.Map;
-
 import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.model.ShopOrderInfo;
+
+import java.util.List;
+import java.util.Map;
 
 public interface ShopOrderInfoMapper {
     int deleteByPrimaryKey(Integer orderId);
@@ -46,4 +46,6 @@ public interface ShopOrderInfoMapper {
     String getSkuGoodsInfoByorderNo(String orderNo);
 
     String querySimpleGoodsInfo(String orderNum);
+
+    String queryOrderNum(String orderNum);
 }

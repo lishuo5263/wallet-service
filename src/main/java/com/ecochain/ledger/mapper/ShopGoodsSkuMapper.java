@@ -1,8 +1,9 @@
 package com.ecochain.ledger.mapper;
 
+import com.ecochain.ledger.model.ShopGoodsSku;
+
 import java.util.List;
 
-import com.ecochain.ledger.model.ShopGoodsSku;
 /**
  * Created by LiShuo on 2016/10/24.
  */

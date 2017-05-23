@@ -1,12 +1,11 @@
 package com.ecochain.ledger.mapper;
 
 
-import java.util.List;
-import java.util.Map;
-
+import com.ecochain.ledger.model.ShopGoods;
 import org.apache.ibatis.annotations.Param;
 
-import com.ecochain.ledger.model.ShopGoods;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LiShuo on 2016/10/24.
@@ -42,7 +41,7 @@ public interface ShopGoodsMapper {
 
     List queryGoodsDetailInfoByGoodsId(String goodsId);
 
-    List showBySearchInfo(@Param("brandId")String brandId, @Param("catId")String catId);
+    List showBySearchInfo(@Param("brandId") String brandId, @Param("catId") String catId);
 
     List goodsDetailGuessYourLike(String goodsId);
 
@@ -68,7 +67,7 @@ public interface ShopGoodsMapper {
 
     List getShopHotGoods();
 
-    boolean updateGoodStock(String goodsId,String orderNo);
+    boolean updateGoodStock(String goodsId, String orderNo);
 
     List searchTagInfo();
 

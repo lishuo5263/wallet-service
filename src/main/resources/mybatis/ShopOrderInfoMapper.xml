@@ -1,0 +1,804 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopOrderInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.ShopOrderInfo" >
+    <id column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="address_id" property="addressId" jdbcType="INTEGER" />
+    <result column="order_status" property="orderStatus" jdbcType="INTEGER" />
+    <result column="shipping_status" property="shippingStatus" jdbcType="INTEGER" />
+    <result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+    <result column="postscript" property="postscript" jdbcType="VARCHAR" />
+    <result column="shipping_name" property="shippingName" jdbcType="VARCHAR" />
+    <result column="pay_name" property="payName" jdbcType="VARCHAR" />
+    <result column="how_oos" property="howOos" jdbcType="VARCHAR" />
+    <result column="trade_hash" property="tradeHash" jdbcType="VARCHAR" />
+    <result column="goods_amount" property="goodsAmount" jdbcType="DECIMAL" />
+    <result column="shipping_fee" property="shippingFee" jdbcType="DECIMAL" />
+    <result column="integral_money" property="integralMoney" jdbcType="DECIMAL" />
+    <result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="shipping_time" property="shippingTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    order_id, order_no, user_id, address_id, order_status, postscript, shipping_name,
+    pay_name, how_oos, goods_amount, shipping_fee, integral_money, order_amount, add_time,
+    shipping_time,is_refund,is_promote
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from shop_order_info
+    where order_id = #{order_id,jdbcType=INTEGER}
+  </select>
+  <select id="getShopOrderByOrderNo" resultType="com.ecochain.ledger.model.PageData" parameterType="com.ecochain.ledger.model.PageData" >
+    select
+    <include refid="Base_Column_List" />
+    from shop_order_info
+    where 1=1
+    and order_no = #{order_no}
+    and user_id = #{user_id}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from shop_order_info
+    where order_id = #{order_id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteShopOrderInfo" parameterType="java.lang.String" >
+    delete from shop_order_info
+    where order_no = #{orderNo,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteShopOrderGoods" parameterType="java.lang.String" >
+    delete from shop_order_goods
+    where shop_order_no = #{orderNo,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into shop_order_info (order_no, user_id,
+      address_id, order_status, postscript,
+      shipping_name, pay_name, how_oos,
+      goods_amount, shipping_fee, integral_money,
+      order_amount, add_time
+      )
+    values (#{order_no,jdbcType=VARCHAR}, #{user_id,jdbcType=INTEGER},
+      #{address_id,jdbcType=INTEGER}, #{order_status,jdbcType=BIT}, #{postscript,jdbcType=VARCHAR},
+      #{shipping_name,jdbcType=VARCHAR}, #{pay_name,jdbcType=VARCHAR}, #{how_oos,jdbcType=VARCHAR},
+      #{goods_amount,jdbcType=DECIMAL}, #{shipping_fee,jdbcType=DECIMAL}, #{integral_money,jdbcType=DECIMAL},
+      #{order_amount,jdbcType=DECIMAL}, now()
+      )
+  </insert>
+  <insert id="insertShopOrder" parameterType="com.ecochain.ledger.model.ShopOrderGoods" >
+    insert into shop_order_info (order_id, order_no, user_id,address_id,is_promote,
+    consignee,mobile,address,zipcode,province,city,area,order_status, postscript, shipping_name,
+    pay_name, how_oos, goods_amount,
+    shipping_fee, integral_money, order_amount,
+    add_time, shipping_time,trade_hash)
+    values
+   (#{orderId,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER},#{addressId,jdbcType=INTEGER},#{isPromote,jdbcType=VARCHAR},
+    #{consignee,jdbcType=VARCHAR},#{mobile,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR},#{zipCode,jdbcType=VARCHAR},#{province,jdbcType=VARCHAR},#{city,jdbcType=VARCHAR},#{area,jdbcType=VARCHAR},
+    #{orderStatus,jdbcType=INTEGER}, #{postscript,jdbcType=VARCHAR},#{shippingName,jdbcType=VARCHAR},
+    #{payName,jdbcType=VARCHAR}, #{howOos,jdbcType=VARCHAR}, #{goodsAmount,jdbcType=DECIMAL},
+    #{shippingFee,jdbcType=DECIMAL}, #{integralMoney,jdbcType=DECIMAL}, #{orderAmount,jdbcType=DECIMAL},
+    #{addTime,jdbcType=TIMESTAMP}, #{shippingTime,jdbcType=TIMESTAMP},#{tradeHash,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into shop_order_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="order_no != null" >
+        order_no,
+      </if>
+      <if test="user_id != null" >
+        user_id,
+      </if>
+      <if test="address_id != null" >
+        address_id,
+      </if>
+      <if test="order_status != null" >
+        order_status,
+      </if>
+      <if test="postscript != null" >
+        postscript,
+      </if>
+      <if test="shipping_name != null" >
+        shipping_name,
+      </if>
+      <if test="pay_name != null" >
+        pay_name,
+      </if>
+      <if test="how_oos != null" >
+        how_oos,
+      </if>
+      <if test="goods_amount != null" >
+        goods_amount,
+      </if>
+      <if test="shipping_fee != null" >
+        shipping_fee,
+      </if>
+      <if test="integral_money != null" >
+        integral_money,
+      </if>
+      <if test="order_amount != null" >
+        order_amount,
+      </if>
+        add_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="order_no != null" >
+        #{order_no,jdbcType=VARCHAR},
+      </if>
+      <if test="user_id != null" >
+        #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="address_id != null" >
+        #{address_id,jdbcType=INTEGER},
+      </if>
+      <if test="order_status != null" >
+        #{order_status,jdbcType=BIT},
+      </if>
+      <if test="postscript != null" >
+        #{postscript,jdbcType=VARCHAR},
+      </if>
+      <if test="shipping_name != null" >
+        #{shipping_name,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_name != null" >
+        #{pay_name,jdbcType=VARCHAR},
+      </if>
+      <if test="how_oos != null" >
+        #{how_oos,jdbcType=VARCHAR},
+      </if>
+      <if test="goods_amount != null" >
+        #{goods_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="shipping_fee != null" >
+        #{shipping_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="integral_money != null" >
+        #{integral_money,jdbcType=DECIMAL},
+      </if>
+      <if test="order_amount != null" >
+        #{order_amount,jdbcType=DECIMAL},
+      </if>
+        now(),
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update shop_order_info
+    <set >
+      <if test="order_no != null" >
+        order_no = #{order_no,jdbcType=VARCHAR},
+      </if>
+      <if test="user_id != null" >
+        user_id = #{user_id,jdbcType=INTEGER},
+      </if>
+      <if test="address_id != null" >
+        address_id = #{address_id,jdbcType=INTEGER},
+      </if>
+      <if test="order_status != null" >
+        order_status = #{order_status,jdbcType=BIT},
+      </if>
+      <if test="postscript != null" >
+        postscript = #{postscript,jdbcType=VARCHAR},
+      </if>
+      <if test="shipping_name != null" >
+        shipping_name = #{shipping_name,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_name != null" >
+        pay_name = #{pay_name,jdbcType=VARCHAR},
+      </if>
+      <if test="how_oos != null" >
+        how_oos = #{how_oos,jdbcType=VARCHAR},
+      </if>
+      <if test="goods_amount != null" >
+        goods_amount = #{goods_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="shipping_fee != null" >
+        shipping_fee = #{shipping_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="integral_money != null" >
+        integral_money = #{integral_money,jdbcType=DECIMAL},
+      </if>
+      <if test="order_amount != null" >
+        order_amount = #{order_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="shipping_time != null" >
+        shipping_time = #{shipping_time,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{order_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update shop_order_info
+    set order_no = #{order_no,jdbcType=VARCHAR},
+      user_id = #{user_id,jdbcType=INTEGER},
+      address_id = #{address_id,jdbcType=INTEGER},
+      order_status = #{order_status,jdbcType=BIT},
+      postscript = #{postscript,jdbcType=VARCHAR},
+      shipping_name = #{shipping_name,jdbcType=VARCHAR},
+      pay_name = #{pay_name,jdbcType=VARCHAR},
+      how_oos = #{how_oos,jdbcType=VARCHAR},
+      goods_amount = #{goods_amount,jdbcType=DECIMAL},
+      shipping_fee = #{shipping_fee,jdbcType=DECIMAL},
+      integral_money = #{integral_money,jdbcType=DECIMAL},
+      order_amount = #{order_amount,jdbcType=DECIMAL},
+      shipping_time = #{shipping_time,jdbcType=TIMESTAMP}
+    where order_id = #{order_id,jdbcType=INTEGER}
+  </update>
+
+  <update id="shopOrderPayCallBack" parameterType="java.lang.String" >
+    update shop_order_info set order_status=1 , pay_status=2 where order_no=#{orderNo,jdbcType=VARCHAR}
+    set order_no = #{order_no,jdbcType=VARCHAR},
+      user_id = #{user_id,jdbcType=INTEGER},
+      address_id = #{address_id,jdbcType=INTEGER},
+      order_status = #{order_status,jdbcType=BIT},
+      postscript = #{postscript,jdbcType=VARCHAR},
+      shipping_name = #{shipping_name,jdbcType=VARCHAR},
+      pay_name = #{pay_name,jdbcType=VARCHAR},
+      how_oos = #{how_oos,jdbcType=VARCHAR},
+      goods_amount = #{goods_amount,jdbcType=DECIMAL},
+      shipping_fee = #{shipping_fee,jdbcType=DECIMAL},
+      integral_money = #{integral_money,jdbcType=DECIMAL},
+      order_amount = #{order_amount,jdbcType=DECIMAL},
+      shipping_time = #{shipping_time,jdbcType=TIMESTAMP}
+    where order_id = #{order_id,jdbcType=INTEGER}
+  </update>
+  <select id="listPageShopOrder" parameterType="com.ecochain.ledger.model.Page" resultType="com.ecochain.ledger.model.PageData">
+    <!-- select
+        a.order_id,a.order_no,substring(a.add_time,1,19)add_time,a.goods_amount,a.order_status,a.order_amount,sum(b.goods_number*b.pay_price) total_price,
+        c.consignee,c.mobile,d.province,e.city,f.area,c.address,c.zipcode
+    from
+        shop_order_info a,
+        shop_order_goods b,
+        user_address c ,
+        system_provinces d,
+        system_cities e,
+        system_areas f
+    where 1=1
+    and a.order_id = b.shop_order_id
+    and a.address_id = c.address_id
+	and c.province = d.provinceid
+	and c.city = e.cityid 
+	and c.district = f.areaid -->
+	select
+        a.order_id,a.order_no,substring(a.add_time,1,19)add_time,a.goods_amount,a.order_status,a.order_amount,sum(b.goods_number*b.pay_price) total_price,b.pay_price,
+        a.consignee,a.mobile,a.province,a.city,a.area,a.address,a.zipcode,a.is_promote,a.pay_name
+    from
+        shop_order_info a,
+        shop_order_goods b
+    where 1=1
+    and a.order_id = b.shop_order_id
+    <if test="pd.query != null and pd.query !=''" >
+      and   (a.order_no like concat('%', #{pd.query}, '%') or b.logistics_no like concat('%', #{pd.query}, '%') or b.goods_name like concat('%', #{pd.query}, '%') )
+    </if>
+    <!-- <if test="pd.order_no != null and pd.order_no !=''" >
+      and   a.order_no like concat('%', #{pd.order_no}, '%')
+    </if>
+    <if test="pd.logistics_no != null and pd.logistics_no !=''" >
+      and   b.logistics_no like concat('%', #{pd.logistics_no}, '%')
+    </if>
+    <if test="pd.goods_name != null and pd.goods_name !=''" >
+      and   b.goods_name like concat('%', #{pd.goods_name}, '%')
+    </if> -->
+    <if test="pd.order_status != null and pd.order_status !=''" >
+      and   a.order_status = #{pd.order_status}
+    </if>
+    <!--供应商使用 state-->
+    <if test="pd.state == 2 " >
+      and   b.state in (2,7,8)
+    </if>
+     <if test="pd.state == 3 " >
+      and   b.state = 3 
+    </if>
+    <!-- <if test="pd.order_status != null and pd.order_status !=''" >
+      and   b.state = #{pd.order_status}
+    </if> -->
+    <if test="pd.search_date == 'day'" >
+      and   date(a.add_time) = date(now())
+    </if>
+    <if test="pd.search_date == 'week'" >
+      and   a.add_time between date_sub(now(),interval 1 week) and now()
+    </if>
+    <if test="pd.search_date == 'month'" >
+      and   a.add_time between date_sub(now(),interval 1 month) and now()
+    </if>
+    <if test="pd.search_date == 'three_month'" >
+      and   a.add_time between date_sub(now(),interval 3 month) and now()
+    </if>
+    <if test="pd.search_date == 'half_year'" >
+      and   a.add_time between date_sub(now(),interval 6 month) and now()
+    </if>
+    <if test="pd.search_date == 'year'" >
+      and   a.add_time between date_sub(now(),interval 1 year) and now()
+    </if>
+    <if test="pd.supplier_id != null" >
+      and   b.supplier_id = #{pd.supplier_id}
+      and   a.order_status not in('1','4','9')
+    </if>
+    <if test="pd.user_id != null" >
+      and   a.user_id = #{pd.user_id}
+      and   a.order_status not in('4','9')
+    </if>
+    group by a.order_id
+    order by a.add_time desc
+  </select>
+  
+  <select id="listShopOrderByPage" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    select
+        a.order_id,a.order_no,substring(a.add_time,1,19)add_time,a.goods_amount,a.order_status,a.order_amount,sum(b.goods_number*b.pay_price) total_price,b.pay_price,
+        a.consignee,a.mobile,a.province,a.city,a.area,a.address,a.zipcode,a.is_promote,a.pay_name,a.trade_hash,a.shipping_name
+    from
+        shop_order_info a,
+        shop_order_goods b
+    where 1=1
+    and a.order_id = b.shop_order_id
+    <if test="query != null and query !=''" >
+      and   (a.order_no like concat('%', #{query}, '%') or b.logistics_no like concat('%', #{query}, '%') or b.goods_name like concat('%', #{query}, '%') )
+    </if>
+    <if test="order_status != null and order_status !=''" >
+      and   a.order_status = #{order_status}
+    </if>
+    <!--供应商使用 state-->
+    <if test="state == 2 " >
+      and   b.state in (2,7,8)
+    </if>
+     <if test="state == 3 " >
+      and   b.state = 3 
+    </if>
+    <!-- <if test="pd.order_status != null and pd.order_status !=''" >
+      and   b.state = #{pd.order_status}
+    </if> -->
+    <if test="search_date == 'day'" >
+      and   date(a.add_time) = date(now())
+    </if>
+    <if test="search_date == 'week'" >
+      and   a.add_time between date_sub(now(),interval 1 week) and now()
+    </if>
+    <if test="search_date == 'month'" >
+      and   a.add_time between date_sub(now(),interval 1 month) and now()
+    </if>
+    <if test="search_date == 'three_month'" >
+      and   a.add_time between date_sub(now(),interval 3 month) and now()
+    </if>
+    <if test="search_date == 'half_year'" >
+      and   a.add_time between date_sub(now(),interval 6 month) and now()
+    </if>
+    <if test="search_date == 'year'" >
+      and   a.add_time between date_sub(now(),interval 1 year) and now()
+    </if>
+    <if test="supplier_id != null" >
+      and   b.supplier_id = #{supplier_id}
+      and   a.order_status not in('1','4','9')
+    </if>
+    <if test="user_id != null" >
+      and   a.user_id = #{user_id}
+      and   a.order_status not in('4','9')
+    </if>
+    <if test="user_type != null and user_type == 6 " >
+      and   a.shipping_name = '国内物流'
+    </if>
+    <if test="user_type != null and user_type == 7 " >
+      and   a.shipping_name = '境外物流'
+    </if>
+    group by a.order_id
+    order by a.add_time desc
+  </select>
+  <select id="getGoodsByOrderId" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    select
+        a.shop_order_id,a.shop_order_no,a.goods_id,a.goods_name,a.goods_number,a.goods_img,a.pay_price,a.sku_info,a.sku_value,a.logistics_no,a.state,a.cat_id,b.supplier_name,c.logistics_name,c.logistics_code,c.logistics_hash,c.logistics_name
+    from
+        shop_order_goods a 
+        LEFT JOIN shop_supplier b on a.supplier_id = b.id 
+        LEFT JOIN shop_order_logistics c on a.logistics_no = c.logistics_no
+    where 1=1
+    <!-- select
+        a.shop_order_id,a.shop_order_no,a.goods_id,a.goods_name,a.goods_number,a.goods_img,a.pay_price,a.sku_info,a.sku_value,a.logistics_no,a.state,a.cat_id,b.supplier_name
+    from
+        shop_order_goods a ,shop_supplier b
+    where 1=1
+    and a.supplier_id = b.id -->
+    and a.shop_order_id in 
+    <foreach collection="orderIdList" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+    </foreach>  
+    <if test="user_id != null" >
+      and   a.user_id = #{user_id}
+      and   a.state not in('5','9')
+    </if>
+    <if test="supplier_id != null" >
+      and   a.supplier_id = #{supplier_id}
+      and   a.state not in('1','5','9')
+    </if>
+    GROUP BY a.rec_id
+  </select>
+  <!-- <select id="listPageShopOrder" parameterType="page" resultType="pd">
+    select
+        a.order_no,substring(a.add_time,1,19),a.goods_amount,a.order_status,
+        e.logistics_no,
+        GROUP_CONCAT(b.goods_id)goods_id,GROUP_CONCAT(b.goods_name)goods_name,GROUP_CONCAT(b.goods_number)goods_number,GROUP_CONCAT(b.goods_img)goods_img,
+        CONCAT(d.consignee,d.mobile,d.country,d.province,d.city,d.district,d.address,d.zipcode)address
+    from
+        shop_order_info a,
+        shop_order_goods b,
+        user_address d,
+        shop_order_logistics e
+    where 1=1
+    and a.user_id = #{pd.user_id}
+    and a.order_id = b.shop_order_id
+    and a.address_id = d.address_id
+    and a.order_no = e.shop_order_no
+    <if test="pd.order_no != null and pd.order_no !=''" >
+      and   a.order_no like concat('%', #{pd.order_no}, '%')
+    </if>
+    <if test="pd.logistics_no != null and pd.logistics_no !=''" >
+      and   e.logistics_no like concat('%', #{pd.logistics_no}, '%')
+    </if>
+    <if test="pd.goods_name != null and pd.goods_name !=''" >
+      and   b.goods_name like concat('%', #{pd.goods_name}, '%')
+    </if>
+    <if test="pd.state != null and pd.state !=''" >
+      and   b.state = #{pd.state}
+    </if>
+    <if test="pd.search_date == 'day'" >
+      and   date(a.add_time) = date(now())
+    </if>
+    <if test="pd.search_date == 'week'" >
+      and   a.add_time between date_sub(now(),interval 1 week) and now()
+    </if>
+    <if test="pd.search_date == 'month'" >
+      and   a.add_time between date_sub(now(),interval 1 month) and now()
+    </if>
+    <if test="pd.search_date == 'half_year'" >
+      and   a.add_time between date_sub(now(),interval 6 month) and now()
+    </if>
+    <if test="pd.search_date == 'year'" >
+      and   a.add_time between date_sub(now(),interval 1 year) and now()
+    </if>
+    group by a.order_no
+    order by a.add_time desc
+  </select> -->
+  <select id="getShopOrderStatus" parameterType="java.lang.Integer" resultType ="com.ecochain.ledger.model.PageData">
+    select
+        sum(tt) total,sum(wait_pay)wait_pay,sum(wait_receipt)wait_receipt,sum(complete)complete
+    FROM
+        (SELECT  1 as tt,
+        case when order_status = '1' then 1 else 0 end as wait_pay,
+        case when order_status = '2' then 1 else 0 end as wait_receipt,
+        case when order_status = '3' then 1 else 0 end as complete
+        FROM shop_order_info
+        where user_id = #{user_id})a
+  </select>
+  <!--按状态查询用户商城订单数 -->
+  <select id="getShopOrderNumByStatus" parameterType="com.ecochain.ledger.model.PageData" resultType ="com.ecochain.ledger.model.PageData">
+    <!-- select
+        sum(tt) total,sum(wait_pay)wait_pay,sum(wait_receipt)wait_receipt,sum(complete)complete
+    FROM
+        (SELECT  1 as tt,
+        case when a.order_status = '1' then 1 else 0 end as wait_pay,
+        case when a.order_status = '2' then 1 else 0 end as wait_receipt,
+        case when a.order_status = '3' then 1 else 0 end as complete
+        FROM shop_order_info a ,shop_order_goods b 
+        where 1=1 
+        <if test="user_id != null" >
+	      and   a.user_id = #{user_id}
+	    </if>
+	    <if test="supplier_id != null" >
+          and   b.supplier_id = #{supplier_id}
+        </if>
+        GROUP BY a.order_id
+    )a -->
+    
+    select
+         sum(tt) total,sum(wait_pay)wait_pay,sum(wait_receipt)wait_receipt,sum(wait_deliver)wait_deliver,sum(complete)complete
+    FROM
+        (SELECT  1 as tt,
+         case when b.state = '1' then 1 else 0 end as wait_pay,
+         case when b.state = '2' or  b.state = '7' then 1 else 0 end as wait_deliver,
+         <if test="user_id != null" >
+            case when b.state = '3' or b.state = '2' or  b.state = '7' then 1 else 0 end as wait_receipt,
+         </if>
+         <if test="supplier_id != null" >
+            case when b.state = '3' then 1 else 0 end as wait_receipt,
+         </if>
+         case when b.state = '6' then 1 else 0 end as complete
+        FROM shop_order_info a ,shop_order_goods b 
+        where 1=1 
+        and a.order_no = b.shop_order_no
+        <if test="user_id != null" >
+          and   a.user_id = #{user_id}
+          and   a.order_status not in('4','9')
+        </if>
+        <if test="supplier_id != null" >
+          and   b.supplier_id = #{supplier_id}
+          and   a.order_status not in('1','4','9')
+        </if>
+        GROUP BY a.order_id
+    )a
+  </select>
+    <!--按状态查询供应商商城订单数 -->
+  <select id="getShopOrderNumByStatusForSupplier" parameterType="com.ecochain.ledger.model.PageData" resultType ="com.ecochain.ledger.model.PageData">
+    select
+         sum(tt) total,sum(wait_pay)wait_pay,sum(wait_receipt)wait_receipt,sum(wait_deliver)wait_deliver,sum(complete)complete
+    FROM
+        (SELECT  1 as tt,
+         case when b.state = '1' then 1 else 0 end as wait_pay,
+         case when b.state = '2' or  b.state = '7' then 1 else 0 end as wait_deliver,
+         case when b.state = '3' then 1 else 0 end as wait_receipt,
+         case when b.state = '6' then 1 else 0 end as complete
+        FROM shop_order_info a ,shop_order_goods b 
+        where 1=1 
+        and a.order_no = b.shop_order_no
+        and b.supplier_id = #{supplier_id}
+        and a.order_status not in('1','4','9')
+        GROUP BY a.order_id
+    )a
+  </select>
+  <!-- <select id="getShopOrderTotalNum" parameterType="java.lang.Integer" resultType ="java.lang.Integer">
+    select
+        count(1)
+    FROM
+        FROM shop_order_info
+    where user_id = #{user_id}
+  </select> -->
+    <!--暂时不用 -->
+  <select id="getShopOrderTotalNum" parameterType="java.lang.Integer" resultType ="java.lang.Integer">
+    select  count(1)
+    FROM shop_order_goods a,shop_order_goods b
+    where 1=1 
+    <if test="user_id != null" >
+      and a.user_id = #{user_id}
+    </if>
+    <if test="supplier_id != null" >
+      and b.supplier_id = #{supplier_id}
+    </if>
+    group by a.shop_order_id
+  </select>
+  <update id="updateOrderStatus" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info
+    set order_status = #{order_status}
+    where order_id = #{order_id}
+    and user_id = #{user_id}
+  </update>
+  <update id="updateOrderGoodsStatus" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_goods
+    set state = #{state}
+    where shop_order_id = #{order_id}
+    and user_id = #{user_id}
+  </update>
+  <update id="updateShopOrderStatus" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info
+    <set >
+        <if test="order_status != null" >
+            order_status = #{order_status},
+        </if>
+        <if test="pay_time != null" >
+            pay_time = #{pay_time},
+       </if>
+    </set>
+    where 1=1
+    and user_id = #{user_id}
+    and order_id = #{order_id}
+  </update>
+
+  <update id="updateShopOrderStatusInfo" parameterType="com.ecochain.ledger.model.PageData">
+    <!--update shop_order_info
+    <set >
+      <if test="order_status != null" >
+        order_status = #{order_status},
+      </if>
+      <if test="pay_time != null" >
+        pay_time = #{pay_time},
+      </if>
+    </set>
+    where 1=1
+    and user_id = #{user_id}
+    and order_no = #{order_no}-->
+
+    update shop_order_info soi,shop_order_goods sog
+    <set >
+      <if test="order_status != null" >
+        soi.order_status = #{order_status} , sog.state=#{order_status}
+      </if>
+      <if test="pay_time != null" >
+        ,soi.pay_time = #{pay_time},
+      </if>
+    </set>
+    where soi.order_no = sog.shop_order_no
+    and soi.order_no=#{order_no}
+
+  </update>
+
+  <update id="updateOrderIdByOrderNo" parameterType="java.lang.String">
+    update shop_order_goods 
+    set shop_order_id = (select order_id from shop_order_info where order_no = #{order_no})
+    where shop_order_no =  #{order_no}
+  </update>
+<!--   判断是否为最后一个订单 -->
+  <select id="isLastShopOrder" parameterType="com.ecochain.ledger.model.PageData">
+    select count(1) from shop_order_goods 
+    where 1=1
+	and state <![CDATA[ <>]]> 6
+	and user_id = #{user_id}
+	and shop_order_no = #{shop_order_no}
+  </select>
+  <update id="updateStateByOrderNo" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_goods
+    set state = 6
+    where 1=1
+    and user_id = #{user_id}
+    and shop_order_no = #{shop_order_no}
+    and goods_id = #{goods_id}
+  </update>
+<!--   根据统计标志查询未统计订单 -->
+  <select id="getShopOrderListByConflag" resultType="com.ecochain.ledger.model.PageData" parameterType="com.ecochain.ledger.model.PageData" >
+    select a.* ,b.id as user_id,b.user_type,b.mobile_phone
+    from shop_order_info a ,users_details b
+    where 1=1
+    and a.user_id = b.id
+    and a.conflag = #{conflag}
+    and a.order_status = '3'
+  </select>
+  <update id="updateOrderConflag" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info
+    set conflag = '1'
+    where order_id = #{order_id}
+  </update>
+  <select id="getOneSupplierByUserId" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+    select * from shop_supplier where user_id =#{user_id}
+  </select>
+
+  <select id="getSkuGoodsInfoByorderNo" parameterType="java.lang.String" resultType="java.lang.String">
+    select sku_value from shop_order_goods where shop_order_no=#{orderNo,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateOrderRefundStatus" parameterType="java.lang.String">
+    update shop_order_info set is_refund=1,order_status=4 where order_no=#{order_no,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateOrderGoodsRefundStatus" parameterType="java.lang.String">
+    update shop_order_goods set state=5 where shop_order_no=#{order_no,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateShopOrderInfoCancleStatus" parameterType="java.lang.String">
+    update shop_order_info set order_status=4 where order_no=#{order_no,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateShopOrderGoodsCancleStatus" parameterType="java.lang.String">
+    update shop_order_goods set state=5 where shop_order_no=#{order_no,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateShopGoodsGoods" parameterType="java.lang.String">
+    update activity_shop_goods set goods_stock=goods_stock+1
+    where goods_id=(select goods_id from shop_order_goods where shop_order_no=#{order_no,jdbcType=VARCHAR})
+  </update>
+
+  <select id="getUnPayOrder"  resultType="map">
+        SELECT
+        soi.order_no,
+        soi.order_status,
+        soi.add_time,
+        sog.goods_id
+    FROM
+        shop_order_info soi,
+        shop_order_goods sog
+    WHERE
+        is_promote = 1
+    AND order_status = 1
+    AND soi.order_no = sog.shop_order_no
+    AND date(soi.add_time) = CURDATE()
+    AND soi.is_refund=0
+  </select>
+
+  <select id="getOrderInfo"  resultType="map" parameterType="java.lang.String">
+   select
+    <include refid="Base_Column_List" />
+   from shop_order_info  where order_no=#{orderNo,jdbcType=VARCHAR}
+  </select>
+
+  <select id="querySecKillCount"  resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    select count(1) from shop_order_info where user_id =#{userId,jdbcType=INTEGER} and is_promote=1 and date(add_time)=CURDATE()
+  </select>
+
+
+  <select id="querySimpleGoodsInfo"  resultType="java.lang.String" parameterType="java.lang.String">
+     select order_amount   from shop_order_info where order_no=#{orderNum}
+  </select>
+
+  <select id="queryOrderNum"  resultType="java.lang.String" parameterType="java.lang.String">
+    select count(1)   from shop_order_info where order_no=#{orderNum}
+  </select>
+
+    <!--退款退货 -->
+    <update id="refundGoods" parameterType="com.ecochain.ledger.model.PageData">
+        update shop_order_goods a,user_wallet b 
+        set a.state = #{state} ,
+	        b.future_currency = b.future_currency + a.pay_pribe,
+            b.froze_wlbi_amnt = b.froze_wlbi_amnt - a.pay_pribe,
+            a.finish_time = now()
+		where 1=1
+		and a.user_id = b.user_id
+		and a.rec_id = #{rec_id} 
+		and b.froze_wlbi_amnt &gt;= a.pay_pribe
+    </update>
+    <!--申请或拒绝退款退货-->
+    <update id="applyAndRefuseRefundGoods" parameterType="com.ecochain.ledger.model.PageData">
+        update shop_order_goods a
+        set a.state = #{state}
+        where 1=1
+        and a.rec_id = #{rec_id} 
+    </update>
+    
+    <!--订单全部商品退货 -->
+    <!-- <update id="refundLastGoods" parameterType="java.lang.String">
+        update shop_order_goods a,user_wallet b ,shop_order_info c
+        set a.state = '9' ,
+	        b.future_currency = b.future_currency + a.pay_pribe,
+	        b.froze_wlbi_amnt = b.froze_wlbi_amnt - a.pay_pribe,
+	        c.order_status = '9',
+	        a.finish_time = now()
+		where 1=1
+		and a.user_id = b.user_id
+		and a.shop_order_no = c.order_no
+		and a.rec_id = #{rec_id} 
+		and b.froze_wlbi_amnt &gt;= a.pay_pribe
+		and a.state in ('2','3','7')
+    </update>
+    <select id="isLastRefundGoods" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) 
+        from shop_order_goods 
+        where 
+			(select count(1) from shop_order_goods 
+			where shop_order_no in (select shop_order_no from shop_order_goods where rec_id = #{rec_id})
+			)-1  
+			= 
+			(select count(1) from shop_order_info a,shop_order_goods b
+			where 1=1
+			and a.order_no = b.shop_order_no
+			and b.state = '9'
+			and shop_order_no in (select shop_order_no from shop_order_goods where rec_id = #{rec_id})
+    </select> -->
+    <select id="getShopOrderAndUserInfo" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+        select a.* ,b.id as user_id,b.user_type,b.mobile_phone
+	    from shop_order_info a ,users_details b
+	    where 1=1
+	    and a.user_id = b.id
+	    and a.order_no = #{order_no}
+    </select>
+    <update id="updateShopReceipt" parameterType="com.ecochain.ledger.model.PageData">
+	    update shop_order_info a,shop_order_goods b 
+	    set a.conflag = '1',
+	        a.order_status = '3',
+	        b.state = '6'
+	    where 1=1
+	    and a.order_no = b.shop_order_no
+	    and a.order_id = #{order_id}
+	    and a.user_id = #{user_id}
+	    and b.state = '3'
+  </update>
+  <update id="updateOrderHashByOrderNo" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info 
+    <set >
+      <if test="trade_hash != null" >
+        trade_hash =  #{trade_hash} ,
+      </if>
+      <if test="order_status != null" >
+        order_status = #{order_status}
+      </if>
+    </set>
+    where order_no = #{order_no}
+  </update>
+  <update id="updateShopOrderStatusByHash" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info 
+    set order_status = #{order_status},
+    pay_time = #{pay_time}
+    WHERE trade_hash  in
+    <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+          #{item}   
+    </foreach> 
+  </update>
+  <update id="lockOrderByOrderNo" parameterType="com.ecochain.ledger.model.PageData">
+     update shop_order_info set is_lock = '1' where order_no = #{order_no}
+  </update>
+  <update id="unLockOrderByOrderNo" parameterType="com.ecochain.ledger.model.PageData">
+     update shop_order_info set is_lock = '0' where order_no = #{order_no}
+  </update>
+</mapper>

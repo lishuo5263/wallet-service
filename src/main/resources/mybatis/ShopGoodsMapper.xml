@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.ShopGoods" >
+    <id column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="cat_id" property="catId" jdbcType="SMALLINT" />
+    <result column="goods_sn" property="goodsSn" jdbcType="VARCHAR" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="goods_name_style" property="goodsNameStyle" jdbcType="VARCHAR" />
+    <result column="goods_sales" property="goodsSales" jdbcType="INTEGER" />
+    <result column="brand_id" property="brandId" jdbcType="SMALLINT" />
+    <result column="brand_detail_id" property="brandDetailId" jdbcType="SMALLINT" />
+    <result column="goods_stock" property="goodsStock" jdbcType="INTEGER" />
+    <!--<result column="goods_number" property="goodsNumber" jdbcType="SMALLINT" />-->
+    <result column="goods_price" property="goodsPrice" jdbcType="DECIMAL" />
+    <result column="vip_price" property="vipPrice" jdbcType="DECIMAL" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="goods_brief" property="goodsBrief" jdbcType="VARCHAR" />
+    <result column="goods_thumb" property="goodsThumb" jdbcType="VARCHAR" />
+    <result column="goods_img" property="goodsImg" jdbcType="VARCHAR" />
+    <result column="original_img" property="originalImg" jdbcType="VARCHAR" />
+    <result column="is_sku_type" property="isSkuType" jdbcType="INTEGER" />
+    <result column="is_real" property="isReal" jdbcType="TINYINT" />
+    <result column="supplier_id" property="supplierId" jdbcType="VARCHAR" />
+    <result column="is_state" property="isState" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="is_delete" property="isDelete" jdbcType="INTEGER" />
+    <result column="is_best" property="isBest" jdbcType="INTEGER" />
+    <result column="is_new" property="isNew" jdbcType="INTEGER" />
+    <result column="is_hot" property="isHot" jdbcType="INTEGER" />
+    <result column="is_promote" property="isPromote" jdbcType="INTEGER" />
+    <result column="goods_type" property="goodsType" jdbcType="SMALLINT" />
+    <result column="give_integral" property="giveIntegral" jdbcType="INTEGER" />
+    <result column="rank_integral" property="rankIntegral" jdbcType="INTEGER" />
+    <result column="keywords" property="keywords" jdbcType="VARCHAR" />
+    <result column="region_id" property="regionId" jdbcType="SMALLINT" />
+    <result column="region_name" property="regionName" jdbcType="VARCHAR" />
+    <!--<result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />-->
+    <result column="goods_desc" property="goodsDesc" jdbcType="VARCHAR" />
+    <result column="activity_id" property="activityId" jdbcType="VARCHAR" />
+    <result column="is_mutil_price" property="isMutilPrice" jdbcType="INTEGER" />
+
+  </resultMap>
+  <sql id="Base_Column_List" >
+    goods_id, cat_id, goods_sn, goods_name, goods_name_style, goods_sales, brand_id,vip_price,goods_price,
+    brand_detail_id,  market_price, goods_brief, goods_thumb, goods_img,
+    original_img, is_real, supplier_id, is_state, add_time, is_delete, is_best, is_new,
+    is_hot, is_promote, goods_type, give_integral, rank_integral, keywords, region_id,
+    region_name, updatetime,is_mutil_price
+  </sql>
+  <sql id="Base_Column_List2" >
+    goods_id, cat_id, goods_sn, goods_name, goods_sales, brand_id,vip_price,goods_price,
+    brand_detail_id,  market_price, goods_brief, goods_thumb, goods_img,
+    original_img, is_real, supplier_id, is_state, add_time, is_delete, is_best, is_new,
+    is_hot, is_promote, goods_type, give_integral, rank_integral, keywords, region_id,
+    region_name, updatetime
+  </sql>
+  <sql id="Blob_Column_List">
+    goods_desc
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from shop_goods
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByPrimaryKey2" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List2" />
+    from activity_shop_goods
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </select>
+
+  <select id="queryRMBGoodsDetailInfoByGoodsId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from shop_goods
+    where goods_id = #{goodsId}
+  </select>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shop_goods
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.ShopGoods" >
+    insert into shop_goods (goods_id, cat_id, goods_sn,
+    goods_name, goods_name_style, goods_sales,
+    brand_id, brand_detail_id,
+    market_price, goods_brief, goods_thumb,
+    goods_img, original_img, is_real,
+    supplier_id, is_state, add_time,
+    is_delete, is_best, is_new, is_hot,
+    is_promote, goods_type, give_integral,
+    rank_integral, keywords, region_id,
+    region_name, updatetime, goods_desc
+    )
+    values (#{goodsId,jdbcType=INTEGER}, #{catId,jdbcType=SMALLINT}, #{goodsSn,jdbcType=VARCHAR},
+    #{goodsName,jdbcType=VARCHAR}, #{goodsNameStyle,jdbcType=VARCHAR}, #{goodsSales,jdbcType=INTEGER},
+    #{brandId,jdbcType=SMALLINT}, #{brandDetailId,jdbcType=SMALLINT},
+    #{marketPrice,jdbcType=DECIMAL}, #{goodsBrief,jdbcType=VARCHAR}, #{goodsThumb,jdbcType=VARCHAR},
+    #{goodsImg,jdbcType=VARCHAR}, #{originalImg,jdbcType=VARCHAR}, #{isReal,jdbcType=TINYINT},
+    #{supplierId,jdbcType=VARCHAR}, #{isState,jdbcType=INTEGER}, #{addTime,jdbcType=TIMESTAMP},
+    #{isDelete,jdbcType=INTEGER}, #{isBest,jdbcType=INTEGER}, #{isNew,jdbcType=INTEGER}, #{isHot,jdbcType=INTEGER},
+    #{isPromote,jdbcType=INTEGER}, #{goodsType,jdbcType=SMALLINT}, #{giveIntegral,jdbcType=INTEGER},
+    #{rankIntegral,jdbcType=INTEGER}, #{keywords,jdbcType=VARCHAR}, #{regionId,jdbcType=SMALLINT},
+    #{regionName,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, #{goodsDesc,jdbcType=LONGVARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.ShopGoods" >
+    insert into shop_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="catId != null" >
+        cat_id,
+      </if>
+      <if test="goodsSn != null" >
+        goods_sn,
+      </if>
+      <if test="goodsName != null" >
+        goods_name,
+      </if>
+      <if test="goodsNameStyle != null" >
+        goods_name_style,
+      </if>
+      <if test="goodsSales != null" >
+        goods_sales,
+      </if>
+      <if test="brandId != null" >
+        brand_id,
+      </if>
+      <if test="brandDetailId != null" >
+        brand_detail_id,
+      </if>
+      <if test="goodsNumber != null" >
+        goods_number,
+      </if>
+      <if test="marketPrice != null" >
+        market_price,
+      </if>
+      <if test="goodsBrief != null" >
+        goods_brief,
+      </if>
+      <if test="goodsThumb != null" >
+        goods_thumb,
+      </if>
+      <if test="goodsImg != null" >
+        goods_img,
+      </if>
+      <if test="originalImg != null" >
+        original_img,
+      </if>
+      <if test="isReal != null" >
+        is_real,
+      </if>
+      <if test="supplierId != null" >
+        supplier_id,
+      </if>
+      <if test="isState != null" >
+        is_state,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="isDelete != null" >
+        is_delete,
+      </if>
+      <if test="isBest != null" >
+        is_best,
+      </if>
+      <if test="isNew != null" >
+        is_new,
+      </if>
+      <if test="isHot != null" >
+        is_hot,
+      </if>
+      <if test="isPromote != null" >
+        is_promote,
+      </if>
+      <if test="goodsType != null" >
+        goods_type,
+      </if>
+      <if test="giveIntegral != null" >
+        give_integral,
+      </if>
+      <if test="rankIntegral != null" >
+        rank_integral,
+      </if>
+      <if test="keywords != null" >
+        keywords,
+      </if>
+      <if test="regionId != null" >
+        region_id,
+      </if>
+      <if test="regionName != null" >
+        region_name,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="goodsDesc != null" >
+        goods_desc,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="catId != null" >
+        #{catId,jdbcType=SMALLINT},
+      </if>
+      <if test="goodsSn != null" >
+        #{goodsSn,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsName != null" >
+        #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsNameStyle != null" >
+        #{goodsNameStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSales != null" >
+        #{goodsSales,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null" >
+        #{brandId,jdbcType=SMALLINT},
+      </if>
+      <if test="brandDetailId != null" >
+        #{brandDetailId,jdbcType=SMALLINT},
+      </if>
+      <if test="goodsNumber != null" >
+        #{goodsNumber,jdbcType=SMALLINT},
+      </if>
+      <if test="marketPrice != null" >
+        #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsBrief != null" >
+        #{goodsBrief,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsThumb != null" >
+        #{goodsThumb,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsImg != null" >
+        #{goodsImg,jdbcType=VARCHAR},
+      </if>
+      <if test="originalImg != null" >
+        #{originalImg,jdbcType=VARCHAR},
+      </if>
+      <if test="isReal != null" >
+        #{isReal,jdbcType=TINYINT},
+      </if>
+      <if test="supplierId != null" >
+        #{supplierId,jdbcType=VARCHAR},
+      </if>
+      <if test="isState != null" >
+        #{isState,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="isBest != null" >
+        #{isBest,jdbcType=INTEGER},
+      </if>
+      <if test="isNew != null" >
+        #{isNew,jdbcType=INTEGER},
+      </if>
+      <if test="isHot != null" >
+        #{isHot,jdbcType=INTEGER},
+      </if>
+      <if test="isPromote != null" >
+        #{isPromote,jdbcType=INTEGER},
+      </if>
+      <if test="goodsType != null" >
+        #{goodsType,jdbcType=SMALLINT},
+      </if>
+      <if test="giveIntegral != null" >
+        #{giveIntegral,jdbcType=INTEGER},
+      </if>
+      <if test="rankIntegral != null" >
+        #{rankIntegral,jdbcType=INTEGER},
+      </if>
+      <if test="keywords != null" >
+        #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="regionId != null" >
+        #{regionId,jdbcType=SMALLINT},
+      </if>
+      <if test="regionName != null" >
+        #{regionName,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="goodsDesc != null" >
+        #{goodsDesc,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ecochain.ledger.model.ShopGoods" >
+    update shop_goods
+    <set >
+      <if test="catId != null" >
+        cat_id = #{catId,jdbcType=SMALLINT},
+      </if>
+      <if test="goodsSn != null" >
+        goods_sn = #{goodsSn,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsName != null" >
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsNameStyle != null" >
+        goods_name_style = #{goodsNameStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSales != null" >
+        goods_sales = #{goodsSales,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null" >
+        brand_id = #{brandId,jdbcType=SMALLINT},
+      </if>
+      <if test="brandDetailId != null" >
+        brand_detail_id = #{brandDetailId,jdbcType=SMALLINT},
+      </if>
+      <if test="goodsNumber != null" >
+        goods_number = #{goodsNumber,jdbcType=SMALLINT},
+      </if>
+      <if test="marketPrice != null" >
+        market_price = #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsBrief != null" >
+        goods_brief = #{goodsBrief,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsThumb != null" >
+        goods_thumb = #{goodsThumb,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsImg != null" >
+        goods_img = #{goodsImg,jdbcType=VARCHAR},
+      </if>
+      <if test="originalImg != null" >
+        original_img = #{originalImg,jdbcType=VARCHAR},
+      </if>
+      <if test="isReal != null" >
+        is_real = #{isReal,jdbcType=TINYINT},
+      </if>
+      <if test="supplierId != null" >
+        supplier_id = #{supplierId,jdbcType=VARCHAR},
+      </if>
+      <if test="isState != null" >
+        is_state = #{isState,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="isBest != null" >
+        is_best = #{isBest,jdbcType=INTEGER},
+      </if>
+      <if test="isNew != null" >
+        is_new = #{isNew,jdbcType=INTEGER},
+      </if>
+      <if test="isHot != null" >
+        is_hot = #{isHot,jdbcType=INTEGER},
+      </if>
+      <if test="isPromote != null" >
+        is_promote = #{isPromote,jdbcType=INTEGER},
+      </if>
+      <if test="goodsType != null" >
+        goods_type = #{goodsType,jdbcType=SMALLINT},
+      </if>
+      <if test="giveIntegral != null" >
+        give_integral = #{giveIntegral,jdbcType=INTEGER},
+      </if>
+      <if test="rankIntegral != null" >
+        rank_integral = #{rankIntegral,jdbcType=INTEGER},
+      </if>
+      <if test="keywords != null" >
+        keywords = #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="regionId != null" >
+        region_id = #{regionId,jdbcType=SMALLINT},
+      </if>
+      <if test="regionName != null" >
+        region_name = #{regionName,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="goodsDesc != null" >
+        goods_desc = #{goodsDesc,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.ecochain.ledger.model.ShopGoods" >
+    update shop_goods
+    set cat_id = #{catId,jdbcType=SMALLINT},
+    goods_sn = #{goodsSn,jdbcType=VARCHAR},
+    goods_name = #{goodsName,jdbcType=VARCHAR},
+    goods_name_style = #{goodsNameStyle,jdbcType=VARCHAR},
+    goods_sales = #{goodsSales,jdbcType=INTEGER},
+    brand_id = #{brandId,jdbcType=SMALLINT},
+    brand_detail_id = #{brandDetailId,jdbcType=SMALLINT},
+    goods_number = #{goodsNumber,jdbcType=SMALLINT},
+    market_price = #{marketPrice,jdbcType=DECIMAL},
+    goods_brief = #{goodsBrief,jdbcType=VARCHAR},
+    goods_thumb = #{goodsThumb,jdbcType=VARCHAR},
+    goods_img = #{goodsImg,jdbcType=VARCHAR},
+    original_img = #{originalImg,jdbcType=VARCHAR},
+    is_real = #{isReal,jdbcType=TINYINT},
+    supplier_id = #{supplierId,jdbcType=VARCHAR},
+    is_state = #{isState,jdbcType=INTEGER},
+    add_time = #{addTime,jdbcType=TIMESTAMP},
+    is_delete = #{isDelete,jdbcType=INTEGER},
+    is_best = #{isBest,jdbcType=INTEGER},
+    is_new = #{isNew,jdbcType=INTEGER},
+    is_hot = #{isHot,jdbcType=INTEGER},
+    is_promote = #{isPromote,jdbcType=INTEGER},
+    goods_type = #{goodsType,jdbcType=SMALLINT},
+    give_integral = #{giveIntegral,jdbcType=INTEGER},
+    rank_integral = #{rankIntegral,jdbcType=INTEGER},
+    keywords = #{keywords,jdbcType=VARCHAR},
+    region_id = #{regionId,jdbcType=SMALLINT},
+    region_name = #{regionName,jdbcType=VARCHAR},
+    updatetime = #{updatetime,jdbcType=TIMESTAMP},
+    goods_desc = #{goodsDesc,jdbcType=LONGVARCHAR}
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ecochain.ledger.model.ShopGoods" >
+    update shop_goods
+    set cat_id = #{catId,jdbcType=SMALLINT},
+    goods_sn = #{goodsSn,jdbcType=VARCHAR},
+    goods_name = #{goodsName,jdbcType=VARCHAR},
+    goods_name_style = #{goodsNameStyle,jdbcType=VARCHAR},
+    goods_sales = #{goodsSales,jdbcType=INTEGER},
+    brand_id = #{brandId,jdbcType=SMALLINT},
+    brand_detail_id = #{brandDetailId,jdbcType=SMALLINT},
+    goods_number = #{goodsNumber,jdbcType=SMALLINT},
+    market_price = #{marketPrice,jdbcType=DECIMAL},
+    goods_brief = #{goodsBrief,jdbcType=VARCHAR},
+    goods_thumb = #{goodsThumb,jdbcType=VARCHAR},
+    goods_img = #{goodsImg,jdbcType=VARCHAR},
+    original_img = #{originalImg,jdbcType=VARCHAR},
+    is_real = #{isReal,jdbcType=TINYINT},
+    supplier_id = #{supplierId,jdbcType=VARCHAR},
+    is_state = #{isState,jdbcType=INTEGER},
+    add_time = #{addTime,jdbcType=TIMESTAMP},
+    is_delete = #{isDelete,jdbcType=INTEGER},
+    is_best = #{isBest,jdbcType=INTEGER},
+    is_new = #{isNew,jdbcType=INTEGER},
+    is_hot = #{isHot,jdbcType=INTEGER},
+    is_promote = #{isPromote,jdbcType=INTEGER},
+    goods_type = #{goodsType,jdbcType=SMALLINT},
+    give_integral = #{giveIntegral,jdbcType=INTEGER},
+    rank_integral = #{rankIntegral,jdbcType=INTEGER},
+    keywords = #{keywords,jdbcType=VARCHAR},
+    region_id = #{regionId,jdbcType=SMALLINT},
+    region_name = #{regionName,jdbcType=VARCHAR},
+    updatetime = #{updatetime,jdbcType=TIMESTAMP}
+    where goods_id = #{goodsId,jdbcType=INTEGER}
+  </update>
+
+  <update id="addGoodStockByType" parameterType="java.lang.Integer" >
+    update activity_shop_goods set goods_stock =goods_stock+1 where goods_id=#{goodsId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateGoodStock" parameterType="java.lang.String" >
+    update activity_shop_goods set goods_stock=goods_stock+1 where goods_id=#{0}
+    and 0=(select is_refund from shop_order_info soi where soi.is_refund=0 and soi.order_no=#{1})
+  </update>
+
+  <update id="delGoodStockByType" parameterType="java.lang.Integer" >
+    update activity_shop_goods set goods_stock =goods_stock-1 where goods_id=#{goodsId,jdbcType=INTEGER}
+  </update>
+
+  <select id="listPageSearchGood" resultType="com.ecochain.ledger.model.Page" parameterType="com.ecochain.ledger.model.PageData">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote from shop_goods where goods_name  LIKE CONCAT(CONCAT('%', #{pd.searchMsg}),'%') and is_promote in( 0,2) and is_state=1 and is_delete=0
+  </select>
+  <select id="listPageQueryGoodsInfo" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote from shop_goods where cat_id=#{pd.catId} and is_promote=0 and is_state=1 and is_delete=0 order by orderby_sort
+  </select>
+  <select id="queryGoodsInfoBuylistPage" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote
+    from shop_goods where  cat_id=#{pd.catId} and is_state=1 and is_promote=0 and is_delete=0 and vip_price BETWEEN #{pd.start} and #{pd.end}
+  </select>
+  <select id="queryGoodsInfo" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote from shop_goods where cat_id=#{categoryId} and is_state=1 and is_promote=0 and is_delete=0 order by goods_sales desc
+  </select>
+  <select id="SearchgoodsListParam" resultType="map" parameterType="java.lang.String">
+    select sgat.attr_name,sga.attr_value from shop_goods_type sgt,shop_goods_attribute sgat,shop_goods_attr sga  where sgt.id=sgat.type_id and sgat.attr_id=sga.attr_id and sgt.id=#{catId}
+  </select>
+  <select id="queryGoodsDetailInfoById" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from shop_goods where goods_id=#{goodsId} and is_state=1  and is_delete=0
+  </select>
+  <select id="queryHotGoodsDetailInfoById" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from activity_shop_goods where goods_id=#{goodsId} and is_state=1  and is_delete=0 and is_promote=1
+  </select>
+  <select id="queryGoodsDetailInfoByGoodsId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from shop_goods where goods_id=#{goodsId} and is_state=1 and is_delete=0
+  </select>
+  <select id="showBySearchInfo" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,market_price,is_promote from shop_goods
+    <where>
+      <choose>
+        <when test="catId !=null and catId != '' ">
+          cat_id=#{catId} and is_promote=0 and is_state=1 and is_delete=0
+        </when >
+        <when test="brandId != null and brandId != '' ">
+          brand_id=#{brandId} and is_promote=0 and is_state=1 and is_delete=0
+        </when >
+      </choose>
+    </where>
+  </select>
+
+  <select id="listPageShowBySearchInfo" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,market_price,is_promote from shop_goods
+    <where>
+      <choose>
+        <when test="pd.catId !=null and pd.catId != '' ">
+          cat_id=#{pd.catId} and is_promote=0 and is_state=1 and is_delete=0
+        </when >
+        <when test="pd.brandId != null and pd.brandId != '' ">
+          brand_id=#{pd.brandId} and is_promote=0 and is_state=1 and is_delete=0
+        </when >
+      </choose>
+    </where>
+  </select>
+
+  <select id="goodsDetailGuessYourLike" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from shop_goods where cat_id =(select sg.cat_id from shop_goods sg where sg.goods_id=#{goodsId}) and is_state=1 and is_promote=0 and is_delete=0 and goods_id <![CDATA[ <> #{goodsId}]]> order by goods_sales desc limit 5
+  </select>
+
+  <select id="guessYourLike" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from shop_goods where cat_id=#{catId} and is_state=1 and is_promote=0 and is_delete=0 limit 5
+  </select>
+
+  <select id="searchGoodsOtherInfo" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote from shop_goods where brand_id=(select brand_id from shop_goods where goods_id=#{goodsId}) and is_state=1 and is_promote=0 and is_delete=0 and goods_id <![CDATA[ <> #{goodsId}]]> order by rand() limit 6
+  </select>
+
+  <select id="serchMyCart" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+    select sg.*,sc.id,sc.user_id,sc.num,sc.sku_info,sc.sku_value from shop_goods sg ,shop_cart sc where sg.goods_id=sc.goods_id and sc.user_id=#{userId,jdbcType=INTEGER} and sg.is_state=1 and sg.is_promote=0 and sg.is_delete=0
+  </select>
+
+  <select id="serchMyCartGoodsPrice" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+    select goods_price from shop_goods where goods_id =#{goodsId,jdbcType=INTEGER} and is_state=1 and is_promote=0 and is_delete=0
+  </select>
+
+  <select id="serchMyCartYourLike" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT *  FROM
+    shop_goods
+    WHERE
+    cat_id = (
+    SELECT sg.cat_id FROM shop_goods sg WHERE	sg.goods_id = (select goods_id from shop_cart where user_id =#{userId,jdbcType=INTEGER} limit 1))
+    and is_state=1
+    and is_promote=0
+    ORDER BY
+    goods_sales DESC LIMIT 5
+  </select>
+
+  <select id="listPageshowGoodsBuyBrandId" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote
+    from shop_goods where  brand_detail_id = #{pd.brandId} and cat_id=#{pd.catId} and is_promote=0 and is_state=1 and is_delete=0 order by orderby_sort
+  </select>
+
+  <select id="listPageshowGoodsBuyUnionInfo" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote
+    from shop_goods where  brand_detail_id = #{pd.brandId} and cat_id=#{pd.catId} and is_promote=0 and is_state=1 and is_delete=0 and vip_price BETWEEN #{pd.start} and #{pd.end} order by orderby_sort
+  </select>
+
+  <select id="listPageshowGoodsBuySearchInfo" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote
+    from shop_goods where  cat_id=#{pd.catId} and is_promote=0 and is_state=1 and is_delete=0
+    <choose>
+      <when test="pd.goodsPriceType !=null and pd.goodsPriceType == 'vip_price' ">
+        order by vip_price asc
+      </when >
+      <when test="pd.goodsPriceType !=null and pd.goodsPriceType == 'goods_price' ">
+        order by goods_price asc
+      </when >
+    </choose>
+  </select>
+
+  <select id="listPageshowGoodsBuySearchInfo2" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote
+    from shop_goods where   cat_id=#{pd.catId} and is_promote=0  and is_state=1 and is_delete=0 order by goods_sales desc
+  </select>
+
+  <select id="listPageGetHotGoods" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote,activity_id
+    from activity_shop_goods where is_promote=1 and is_state=1 and is_delete=0 and is_link=1
+  </select>
+
+  <select id="getActivityInfo" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select pic_url,topic,DATE_FORMAT(start_time,'%Y-%m-%d %H:%i') start_time ,DATE_FORMAT(end_time,'%Y-%m-%d %H:%i') end_time from activity_info where id=#{pd.activityId}
+  </select>
+
+  <select id="getShopHotGoods"  resultType="map" parameterType="com.ecochain.ledger.model.PageData">
+    select goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote,orderby_sort,activity_id
+    from activity_shop_goods asg ,activity_info ai
+    where is_promote=1 and is_state=1 and is_delete=0 and is_link = 1 and activity_id=#{pd.activityId} and asg.activity_id=ai.id and ai.state in(1,3)
+    <choose>
+      <when test="pd.city !=null and pd.city != '' ">
+        and  asg.city=#{pd.city}
+      </when >
+    </choose>
+    order by orderby_sort,updatetime limit 0,500
+  </select>
+
+  <select id="getGoodsStock" parameterType="java.lang.String" resultType="java.lang.String">
+    select goods_stock from activity_shop_goods where goods_id =#{goodsId} and is_promote=1 and is_state=1 and is_delete=0
+  </select>
+
+  <select id="queryGoodsStock" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select goods_stock from activity_shop_goods where goods_id =#{goodsId} and is_promote=1 and is_state=1 and is_delete=0
+  </select>
+
+  <select id="searchTagInfo"  resultType="map">
+    select id,tag_name from system_tag where tag_type=1 and is_show=1
+  </select>
+
+  <select id="getSkuGoodsInfo"  resultType="map" parameterType="java.lang.String">
+    select gmp_stock,gmp_goods_id from shop_goods_mutil_prise where gmp_attr_value_str=#{skuValue,jdbcType=VARCHAR}
+  </select>
+
+  <select id="listPageMobileHomeRoom" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.Page">
+    select
+     goods_id,cat_id,goods_name,goods_sales,brand_id,brand_detail_id,vip_price,goods_price,goods_img,is_promote
+     from shop_goods where cat_id=#{pd.catId} and is_state=1 and is_promote=0 and is_delete=0
+  </select>
+
+  <select id="getBuyCountByOrderNo" parameterType="java.lang.String" resultType="map">
+    select goods_id,goods_number from shop_order_goods where shop_order_no=#{orderNo,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getOrderType" parameterType="java.lang.String" resultType="java.lang.Integer">
+     select is_promote from shop_order_info where order_no=#{orderNo,jdbcType=VARCHAR}
+  </select>
+
+  <!--商城支付更新商品销量 -->
+  <update id="updateShopGoodsSales" parameterType="java.util.HashMap">
+    update shop_goods set goods_sales =goods_sales+ #{goods_number} where goods_id in
+    <foreach item="item" index="index" collection="updateList" open="(" separator="," close=")">
+      #{item.goods_id}
+    </foreach>
+  </update>
+
+  <!--商城支付更新秒杀商品销量 -->
+  <update id="updateShopHotGoodsSales" parameterType="java.util.HashMap">
+    update activity_shop_goods set goods_sales =goods_sales+1 where goods_id in
+    <foreach item="item" index="index" collection="updateList" open="(" separator="," close=")">
+      #{item.goods_id}
+    </foreach>
+  </update>
+
+  <update id="delSkuGoodStockByType" parameterType="java.lang.String" >
+    update shop_goods_mutil_prise set gmp_stock =gmp_stock-1 where gmp_attr_value_str=#{skuValue,jdbcType=VARCHAR}
+  </update>
+
+  <update id="addSkuGoodStockByType" parameterType="java.lang.String" >
+    update shop_goods_mutil_prise set gmp_stock =gmp_stock+1 where gmp_attr_value_str=#{skuValue,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

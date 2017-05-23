@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopSupplierMapper" >
+
+  <select id="searchSupplierInfo" parameterType="java.lang.String" resultType="java.lang.String">
+  select supplier_name from shop_supplier where id=(select supplier_id from shop_goods where goods_id=#{goodsId})
+  </select>
+
+    <select id="getSupplierByUserId" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.Page">
+	  select * from shop_supplier where user_id = #{user_id}
+	</select>
+</mapper>

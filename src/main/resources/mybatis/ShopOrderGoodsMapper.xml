@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.ShopOrderGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.ShopOrderGoods" >
+    <id column="rec_id" property="recId" jdbcType="INTEGER" />
+    <result column="shop_order_id" property="shopOrderId" jdbcType="VARCHAR" />
+    <result column="shop_order_no" property="shopOrderNo" jdbcType="VARCHAR" />
+    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="sku_info" property="skuInfo" jdbcType="VARCHAR" />
+    <result column="sku_id" property="skuId" jdbcType="INTEGER" />
+    <result column="supplier_id" property="supplierId" jdbcType="INTEGER" />
+    <result column="supplier_name" property="supplierName" jdbcType="VARCHAR" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="goods_sn" property="goodsSn" jdbcType="VARCHAR" />
+    <result column="goods_number" property="goodsNumber" jdbcType="SMALLINT" />
+    <result column="pay_price" property="payPrice" jdbcType="DECIMAL" />
+    <result column="sku_value" property="skuValue" jdbcType="VARCHAR" />
+    <result column="goods_attr_id" property="goodsAttrId" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.ecochain.ledger.model.ShopOrderGoods" extends="BaseResultMap" >
+    <result column="goods_attr" property="goodsAttr" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    rec_id, shop_order_id, goods_id, sku_id, goods_name, goods_sn, goods_number, market_price,
+    goods_price, goods_attr_id
+  </sql>
+  <sql id="Blob_Column_List" >
+    goods_attr
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from shop_order_goods
+    where rec_id = #{recId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shop_order_goods
+    where rec_id = #{recId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="java.util.List">
+    INSERT INTO shop_order_goods (rec_id, shop_order_id,shop_order_no,cat_id,goods_id,sku_info,
+    sku_id,supplier_id,user_id,supplier_name,goods_name,goods_sn,goods_img,
+    goods_number,pay_price,sku_value,goods_attr_id,add_time)
+    VALUES
+    <foreach collection="shopOrderGoods" item="shopOrderGoods"  separator="," >
+      (#{shopOrderGoods.recId},#{shopOrderGoods.shopOrderId},#{shopOrderGoods.shopOrderNo},#{shopOrderGoods.catId},#{shopOrderGoods.goodsId},#{shopOrderGoods.skuInfo},#{shopOrderGoods.skuId},
+      #{shopOrderGoods.supplierId},#{shopOrderGoods.userId},#{shopOrderGoods.supplierName},#{shopOrderGoods.goodsName},#{shopOrderGoods.goodsSn},#{shopOrderGoods.goodsImg},#{shopOrderGoods.goodsNumber},
+      #{shopOrderGoods.payPrice},#{shopOrderGoods.skuValue},#{shopOrderGoods.goodsAttrId},now())
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.ShopOrderGoods" >
+    insert into shop_order_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recId != null" >
+        rec_id,
+      </if>
+      <if test="shopOrderId != null" >
+        shop_order_id,
+      </if>
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="goodsName != null" >
+        goods_name,
+      </if>
+      <if test="goodsSn != null" >
+        goods_sn,
+      </if>
+      <if test="goodsNumber != null" >
+        goods_number,
+      </if>
+      <if test="marketPrice != null" >
+        market_price,
+      </if>
+      <if test="goodsPrice != null" >
+        goods_price,
+      </if>
+      <if test="goodsAttrId != null" >
+        goods_attr_id,
+      </if>
+      <if test="goodsAttr != null" >
+        goods_attr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recId != null" >
+        #{recId,jdbcType=INTEGER},
+      </if>
+      <if test="shopOrderId != null" >
+        #{shopOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsName != null" >
+        #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSn != null" >
+        #{goodsSn,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsNumber != null" >
+        #{goodsNumber,jdbcType=SMALLINT},
+      </if>
+      <if test="marketPrice != null" >
+        #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsPrice != null" >
+        #{goodsPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsAttrId != null" >
+        #{goodsAttrId,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsAttr != null" >
+        #{goodsAttr,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ecochain.ledger.model.ShopOrderGoods" >
+    update shop_order_goods
+    <set >
+      <if test="shopOrderId != null" >
+        shop_order_id = #{shopOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsId != null" >
+        goods_id = #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsName != null" >
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSn != null" >
+        goods_sn = #{goodsSn,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsNumber != null" >
+        goods_number = #{goodsNumber,jdbcType=SMALLINT},
+      </if>
+      <if test="marketPrice != null" >
+        market_price = #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsPrice != null" >
+        goods_price = #{goodsPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsAttrId != null" >
+        goods_attr_id = #{goodsAttrId,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsAttr != null" >
+        goods_attr = #{goodsAttr,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where rec_id = #{recId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.ecochain.ledger.model.ShopOrderGoods" >
+    update shop_order_goods
+    set shop_order_id = #{shopOrderId,jdbcType=VARCHAR},
+    goods_id = #{goodsId,jdbcType=INTEGER},
+    sku_id = #{skuId,jdbcType=INTEGER},
+    goods_name = #{goodsName,jdbcType=VARCHAR},
+    goods_sn = #{goodsSn,jdbcType=VARCHAR},
+    goods_number = #{goodsNumber,jdbcType=SMALLINT},
+    market_price = #{marketPrice,jdbcType=DECIMAL},
+    goods_price = #{goodsPrice,jdbcType=DECIMAL},
+    goods_attr_id = #{goodsAttrId,jdbcType=VARCHAR},
+    goods_attr = #{goodsAttr,jdbcType=LONGVARCHAR}
+    where rec_id = #{recId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ecochain.ledger.model.ShopOrderGoods" >
+    update shop_order_goods
+    set shop_order_id = #{shopOrderId,jdbcType=VARCHAR},
+      goods_id = #{goodsId,jdbcType=INTEGER},
+      sku_id = #{skuId,jdbcType=INTEGER},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      goods_sn = #{goodsSn,jdbcType=VARCHAR},
+      goods_number = #{goodsNumber,jdbcType=SMALLINT},
+      market_price = #{marketPrice,jdbcType=DECIMAL},
+      goods_price = #{goodsPrice,jdbcType=DECIMAL},
+      goods_attr_id = #{goodsAttrId,jdbcType=VARCHAR}
+    where rec_id = #{recId,jdbcType=INTEGER}
+  </update>
+  <!--更新物流信息 -->
+  <update id="updateLogistics" parameterType="com.ecochain.ledger.model.PageData" >
+    update shop_order_goods
+    set logistics_no = #{logistics_no,jdbcType=VARCHAR},
+      `state` = #{state,jdbcType=VARCHAR}
+    where 1=1 
+    and shop_order_id = #{shop_order_id,jdbcType=VARCHAR}
+    and goods_id = #{goods_id}
+  </update>
+  <select id="getOrderGoods" parameterType="com.ecochain.ledger.model.Page" resultType="com.ecochain.ledger.model.PageData">
+    select * from shop_order_goods 
+    where 1=1
+    and shop_order_no = #{shop_order_no}
+    and goods_id = #{goods_id}
+  </select>
+    <!--更新订单商品关联表状态 -->
+  <update id="updateOrderGoodsStatus" parameterType="com.ecochain.ledger.model.Page">
+    update shop_order_goods
+    set `state` = #{state}
+    where 1=1
+    and shop_order_id = #{shop_order_id}
+<!--     and goods_id = #{goods_id} -->
+    and user_id = #{user_id}
+  </update>
+
+  <select id="queryGoodsByCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  select count(1) from shop_order_goods where user_id=#{0} and goods_id =#{1} and date(add_time) = CURDATE()
+  </select>
+    <select id="getOrderGoodsAndUserInfoById" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.Page">
+        select a.user_type,a.mobile_phone,b.user_id,b.shop_order_no,b.pay_price,goods_name 
+        from users_details a,shop_order_goods b 
+		where 1=1
+		and a.id = b.user_id 
+		and b.rec_id = #{rec_id}
+    </select>
+
+  <select id="queryActiveInfo" parameterType="java.lang.String" resultType="map">
+    select start_time,end_time from activity_info where id=#{activityId} and state in(1,3) and cate=2
+  </select>
+  <select id="getOneGoodsNameByOrderNo" parameterType="java.lang.String" resultType="java.lang.String">
+      select goods_name from shop_order_goods where shop_order_no = #{shop_order_no} limit 0,1
+  </select>
+  <select id="getGoodsAndBounsByOrderNo" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.Page">
+      select b.*,a.goods_id from shop_order_goods a,goods_bounsparam b 
+      where 1=1
+      and a.goods_id = b.goods_id
+      and a.shop_order_no = #{shop_order_no} limit 0,1
+  </select>
+  <update id="updateOrderGoodsStatusByHash" parameterType="com.ecochain.ledger.model.Page">
+    update shop_order_goods a,shop_order_info b set a.state = #{state} 
+    where 1=1
+    and a.shop_order_no = b.order_no 
+    and b.trade_hash in
+    <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+          #{item}   
+    </foreach> 
+  </update>
+</mapper>

@@ -164,7 +164,7 @@
   </update>
   <select id="getWalletByUserId" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.String">
 <!--     select * from user_wallet where user_id = #{user_id} -->
-	select  user_id,future_currency,future_treasure,ROUND(money,2)money,sanrelarmb_amnt,
+	select  user_id,future_currency,future_treasure,ROUND(money,2)money,sanrelarmb_amnt,hlb_amnt,
 	        last_caldate,froze_rmb_amnt,froze_wlbao_amnt,froze_wlbi_amnt 
 	from user_wallet 
 	where user_id = #{user_id}
@@ -519,7 +519,7 @@
     update user_wallet 
     set 
         hlb_amnt = hlb_amnt - #{coin_amnt} ,
-        money = money + #{rmb_amnt}
+        money = money + #{money}
     where 1=1
     and user_id = #{user_id}
     and hlb_amnt &gt;= #{coin_amnt}
@@ -528,7 +528,7 @@
     update user_wallet 
     set 
         hlb_amnt = hlb_amnt + #{coin_amnt} ,
-        money = money - #{rmb_amnt}
+        money = money - #{coinPrice}
     where 1=1
     and user_id = #{user_id}
     and money &gt;= #{rmb_amnt}

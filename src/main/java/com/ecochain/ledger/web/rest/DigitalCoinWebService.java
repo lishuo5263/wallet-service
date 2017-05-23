@@ -1,12 +1,19 @@
 package com.ecochain.ledger.web.rest;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.annotation.LoginVerify;
 import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.DigitalCoinService;
+import com.ecochain.ledger.service.UserWalletService;
 import com.ecochain.ledger.util.AjaxResponse;
+import com.ecochain.ledger.util.RequestUtils;
+import com.ecochain.ledger.util.SessionUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +38,9 @@ public class DigitalCoinWebService extends BaseWebService {
     @Autowired
     private DigitalCoinService digitalCoinService;
 
+    @Autowired
+    private UserWalletService userWalletService;
+
     /**
      * 获取当前币种价格
      */
@@ -46,10 +56,36 @@ public class DigitalCoinWebService extends BaseWebService {
         AjaxResponse ar= new AjaxResponse();
         try{
             Map<String, Object> map = this.digitalCoinService.getCoinPrice(request.getParameter("coinName"));
+            map.put("coin_rate",map.get("coin_rate").toString().split(":")[0]);
             ar=fastReturn(map,true,"获取当前币种价格成功！",CodeConstant.SC_OK);
         }catch(Exception e){
             logger.debug(e.toString(), e);
             ar=fastReturn(null,false,"系统异常，获取当前币种价格失败！",CodeConstant.SYS_ERROR);
+        }
+        return ar;
+    }
+
+    /**
+     * 获取买家账户信息
+     */
+    @LoginVerify
+    @GetMapping("getBuyerInfo")
+    @ApiOperation(nickname = "getBuyerInfo", value = "获取买家账户信息", notes = "获取买家账户信息！！")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "CSESSIONID", value = "CSESSIONID", required = true, paramType = "query", dataType = "String"),
+    })
+    public AjaxResponse getBuyerInfo(HttpServletRequest request, Page page){
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        page.setPd(pd);
+        AjaxResponse ar= new AjaxResponse();
+        try{
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            ar=fastReturn(this.userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO),true,"获取买家账户信息！",CodeConstant.SC_OK);
+        }catch(Exception e){
+            logger.debug(e.toString(), e);
+            ar=fastReturn(null,false,"系统异常，获取买家账户信息失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
     }

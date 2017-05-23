@@ -1,21 +1,6 @@
 package com.ecochain.ledger.web.rest;
 
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.annotation.LoginVerify;
 import com.ecochain.ledger.base.BaseWebService;
@@ -24,27 +9,30 @@ import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.AccDetailService;
-import com.ecochain.ledger.service.PayOrderService;
-import com.ecochain.ledger.service.SysGenCodeService;
-import com.ecochain.ledger.service.SysMaxnumService;
-import com.ecochain.ledger.service.UserLoginService;
-import com.ecochain.ledger.service.UserWalletService;
-import com.ecochain.ledger.service.UsersDetailsService;
-import com.ecochain.ledger.util.AjaxResponse;
-import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.Logger;
-import com.ecochain.ledger.util.OrderGenerater;
-import com.ecochain.ledger.util.RequestUtils;
-import com.ecochain.ledger.util.SessionUtil;
-import com.ecochain.ledger.util.StringUtil;
-import com.ecochain.ledger.util.Validator;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * 账户控制类
  * @author zhangchunming
  */
 @Controller
-@RequestMapping("/acc")
+@RequestMapping("/api/rest/acc")
 public class AccWebSerivce extends BaseWebService{
     
     private final Logger logger = Logger.getLogger(AccWebSerivce.class);
@@ -67,6 +55,8 @@ public class AccWebSerivce extends BaseWebService{
     private CacheManager cacheManager;*/
     @Autowired
     private UserLoginService userLoginService;
+    @Autowired
+    private DigitalCoinService digitalCoinService;
 
     /**
      * @describe:查询账户列表
@@ -1356,8 +1346,17 @@ public class AccWebSerivce extends BaseWebService{
      * @return: AjaxResponse
      */
     @LoginVerify
-    @RequestMapping(value="/currencyExchange", method=RequestMethod.POST)
     @ResponseBody
+    @RequestMapping(value="/currencyExchange", method=RequestMethod.POST)
+    @ApiOperation(nickname = "currencyExchange", value = "获取用户兑换信息", notes = "获取用户兑换信息！！")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "CSESSIONID", value = "CSESSIONID", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "exchange_num", value = "购买个数", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "buy_in_out", value = "兑换类型 列如： 1：RMB->HLB  2:HLB->RMB", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "exchangeCoin", value = "兑换的币种 列如：HLB", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "rmb_amnt", value = "当前用户人民币数额", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "errorCode", value = "-118 人民币数额不正确- 50 账户余额不足 -15 参数有误 -34 系统异常", required = false, paramType = "query", dataType = "String"),
+    })
     public AjaxResponse currencyExchange(HttpServletRequest request){
         logBefore(logger, "***************currencyExchange-币种兑换***************");
         AjaxResponse ar = new AjaxResponse();
@@ -1367,108 +1366,61 @@ public class AccWebSerivce extends BaseWebService{
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             logger.info("************币种兑换 pd value is"+pd.toString());
-            if(StringUtil.isEmpty(pd.getString("original_currency"))){
-                ar.setMessage("请输入原始币种！");
-                ar.setSuccess(false);
-                ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                return ar;
-            }
-            if(!"1".equals(pd.getString("original_currency"))&&!"3".equals(pd.getString("original_currency"))){
-                ar.setMessage("原始币种输入有误，请重新输入！");
-                ar.setSuccess(false);
-                ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                return ar;
-            }
-            if(StringUtil.isEmpty(pd.getString("exchange_num"))){
-                ar.setMessage("请输入兑换数额！");
-                ar.setSuccess(false);
-                ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                return ar;
-            }
             if(!Validator.isMoney4(pd.getString("exchange_num"))){
                 ar.setMessage("兑换数额格式有误，必须为正数哦！");
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            if(StringUtil.isEmpty(pd.getString("target_currency"))){
-                ar.setMessage("请选择目标币种！");
-                ar.setSuccess(false);
-                ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                return ar;
-            }
-            if(!"1".equals(pd.getString("target_currency"))&&!"3".equals(pd.getString("target_currency"))){
-                ar.setMessage("目标币种输入有误，请重新输入！");
-                ar.setSuccess(false);
-                ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                return ar;
-            }
-            if(pd.getString("original_currency").equals(pd.getString("target_currency"))){
-                ar.setMessage("目标币种不能和原始币种一致，请重新输入！");
-                ar.setSuccess(false);
-                ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                return ar;
-            }
-            if(StringUtil.isEmpty(pd.getString("result_num"))){
+            if(StringUtil.isEmpty(pd.getString("exchange_num"))){
                 ar.setMessage("请输入可兑换数额！");
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }
-            if(!Validator.isMoney4(pd.getString("result_num"))){
-                ar.setMessage("可兑换数额格式有误，必须为正数哦！");
+            }if(StringUtil.isEmpty(pd.getString("rmb_amnt"))){
+                ar.setMessage("请输入人民币数额！");
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
-            String exchange_rate = "EXCHANGE_RATE";
-            List<PageData> codeList =sysGenCodeService.findByGroupCode("LIMIT_RATE", Constant.VERSION_NO);
-            for(PageData code:codeList){
-                if("EXCHANGE_RATE".equals(code.getString("code_name"))){
-                    exchange_rate = code.getString("code_value");
-                }
+            if(new BigDecimal(pd.get("rmb_amnt").toString()).compareTo(new BigDecimal(String.valueOf(userWallet.get("money").toString()))) < 0){
+                ar.setMessage("请输入正确的人民币数额！");
+                ar.setSuccess(false);
+                ar.setErrorCode(CodeConstant.ERROR_RMB);
+                return ar;
             }
-            String result_num = "";
-            if("1".equals(pd.getString("original_currency"))){//1-三界石 2-三界宝 3-人民币
-                if(new BigDecimal(pd.getString("exchange_num")).compareTo(new BigDecimal(String.valueOf(userWallet.get("future_currency"))))>0){
-                    ar.setMessage("余额不足，请重新输入！");
+            Map<String,Object> map= digitalCoinService.getCoinPrice(pd.getString("exchangeCoin"));
+            String coinPrice  = map.get("coin_rate").toString().split(":")[0];
+            String exchange_num =String.valueOf(pd.getString("exchange_num"));
+            if("1".equals(pd.getString("buy_in_out"))){ //RMB->HLB
+                if(new BigDecimal(exchange_num).multiply(new BigDecimal(coinPrice)).compareTo(new BigDecimal(String.valueOf(userWallet.get("money").toString()))) > 0){
+                    ar.setMessage("账户余额不足，兑换失败！");
                     ar.setSuccess(false);
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
-                String divisor = exchange_rate.split(":")[0];//除数
-                String dividend = exchange_rate.split(":")[1];//被除数
-                result_num = new BigDecimal(divisor).divide(new BigDecimal(dividend),6,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(pd.getString("exchange_num"))).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
-                logger.info("**********币种兑换******后台可兑换数额result_num："+result_num+",前台可兑换数额："+pd.getString("result_num")+",兑换费率："+exchange_rate);
-                if(new BigDecimal(result_num).compareTo(new BigDecimal(pd.getString("result_num")))!=0){
-                    ar.setMessage("可兑换数计算有误！");
-                    ar.setSuccess(false);
-                    ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                    return ar;
-                }
-            }else if("3".equals(pd.getString("original_currency"))){
-                if(new BigDecimal(pd.getString("exchange_num")).compareTo(new BigDecimal(String.valueOf(userWallet.get("money"))))>0){
-                    ar.setMessage("余额不足，请重新输入！");
+            }else if("2".equals(pd.getString("buy_in_out"))){ //HLB->RMB
+                if(new BigDecimal(pd.getString("exchange_num")).compareTo(new BigDecimal(String.valueOf(userWallet.get("hlb_amnt"))))>0){
+                    ar.setMessage("账户余额不足，请重新输入！");
                     ar.setSuccess(false);
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
-                String divisor = exchange_rate.split(":")[0];//除数
-                String dividend = exchange_rate.split(":")[1];//被除数
-                result_num = new BigDecimal(pd.getString("exchange_num")).divide(new BigDecimal(divisor).divide(new BigDecimal(dividend), 6, BigDecimal.ROUND_HALF_UP),4,BigDecimal.ROUND_HALF_UP).toString();
-                logger.info("**********币种兑换******后台可兑换数额result_num："+result_num+",前台可兑换数额："+pd.getString("result_num")+",兑换费率："+exchange_rate);
-                if(new BigDecimal(result_num).compareTo(new BigDecimal(pd.getString("result_num")))!=0){
-                    ar.setMessage("可兑换数计算有误！");
-                    ar.setSuccess(false);
-                    ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                    return ar;
-                }
             }
-            
             pd.put("flow_no", OrderGenerater.generateOrderCode(user.getString("usercode")));
             pd.put("user_id", String.valueOf(user.get("id")));
+            pd.put("acc_no","95");
+            pd.put("coin_name",map.get("coin_name"));
+            pd.put("coin_rate",map.get("coin_rate").toString().split(":")[0]);
+            pd.put("money", new BigDecimal(pd.get("rmb_amnt").toString()));
+            pd.put("coinPrice", map.get("coin_rate").toString().split(":")[0]);
+            pd.put("buy_in_out",pd.getString("buy_in_out"));
+            pd.put("coin_amnt",pd.getString("exchange_num"));
+            pd.put("rmb_amnt",pd.getString("rmb_amnt"));
+            pd.put("status","6");
+            pd.put("cntflag","1");
+            pd.put("remark1","币种兑换");
             boolean currencyExchange = accDetailService.currencyExchange(pd, Constant.VERSION_NO);
             if(currencyExchange){
                 ar.setSuccess(true);
@@ -1490,7 +1442,7 @@ public class AccWebSerivce extends BaseWebService{
         }   
         return ar;
     }
-    
+
     /**
      * @describe:查询转三界石记录
      * @author: zhangchunming

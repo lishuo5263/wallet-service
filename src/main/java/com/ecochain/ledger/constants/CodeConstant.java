@@ -515,4 +515,9 @@ public interface CodeConstant {
 	 * 区块链接口发生错误
 	 */
 	public final short ERROR_BLOCKCHAIN =117;
+
+	/**
+	 * 人民币不正确
+	 */
+	public final short ERROR_RMB =-118;
 }

@@ -1469,8 +1469,8 @@ public class AccWebSerivce extends BaseWebService{
             
             pd.put("flow_no", OrderGenerater.generateOrderCode(user.getString("usercode")));
             pd.put("user_id", String.valueOf(user.get("id")));
-            /*boolean addExchangeRecodeResult = curExchageRecodeService.addExchangeRecode(pd, Constant.VERSION_NO);
-            if(addExchangeRecodeResult){
+            boolean currencyExchange = accDetailService.currencyExchange(pd, Constant.VERSION_NO);
+            if(currencyExchange){
                 ar.setSuccess(true);
                 ar.setMessage("兑换成功！");
                 return ar;
@@ -1479,7 +1479,7 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setMessage("兑换失败！");
                 ar.setErrorCode(CodeConstant.UPDATE_FAIL);
                 return ar;
-            }*/
+            }
         } catch (Exception e) {
             e.printStackTrace();
             ar.setSuccess(false);

@@ -515,4 +515,22 @@
     and b.confirm_time is NULL
     and a.froze_rmb_amnt &gt;= b.txamnt
   </update>
+  <update id="exchangeHLB2RMB" parameterType="pd">
+    update user_wallet 
+    set 
+        hlb_amnt = hlb_amnt - #{coin_amnt} ,
+        money = money + #{rmb_amnt}
+    where 1=1
+    and user_id = #{user_id}
+    and hlb_amnt &gt;= #{coin_amnt}
+  </update>
+  <update id="exchangeRMB2HLB" parameterType="pd">
+    update user_wallet 
+    set 
+        hlb_amnt = hlb_amnt + #{coin_amnt} ,
+        money = money - #{rmb_amnt}
+    where 1=1
+    and user_id = #{user_id}
+    and money &gt;= #{rmb_amnt}
+  </update>
 </mapper>

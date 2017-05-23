@@ -263,4 +263,23 @@ public interface UserWalletService {
      */
     boolean withDrawalAddMoney()throws Exception;
     /******************************************提现模块**************end******************************************/
+    
+    /**
+     * @describe:合链币兑换人民币
+     * @author: zhangchunming
+     * @date: 2017年5月23日下午1:39:36
+     * @param pd
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean exchangeHLB2RMB(PageData pd)throws Exception;
+    /**
+     * @describe:人民币兑换合链币
+     * @author: zhangchunming
+     * @date: 2017年5月23日下午1:50:59
+     * @param pd
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean exchangeRMB2HLB(PageData pd)throws Exception;
 }

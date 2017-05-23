@@ -162,4 +162,14 @@ public interface AccDetailService {
      * @return: boolean
      */
     boolean accDetailHashSummary(PageData pd,String versionNo) throws Exception;
+    /**
+     * @describe:币种兑换
+     * @author: zhangchunming
+     * @date: 2017年5月23日上午11:58:16
+     * @param pd
+     * @param versionNo
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean currencyExchange(PageData pd,String versionNo) throws Exception;
 }

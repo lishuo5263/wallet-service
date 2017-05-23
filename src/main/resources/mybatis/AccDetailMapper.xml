@@ -4,7 +4,7 @@
   <sql id="Base_Column_List" >
     id, user_id, acc_no, rela_user_id, rela_userlevel, wlbi_amnt, wlbao_amnt, rmb_amnt, 
     caldate, cntflag, status, syscode, otherno, other_amnt, other_source, create_time, 
-    modify_time, operator,bsrate,sanhq
+    modify_time, operator,bsrate,sanhq,coin_name,coin_rate,coin_amnt,buy_in_out
   </sql>
   <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
     select 
@@ -92,6 +92,18 @@
       <if test="hash != null" >
         hash,
       </if>
+      <if test="coin_name != null" >
+        coin_name,
+      </if>
+      <if test="coin_rate != null" >
+        coin_rate,
+      </if>
+      <if test="coin_amnt != null" >
+        coin_amnt,
+      </if>
+      <if test="buy_in_out != null" >
+        buy_in_out,
+      </if>
       <if test="remark1 != null" >
         remark1,
       </if>
@@ -166,6 +178,18 @@
       </if>
       <if test="hash != null" >
         #{hash},
+      </if>
+      <if test="coin_name != null" >
+        #{coin_name},
+      </if>
+      <if test="coin_rate != null" >
+        #{coin_rate},
+      </if>
+      <if test="coin_amnt != null" >
+        #{coin_amnt},
+      </if>
+      <if test="buy_in_out != null" >
+        #{buy_in_out},
       </if>
       <if test="remark1 != null" >
         #{remark1},

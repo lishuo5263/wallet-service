@@ -14,6 +14,7 @@ import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.AccDetailService;
 import com.ecochain.ledger.service.ShopOrderGoodsService;
 import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.UserWalletService;
 import com.ecochain.ledger.util.DateUtil;
 import com.ecochain.ledger.util.Logger;
 @Component("accDetailService")
@@ -27,6 +28,8 @@ public class AccDetailServiceImpl implements AccDetailService {
     private ShopOrderInfoService shopOrderInfoService;
     @Resource
     private ShopOrderGoodsService shopOrderGoodsService;
+    @Resource
+    private UserWalletService userWalletService;
     
     @Override
     public boolean insertSelective(PageData pd, String versionNo) throws Exception {
@@ -178,6 +181,23 @@ public class AccDetailServiceImpl implements AccDetailService {
     @Override
     public boolean accDetailHashSummary(PageData pd, String versionNo) throws Exception {
         return (Integer)dao.update("AccDetailMapper.accDetailHashSummary", pd)>0;
+    }
+
+    @Override
+    public boolean currencyExchange(PageData pd, String versionNo) throws Exception {
+        
+        logger.info("***********************币种兑换**************start********");
+        
+        boolean exchangeResult = false;
+        if("1".equals(pd.getString("buy_in_out"))&&"HLB".equals(pd.getString("coin_name"))){//买进，人民币减少，合链币增加
+            exchangeResult = userWalletService.exchangeRMB2HLB(pd);
+        }else if("2".equals(pd.getString("buy_in_out"))&&"HLB".equals(pd.getString("coin_name"))){//卖出，人民币增加，合链币减少
+            exchangeResult = userWalletService.exchangeHLB2RMB(pd);
+        }
+        //插入账户流水
+        this.insertSelective(pd, versionNo);
+        logger.info("***********************币种兑换**************end********结果exchangeResult："+exchangeResult);
+        return exchangeResult;
     }
 
 }

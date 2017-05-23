@@ -335,4 +335,14 @@ public class UserWalletServiceImpl implements UserWalletService {
     public boolean withDrawalAddMoney() throws Exception {
         return (Integer)dao.update("UserWalletMapper.withDrawalAddMoney", null)>0;
     }
+
+    @Override
+    public boolean exchangeHLB2RMB(PageData pd) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.exchangeHLB2RMB", pd)>0;
+    }
+
+    @Override
+    public boolean exchangeRMB2HLB(PageData pd) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.exchangeRMB2HLB", pd)>0;
+    }
 }

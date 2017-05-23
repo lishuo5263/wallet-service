@@ -515,7 +515,7 @@
     and b.confirm_time is NULL
     and a.froze_rmb_amnt &gt;= b.txamnt
   </update>
-  <update id="exchangeHLB2RMB" parameterType="pd">
+  <update id="exchangeHLB2RMB" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet 
     set 
         hlb_amnt = hlb_amnt - #{coin_amnt} ,
@@ -524,7 +524,7 @@
     and user_id = #{user_id}
     and hlb_amnt &gt;= #{coin_amnt}
   </update>
-  <update id="exchangeRMB2HLB" parameterType="pd">
+  <update id="exchangeRMB2HLB" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet 
     set 
         hlb_amnt = hlb_amnt + #{coin_amnt} ,

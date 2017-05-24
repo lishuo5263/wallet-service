@@ -345,4 +345,9 @@ public class UserWalletServiceImpl implements UserWalletService {
     public boolean exchangeRMB2HLB(PageData pd) throws Exception {
         return (Integer)dao.update("UserWalletMapper.exchangeRMB2HLB", pd)>0;
     }
+    
+    @Override
+    public boolean payNowByHLB(PageData pd, String versionNo) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.payNowByHLB", pd)>0;//用户扣钱
+    }
 }

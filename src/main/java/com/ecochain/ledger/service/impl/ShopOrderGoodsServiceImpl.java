@@ -5,9 +5,11 @@ import com.ecochain.ledger.mapper.ShopGoodsMapper;
 import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.ShopOrderGoodsService;
+
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
 import java.util.Map;
 
 /**
@@ -65,4 +67,8 @@ public class ShopOrderGoodsServiceImpl implements ShopOrderGoodsService {
         return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.updateOrderGoodsStatusByHash", pd)>0;
     }
 
+    @Override
+    public boolean updateOrderGoodsStatusByOrderNo(PageData pd, String versionNo) throws Exception {
+        return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderGoodsMapper.updateOrderGoodsStatusByOrderNo", pd)>0;
+    }
 }

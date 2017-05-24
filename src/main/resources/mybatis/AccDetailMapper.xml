@@ -638,7 +638,7 @@
     </select>
     
     <select id="getHashList" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
-        select `hash`,acc_no from acc_detail where `status` = '5' and cntflag = '0'
+        select `hash`,acc_no,otherno from acc_detail where `status` = '5' and cntflag = '0'
     </select>
     <update id="updateCntflagByHash" parameterType="com.ecochain.ledger.model.PageData">
         update acc_detail 

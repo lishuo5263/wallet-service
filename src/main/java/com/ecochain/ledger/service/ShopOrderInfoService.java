@@ -442,4 +442,14 @@ public interface ShopOrderInfoService {
      * @return: String
      */
     String queryOrderNum(String orderNum);
+    /**
+     * @describe:根据订单号更新状态
+     * @author: zhangchunming
+     * @date: 2017年5月24日下午2:09:43
+     * @param pd
+     * @param versionNo
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean updateStatusByOrderNo(PageData pd, String versionNo) throws Exception;
 }

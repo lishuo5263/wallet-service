@@ -519,10 +519,10 @@
     update user_wallet 
     set 
         hlb_amnt = hlb_amnt - #{coin_amnt} ,
-        money = money + #{money}
+        money = money + #{coinPrice}
     where 1=1
     and user_id = #{user_id}
-    and hlb_amnt &gt;= #{coin_amnt}
+    and money &gt;= #{rmb_amnt}
   </update>
   <update id="exchangeRMB2HLB" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet 

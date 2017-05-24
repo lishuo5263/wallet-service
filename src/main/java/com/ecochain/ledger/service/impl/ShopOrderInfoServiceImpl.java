@@ -12,6 +12,7 @@ import com.ecochain.ledger.util.DateUtil;
 import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.StringUtil;
 import com.github.pagehelper.PageHelper;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -527,7 +529,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         logger.info("-------------商城支付-----------start------------");
         pd.put("bussType", "payNow");//添加业务类型
         //从账户余额扣钱到冻结余额中
-        if(userWalletService.payNowBySJT(pd, Constant.VERSION_NO)){
+        if(userWalletService.payNowByHLB(pd, Constant.VERSION_NO)){
             /*//修改订单状态为已支付
             PageData shopOrder = new PageData();
             shopOrder.put("user_id", pd.get("user_id"));
@@ -561,8 +563,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             pd.put("status", "6");//进区块链
             accDetail.put("otherno", pd.getString("order_no"));
             accDetail.put("other_amnt", String.valueOf(pd.get("order_amount")));
-            accDetail.put("other_source", "商城兑换");
-            pd.put("other_source", "商城兑换");//进区块链
+            accDetail.put("other_source", "商城支付");
+            pd.put("other_source", "商城支付");//进区块链
             accDetail.put("operator", pd.getString("operator"));
             String good_name = shopOrderGoodsService.getOneGoodsNameByOrderNo(pd.getString("shop_order_no"));
             accDetail.put("remark1", good_name);
@@ -612,7 +614,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             
             PageData tshopOrder = new PageData();
             tshopOrder.put("order_no", pd.getString("order_no"));
-            tshopOrder.put("trade_hash", pd.getString("trade_hash"));
+//            tshopOrder.put("trade_hash", pd.getString("trade_hash"));
             tshopOrder.put("order_status", "10");//支付处理中
             boolean updateOrderHashResult = updateOrderHashByOrderNo(tshopOrder);
             logger.info("--------商城兑换订单更新hash值---------updateOrderHashResult结果："+updateOrderHashResult);
@@ -955,5 +957,10 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     public String queryOrderNum(String orderNum) {
         return this.shopOrderInfoMapper.queryOrderNum(orderNum);
+    }
+
+    @Override
+    public boolean updateStatusByOrderNo(PageData pd, String versionNo) throws Exception {
+        return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateStatusByOrderNo", pd)>0;
     }
 }

@@ -1354,7 +1354,7 @@ public class AccWebSerivce extends BaseWebService{
             @ApiImplicitParam(name = "exchange_num", value = "购买个数", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "buy_in_out", value = "兑换类型 列如： 1：RMB->HLB  2:HLB->RMB", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "exchangeCoin", value = "兑换的币种 列如：HLB", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "rmb_amnt", value = "当前用户人民币数额", required = true, paramType = "query", dataType = "String"),
+            //@ApiImplicitParam(name = "rmb_amnt", value = "当前用户人民币数额", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "errorCode", value = "-118 人民币数额不正确- 50 账户余额不足 -15 参数有误 -34 系统异常", required = false, paramType = "query", dataType = "String"),
     })
     public AjaxResponse currencyExchange(HttpServletRequest request){
@@ -1377,19 +1377,19 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }if(StringUtil.isEmpty(pd.getString("rmb_amnt"))){
+            }/*if(StringUtil.isEmpty(pd.getString("rmb_amnt"))){
                 ar.setMessage("请输入人民币数额！");
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }
+            }*/
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
-            if(new BigDecimal(pd.get("rmb_amnt").toString()).compareTo(new BigDecimal(String.valueOf(userWallet.get("money").toString()))) < 0){
+            /*if(new BigDecimal(pd.get("rmb_amnt").toString()).compareTo(new BigDecimal(String.valueOf(userWallet.get("money").toString()))) != 0){
                 ar.setMessage("请输入正确的人民币数额！");
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.ERROR_RMB);
                 return ar;
-            }
+            }*/
             Map<String,Object> map= digitalCoinService.getCoinPrice(pd.getString("exchangeCoin"));
             String coinPrice  = map.get("coin_rate").toString().split(":")[0];
             String exchange_num =String.valueOf(pd.getString("exchange_num"));
@@ -1411,13 +1411,13 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("flow_no", OrderGenerater.generateOrderCode(user.getString("usercode")));
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("acc_no","95");
+            pd.put("coin_rate",coinPrice);
             pd.put("coin_name",map.get("coin_name"));
-            pd.put("coin_rate",map.get("coin_rate").toString().split(":")[0]);
-            pd.put("money", new BigDecimal(pd.get("rmb_amnt").toString()));
-            pd.put("coinPrice", map.get("coin_rate").toString().split(":")[0]);
+            //pd.put("money", new BigDecimal(pd.get("rmb_amnt").toString()));
+            pd.put("coinPrice", new BigDecimal(coinPrice).multiply(new BigDecimal(pd.get("exchange_num").toString())));
             pd.put("buy_in_out",pd.getString("buy_in_out"));
             pd.put("coin_amnt",pd.getString("exchange_num"));
-            pd.put("rmb_amnt",pd.getString("rmb_amnt"));
+            pd.put("rmb_amnt",new BigDecimal(coinPrice).multiply(new BigDecimal(pd.get("exchange_num").toString())));
             pd.put("status","6");
             pd.put("cntflag","1");
             pd.put("remark1","币种兑换");

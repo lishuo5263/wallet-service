@@ -210,5 +210,10 @@ public class AccDetailServiceImpl implements AccDetailService {
         List<PageData> list = (List<PageData>)dao.findForList("AccDetailMapper.listPageAcc", pd);
         return list;
     }
+    
+    @Override
+    public PageData getAccDetail(String id) throws Exception {
+        return (PageData)dao.findForObject("AccDetailMapper.getAccDetail", id);
+    }
 
 }

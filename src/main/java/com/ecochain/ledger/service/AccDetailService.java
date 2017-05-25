@@ -187,9 +187,9 @@ public interface AccDetailService {
      * @describe:根据账单id查询详情
      * @author: zhangchunming
      * @date: 2017年5月25日下午4:07:47
-     * @param id
+     * @param pd
      * @throws Exception
      * @return: PageData
      */
-    PageData getAccDetail(String id) throws Exception;
+    PageData getAccDetail(PageData pd) throws Exception;
 }

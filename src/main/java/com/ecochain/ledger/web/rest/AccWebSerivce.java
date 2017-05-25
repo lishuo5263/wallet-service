@@ -1506,8 +1506,8 @@ public class AccWebSerivce extends BaseWebService{
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String,Object>();
         try {
-            /*String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
-            JSONObject user = JSONObject.parseObject(userstr);*/
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
             PageData pd = this.getPageData();
             if(StringUtil.isEmpty(pd.getString("id"))){
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
@@ -1515,7 +1515,8 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setMessage("请输入账单id");
                 return ar;
             }
-            PageData accDetail = accDetailService.getAccDetail(pd.getString("id"));
+            pd.put("user_id", user.get("id"));
+            PageData accDetail = accDetailService.getAccDetail(pd);
             data.put("accDetail", accDetail);
             ar.setData(data);
             ar.setSuccess(true);

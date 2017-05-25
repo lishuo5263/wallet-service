@@ -243,8 +243,8 @@ public class AccDetailServiceImpl implements AccDetailService {
     }
     
     @Override
-    public PageData getAccDetail(String id) throws Exception {
-        return (PageData)dao.findForObject("AccDetailMapper.getAccDetail", id);
+    public PageData getAccDetail(PageData pd) throws Exception {
+        return (PageData)dao.findForObject("AccDetailMapper.getAccDetail", pd);
     }
 
 }

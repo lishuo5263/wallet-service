@@ -387,7 +387,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateOrderHashByOrderNo(PageData pd)throws Exception;
+    boolean updateOrderStatusByOrderNo(PageData pd)throws Exception;
     /**
      * @describe:根据订单号锁定订单
      * @author: zhangchunming

@@ -11,17 +11,22 @@ import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.*;
+import com.github.pagehelper.PageInfo;
+
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,33 +72,27 @@ public class AccWebSerivce extends BaseWebService{
      * @return: AjaxResponse
      */
     @LoginVerify
-    @RequestMapping(value="/listPageAcc", method=RequestMethod.POST)
-    @ResponseBody
-    public AjaxResponse listPageAcc(HttpServletRequest request,Page page){
+    @PostMapping("/listPageAcc")
+    @ApiOperation(nickname = "账户流水", value = "账户流水", notes = "账户流水")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse listPageAcc(HttpServletRequest request){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String, Object>();
         try {
-           /* String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             PageData pd = new PageData();
             pd = this.getPageData();
             pd.put("user_id", user.get("id"));
-            page.setPd(pd);
             //查询账户列表
-            PageData accPD = accDetailService.listPageAcc(page, Constant.VERSION_NO);
-            List<PageData> listPageAcc = null;
-            if(accPD!=null){
-                listPageAcc = (List<PageData>)accPD.get("list");
-                page = (Page)accPD.get("page");
-            }
+            List<PageData> listPageAcc  = accDetailService.listPageAcc(pd);
             //查询小计
-            PageData subTotal = accDetailService.getSubTotal(pd, Constant.VERSION_NO);
-            data.put("listPageAcc", listPageAcc);
-            data.put("subTotal", subTotal);
+//            PageData subTotal = accDetailService.getSubTotal(pd, Constant.VERSION_NO);
+//            data.put("subTotal", subTotal);
+            data.put("pageInfo", new PageInfo<PageData>(listPageAcc));
             ar.setData(data);
-            ar.setPage(page);
             ar.setSuccess(true);
             ar.setMessage("查询成功！");
         } catch (Exception e) {

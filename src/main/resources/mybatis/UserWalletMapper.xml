@@ -535,7 +535,7 @@
   </update>
   
   <!--商城支付扣除合链币 -->
-  <update id="payNowBySJT" parameterType="com.ecochain.ledger.model.PageData">
+  <update id="payNowByHLB" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet
     set hlb_amnt = hlb_amnt - #{order_amount},
         froze_hlb_amnt = froze_hlb_amnt + #{order_amount}

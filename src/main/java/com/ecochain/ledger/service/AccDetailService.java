@@ -172,4 +172,14 @@ public interface AccDetailService {
      * @return: boolean
      */
     boolean currencyExchange(PageData pd,String versionNo) throws Exception;
+    
+    /**
+     * @describe:分页查询账户流水
+     * @author: zhangchunming
+     * @date: 2017年5月24日下午7:58:05
+     * @param pd
+     * @throws Exception
+     * @return: PageData
+     */
+    List<PageData> listPageAcc(PageData pd) throws Exception;
 }

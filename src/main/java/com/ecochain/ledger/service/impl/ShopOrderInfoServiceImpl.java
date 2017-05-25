@@ -62,6 +62,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     private PayOrderService payOrderService;
     @Autowired
     private QklLibService qklLibService;
+    @Autowired
+    private SysGenCodeService sysGenCodeService;
 
     @Override
     public boolean updateOrderRefundStatus(String orderNo) {
@@ -553,8 +555,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             accDetail.put("user_type", pd.getString("user_type"));
             accDetail.put("acc_no", "05");
             pd.put("acc_no", "05");//进区块链
-            accDetail.put("wlbi_amnt", String.valueOf(pd.get("order_amount")));
-            accDetail.put("future_currency", String.valueOf(pd.get("order_amount")));//区块链保存数据用
+            accDetail.put("coin_amnt", String.valueOf(pd.get("order_amount")));
+            pd.put("coin_amnt", String.valueOf(pd.get("order_amount")));//区块链保存数据用
             accDetail.put("user_type", pd.getString("user_type"));
             /*accDetail.put("caldate", DateUtil.getCurrDateTime());
             accDetail.put("cntflag", "1");
@@ -573,7 +575,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             pd.put("create_time", DateUtil.getCurrDateTime());//进区块链
             pd.put("order_status", "2");//进区块链
             pd.put("pay_time", DateUtil.getCurrDateTime());//进区块链
-            
+            pd.put("order_status","2");//进区块链,订单状态
+            pd.put("state","2");//进区块链，订单商品关联表状态
             
             /*logger.info("====================生产掉动态库代码========start================");
             String seedsStr = pd.getString("seeds");
@@ -584,7 +587,16 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             logger.info("====================生产掉动态库代码=======end=================");*/
             
             logger.info("====================测试代码========start================");
-            String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
+            String kql_url =null;
+            List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
+            for(PageData mapObj:codeList){
+                if("QKL_URL".equals(mapObj.get("code_name"))){
+                    kql_url = mapObj.get("code_value").toString();
+                }
+            }
+            
+//            String jsonStr = HttpUtil.sendPostData("http://192.168.200.83:8332/get_new_key", "");
+            String jsonStr = HttpUtil.sendPostData(kql_url+"/get_new_key", "");
             JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
             PageData keyPd = new PageData();
             keyPd.put("data",Base64.getBase64((JSON.toJSONString(pd))));
@@ -592,22 +604,19 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
             System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
             //2. 获取公钥签名
-            String signJsonObjStr =HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_for_sign",JSON.toJSONString(keyPd));
+            String signJsonObjStr =HttpUtil.sendPostData(kql_url+"/send_data_for_sign",JSON.toJSONString(keyPd));
             JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
             Map<String, Object> paramentMap =new HashMap<String, Object>();
             paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
             paramentMap.put("data",Base64.getBase64((JSON.toJSONString(pd))));
             paramentMap.put("sign",signJsonObj.getString("result"));
-            String result = HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_to_sys", JSON.toJSONString(paramentMap));
+            String result = HttpUtil.sendPostData(kql_url+"/send_data_to_sys", JSON.toJSONString(paramentMap));
             JSONObject json = JSON.parseObject(result);
             if(StringUtil.isNotEmpty(json.getString("result"))){
                 accDetail.put("hash", json.getString("result")); 
                 pd.put("trade_hash", json.getString("result")); 
             }
             logger.info("====================测试代码=======end=================");
-            
-            
-            
             
             boolean accDetailResult = accDetailService.insertSelective(accDetail, Constant.VERSION_NO);
             logger.info("--------商城兑换插入账户流水---------accDetailResult结果："+accDetailResult);
@@ -616,7 +625,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             tshopOrder.put("order_no", pd.getString("order_no"));
 //            tshopOrder.put("trade_hash", pd.getString("trade_hash"));
             tshopOrder.put("order_status", "10");//支付处理中
-            boolean updateOrderHashResult = updateOrderHashByOrderNo(tshopOrder);
+            
+            boolean updateOrderHashResult = updateOrderStatusByOrderNo(tshopOrder);
             logger.info("--------商城兑换订单更新hash值---------updateOrderHashResult结果："+updateOrderHashResult);
             //解锁订单
             boolean unLockOrderByOrderNo = unLockOrderByOrderNo(pd);
@@ -943,10 +953,10 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     }
 
     @Override
-    public boolean updateOrderHashByOrderNo(PageData pd) throws Exception {
-        return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateOrderHashByOrderNo", pd)>0;
+    public boolean updateOrderStatusByOrderNo(PageData pd) throws Exception {
+        return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateOrderStatusByOrderNo", pd)>0;
     }
-
+    
     /**
      * @param orderNum
      * @describe:根据订单号查询商品简要信息

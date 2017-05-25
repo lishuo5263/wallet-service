@@ -626,7 +626,13 @@ public class AccWebSerivce extends BaseWebService{
      */
     @LoginVerify
     @RequestMapping(value="/transferAccount", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping("/login")
+    @ApiOperation(nickname = "转HLB", value = "转HLB", notes = "转HLB！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "revbankaccno", value = "对方账号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "money", value = "密码", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse transferAccount(HttpServletRequest request,HttpServletResponse response){
         logBefore(logger, "---------转三界石----transferAccount-----------");
         AjaxResponse ar = new AjaxResponse();
@@ -647,7 +653,7 @@ public class AccWebSerivce extends BaseWebService{
             }
             if(!Validator.isMoney(pd.getString("money"))){
                 ar.setSuccess(false);
-                ar.setMessage("三界石必须为整数，不能为小数");
+                ar.setMessage("转账金额必须为正整数");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
@@ -676,14 +682,14 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.ERROR_DISABLE);
                 return ar;
             }
-            PageData userInfo  = userLoginService.getUserInfoByAccount(pd.getString("revbankaccno"), Constant.VERSION_NO);
+            /*PageData userInfo  = userLoginService.getUserInfoByAccount(pd.getString("revbankaccno"), Constant.VERSION_NO);
             if("3".equals(userInfo.getString("user_type"))){
                 ar.setSuccess(false);
                 ar.setMessage("对方账户是店铺会员身份，不允许转入三界石！");
                 ar.setErrorCode(CodeConstant.DISABLE_TURN_IN);
                 return ar;
-            }
-            //转账上限、下限查询
+            }*/
+            /*//转账上限、下限查询
             String  uplimit = "";
             String  lowlimit = "";
             String codeName = "";
@@ -726,21 +732,20 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setMessage("转账金额不能低于下限");
                 ar.setErrorCode(CodeConstant.ERROR_LOWER_LOWLIMIT);
                 return ar;
-            }
+            }*/
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
-            String future_currency = String.valueOf(userWallet.get("future_currency"));
-            if(new BigDecimal(pd.getString("money")).compareTo(new BigDecimal(future_currency))>0){
+            String hlb_amnt = String.valueOf(userWallet.get("hlb_amnt"));
+            if(new BigDecimal(pd.getString("money")).compareTo(new BigDecimal(hlb_amnt))>0){
                 ar.setSuccess(false);
-                ar.setMessage("您的三界石余额不足！");
+                ar.setMessage("您的合链币余额不足！");
                 ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                 return ar;
             }
             //开始转账
             pd.put("user_id", user.get("id"));
             pd.put("user_type", userType);
-            pd.put("future_currency", pd.getString("money"));
-            pd.put("operator", user.getString("mobile_phone"));
-            pd.put("usercode", user.getString("usercode"));
+            pd.put("coin_amnt", pd.getString("money"));
+            pd.put("operator", user.getString("account"));
             pd.remove("money");
             //生成支付号
             Long tMaxno =sysMaxnumService.findMaxNo("payno", Constant.VERSION_NO);

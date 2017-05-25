@@ -94,7 +94,7 @@ public class UserWalletServiceImpl implements UserWalletService {
         boolean updateAddResult = false;
         if(updateSubResult){
             PageData wallet = new PageData();
-            wallet.put("future_currency", pd.getString("future_currency"));
+            wallet.put("hlb_amnt", pd.getString("coin_amnt"));
             wallet.put("user_id", String.valueOf(userInfo.get("user_id")));//对方手机号
             wallet.put("operator", pd.getString("operator"));
             updateAddResult = updateAdd(wallet, versionNo);
@@ -102,7 +102,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             logger.info("------------------内部转账end---------转账结果："+(updateAddResult&&updateSubResult));
         }
         if(updateAddResult&&updateSubResult){
-            //生成支付订单
+            /*//生成支付订单
             PageData payOrder = new PageData();
             payOrder.put("user_id", pd.get("user_id"));
             payOrder.put("pay_no", pd.getString("pay_no"));//支付号
@@ -113,7 +113,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             payOrder.put("revbankaccno", pd.getString("revbankaccno"));//revbankaccno对方账户即对方手机号
             payOrder.put("txdate", DateUtil.getCurrDateTime());
             payOrder.put("operator", pd.getString("operator"));
-            payOrderService.insertSelective(payOrder, Constant.VERSION_NO);
+            payOrderService.insertSelective(payOrder, Constant.VERSION_NO);*/
             //生成账户流水
             PageData accDetail = new PageData();
             accDetail.put("user_id", pd.get("user_id"));
@@ -121,22 +121,23 @@ public class UserWalletServiceImpl implements UserWalletService {
             accDetail.put("user_type", pd.getString("user_type"));
             accDetail.put("rela_user_id", String.valueOf(userInfo.get("user_id")));//对方账户
             accDetail.put("rela_userlevel", "");//充值、转账、提现关联级别设为空
-            accDetail.put("wlbi_amnt", pd.getString("future_currency"));
+            accDetail.put("coin_amnt", pd.getString("coin_amnt"));
             accDetail.put("caldate", DateUtil.getCurrDateTime());
             accDetail.put("cntflag", "1");
-            accDetail.put("status", "4");
-            accDetail.put("otherno", payOrder.getString("pay_no"));
-            accDetail.put("other_amnt", pd.getString("future_currency"));
-            accDetail.put("other_source", "转出三界石");
+            accDetail.put("status", "6");
+//            accDetail.put("otherno", payOrder.getString("pay_no"));
+            accDetail.put("other_amnt", pd.getString("hlb_amnt"));
+            accDetail.put("other_source", "转出合链币");
             accDetail.put("operator", pd.getString("operator"));
-            if(Validator.isMobile(userInfo.getString("account"))){
+            accDetail.put("remark1","转账-HLB");
+            /*if(Validator.isMobile(userInfo.getString("account"))){
                 accDetail.put("remark1", "我转账给"+FormatNum.convertPhone(userInfo.getString("account")));  
             }else{
                 accDetail.put("remark1", "我转账给"+(userInfo.getString("account").length()>10?userInfo.getString("account").substring(0, 10)+"...":userInfo.getString("account")));  
-            }
-            accDetail.put("remark2", userInfo.getString("account"));  
+            }*/
+            accDetail.put("remark2", userInfo.getString("account"));//对方账号  
             accDetailService.insertSelective(accDetail, Constant.VERSION_NO);
-            //插入对方账户流水
+            /*//插入对方账户流水
             PageData accDetail1 = new PageData();
             accDetail1.put("user_id", userInfo.get("user_id"));
             accDetail1.put("acc_no", "34");
@@ -158,9 +159,9 @@ public class UserWalletServiceImpl implements UserWalletService {
                 accDetail1.put("remark1", userLogin.getString("account").length()>10?userLogin.getString("account").substring(0, 10)+"...转给我":userLogin.getString("account")+"转给我");  
             }
             accDetail1.put("remark2", userLogin.getString("account"));  
-            accDetailService.insertSelective(accDetail1, Constant.VERSION_NO);
+            accDetailService.insertSelective(accDetail1, Constant.VERSION_NO);*/
         }
-        if(updateAddResult&&updateSubResult){
+        /*if(updateAddResult&&updateSubResult){
             List<PageData> codeList =sysGenCodeService.findByGroupCode("SENDSMS_FLAG", Constant.VERSION_NO);
             String smsflag ="";
             for(PageData mapObj:codeList){
@@ -177,7 +178,7 @@ public class UserWalletServiceImpl implements UserWalletService {
                 String content_other = "尊敬的会员"+userInfo_other.getString("account")+"您好，账户"+userInfo_self.getString("account")+"给您转账了"+pd.getString("future_currency")+"个三界石。请登录账号查收。";
                 SMSUtil.sendSMS_ChinaNet1(userInfo_other.getString("mobile_phone"), content_other, SMSUtil.notice_productid);
             }
-        }
+        }*/
         
         return(updateAddResult&&updateSubResult);
     }

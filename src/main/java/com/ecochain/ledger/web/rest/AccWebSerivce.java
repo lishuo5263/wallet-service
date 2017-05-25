@@ -1,6 +1,31 @@
 package com.ecochain.ledger.web.rest;
 
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import tk.mybatis.mapper.util.StringUtil;
+
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.annotation.LoginVerify;
 import com.ecochain.ledger.base.BaseWebService;
@@ -9,33 +34,30 @@ import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.*;
-import com.ecochain.ledger.util.*;
+import com.ecochain.ledger.service.AccDetailService;
+import com.ecochain.ledger.service.DigitalCoinService;
+import com.ecochain.ledger.service.PayOrderService;
+import com.ecochain.ledger.service.SysGenCodeService;
+import com.ecochain.ledger.service.SysMaxnumService;
+import com.ecochain.ledger.service.UserLoginService;
+import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.service.UsersDetailsService;
+import com.ecochain.ledger.util.AjaxResponse;
+import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.Logger;
+import com.ecochain.ledger.util.OrderGenerater;
+import com.ecochain.ledger.util.RequestUtils;
+import com.ecochain.ledger.util.SessionUtil;
+import com.ecochain.ledger.util.Validator;
 import com.github.pagehelper.PageInfo;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import tk.mybatis.mapper.util.StringUtil;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * 账户控制类
  * @author zhangchunming
  */
-@Controller
+@RestController
 @RequestMapping("/api/rest/acc")
+@Api(value = "账户管理")
 public class AccWebSerivce extends BaseWebService{
     
     private final Logger logger = Logger.getLogger(AccWebSerivce.class);
@@ -110,7 +132,7 @@ public class AccWebSerivce extends BaseWebService{
      * @param response
      * @return: AjaxResponse
      */
-    @LoginVerify
+    /*@LoginVerify
     @RequestMapping(value="/withdrawal1", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse withdrawal1(HttpServletRequest request,HttpServletResponse response){
@@ -119,8 +141,8 @@ public class AccWebSerivce extends BaseWebService{
             PageData pd = new PageData();
             pd = this.getPageData();
             logger.info("**************提现*******pd value is "+pd.toString());
-           /* String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             String userType = user.getString("user_type");
@@ -209,7 +231,7 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                 return ar;
             }
-            /**************************提现金额上下限判断-----------start***********************/
+            *//**************************提现金额上下限判断-----------start***********************//*
             //提现上限下限（现金/每次）
             String uplimit = "";
             String lowlimit = "";
@@ -232,7 +254,7 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.ERROR_LOWER_LOWLIMIT);
                 return ar;
             }
-            /**************************提现金额上下限判断-----------end***********************/
+            *//**************************提现金额上下限判断-----------end***********************//*
             //生成支付号
             Long tMaxno =sysMaxnumService.findMaxNo("payno", Constant.VERSION_NO);
             if(tMaxno==null){
@@ -248,9 +270,9 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("pay_no", pay_no);//工单号
             pd.put("fee_type", "2");//工单号
             pd.put("cuy_type", "3");//1-三界石2-三界宝3-人民币
-           /* pd.put("revorgname", "3");//银行名称、微信、支付宝名称
+            pd.put("revorgname", "3");//银行名称、微信、支付宝名称
             pd.put("revbankaccno", pd.getString("revbankaccno"));//银行、支付宝账号
-*/            if(StringUtil.isNotEmpty(pd.getString("name"))){
+            if(StringUtil.isNotEmpty(pd.getString("name"))){
                 pd.put("remark2", pd.getString("name"));//持卡人姓名或支付宝姓名
             }
             pd.put("txamnt", pd.getString("money"));//1-三界石2-三界宝3-人民币
@@ -258,7 +280,7 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("txdate", DateUtil.getCurrDateTime());
             pd.put("operator", user.getString("mobile_phone"));
             if(payOrderService.applyWithDrawal(pd, Constant.VERSION_NO)){
-                /*String phone = user.getString("mobile_phone");
+                String phone = user.getString("mobile_phone");
                 String content = "";
                 if("1".equals(pd.getString("pay_type"))){//1-支付宝 2-微信 3-银联
                     content = "您的提现申请已经通过，我们已给您的账号（支付宝账号["+pd.getString("revbankaccno")+"]）转账，请注意查收！";
@@ -285,7 +307,7 @@ public class AccWebSerivce extends BaseWebService{
                     if("1".equals(smsflag)){
                         SMSUtil.sendSMS_ChinaNet1(phone, content, SMSUtil.notice_productid);
                     }
-                }*/
+                }
                 ar.setSuccess(true);
                 ar.setMessage("提现申请成功！");
             }
@@ -296,9 +318,9 @@ public class AccWebSerivce extends BaseWebService{
             ar.setMessage("网络繁忙，请稍候重试！");
         }   
         return ar;
-    }
+    }*/
     
-    @LoginVerify
+    /*@LoginVerify
     @RequestMapping(value="/withdrawal", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse withdrawal(HttpServletRequest request,HttpServletResponse response){
@@ -307,8 +329,8 @@ public class AccWebSerivce extends BaseWebService{
             PageData pd = new PageData();
             pd = this.getPageData();
             logger.info("**************提现*******pd value is "+pd.toString());
-           /* String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             String userType = user.getString("user_type");
@@ -344,12 +366,12 @@ public class AccWebSerivce extends BaseWebService{
                    ar.setErrorCode(CodeConstant.PARAM_ERROR);
                    return ar;
                }
-               /*if(StringUtil.isEmpty(pd.getString("name"))){//所选银行名称或者支付宝名称
+               if(StringUtil.isEmpty(pd.getString("name"))){//所选银行名称或者支付宝名称
                    ar.setSuccess(false);
                    ar.setMessage("请输入您的支付宝名称");
                    ar.setErrorCode(CodeConstant.PARAM_ERROR);
                    return ar;
-               } */
+               } 
             }else if("3".equals(pd.getString("pay_type"))){//银联提现
                 if(StringUtil.isEmpty(pd.getString("revorgname"))){//所选银行名称或者支付宝名称
                     ar.setSuccess(false);
@@ -363,12 +385,12 @@ public class AccWebSerivce extends BaseWebService{
                     ar.setErrorCode(CodeConstant.PARAM_ERROR);
                     return ar;
                 } 
-                /*if(StringUtil.isEmpty(pd.getString("name"))){//持卡人姓名
+                if(StringUtil.isEmpty(pd.getString("name"))){//持卡人姓名
                     ar.setSuccess(false);
                     ar.setMessage("输入持卡人真实姓名");
                     ar.setErrorCode(CodeConstant.PARAM_ERROR);
                     return ar;
-                } */
+                } 
             }else if("2".equals(pd.getString("pay_type"))){//微信提现
                 if(StringUtil.isEmpty(pd.getString("revbankaccno"))){//提现账号（支付宝/银行卡号）
                     ar.setSuccess(false);
@@ -404,7 +426,7 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                 return ar;
             }
-            /**************************提现金额上下限判断-----------start***********************/
+            *//**************************提现金额上下限判断-----------start***********************//*
             //提现上限下限（现金/每次）
             String uplimit = "";
             String lowlimit = "";
@@ -427,7 +449,7 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.ERROR_LOWER_LOWLIMIT);
                 return ar;
             }
-            /**************************提现金额上下限判断-----------end***********************/
+            *//**************************提现金额上下限判断-----------end***********************//*
             //生成支付号
             Long tMaxno =sysMaxnumService.findMaxNo("payno", Constant.VERSION_NO);
             if(tMaxno==null){
@@ -443,9 +465,9 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("pay_no", pay_no);//工单号
             pd.put("fee_type", "2");//工单号
             pd.put("cuy_type", "3");//1-三界石2-三界宝3-人民币
-           /* pd.put("revorgname", "3");//银行名称、微信、支付宝名称
+            pd.put("revorgname", "3");//银行名称、微信、支付宝名称
             pd.put("revbankaccno", pd.getString("revbankaccno"));//银行、支付宝账号
-*/            if(StringUtil.isNotEmpty(pd.getString("name"))){
+            if(StringUtil.isNotEmpty(pd.getString("name"))){
                 pd.put("remark2", pd.getString("name"));//持卡人姓名或支付宝姓名
             }
             pd.put("txamnt", pd.getString("money"));//1-三界石2-三界宝3-人民币
@@ -463,7 +485,7 @@ public class AccWebSerivce extends BaseWebService{
             ar.setMessage("网络繁忙，请稍候重试！");
         }   
         return ar;
-    }
+    }*/
     /*
      * 导出会员账单到EXCEL
      * @return
@@ -521,7 +543,7 @@ public class AccWebSerivce extends BaseWebService{
      * 导出会员账单到EXCEL
      * @return
      */
-    @LoginVerify
+    /*@LoginVerify
     @RequestMapping(value="/exportExcel", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse exportExcel(HttpServletRequest request){
@@ -530,7 +552,7 @@ public class AccWebSerivce extends BaseWebService{
         PageData pd = new PageData();
         pd = this.getPageData();
         try{
-            /*if(StringUtil.isEmpty(pd.getString("startTime"))&&StringUtil.isEmpty(pd.getString("endTime"))&&StringUtil.isEmpty(pd.getString("search_date"))){
+            if(StringUtil.isEmpty(pd.getString("startTime"))&&StringUtil.isEmpty(pd.getString("endTime"))&&StringUtil.isEmpty(pd.getString("search_date"))){
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 ar.setMessage("请选择导出时间且时间不能超出3个月哦！");
@@ -561,7 +583,7 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 ar.setMessage("结束时间必须大于等于开始时间哦！");
                 return ar; 
-            }*/
+            }
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             pd.put("user_id", user.get("id"));
@@ -581,7 +603,7 @@ public class AccWebSerivce extends BaseWebService{
             ar.setMessage("网络繁忙，请稍候重试！");
         }
         return ar;
-    }
+    }*/
     
     /**
      * @describe:查询账户余额
@@ -850,15 +872,15 @@ public class AccWebSerivce extends BaseWebService{
      * @param response
      * @return: AjaxResponse
      */
-    @LoginVerify
+    /*@LoginVerify
     @RequestMapping(value="/toRecharge", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse toRecharge(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String, Object>();
         try {
-            /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             String userType = user.getString("user_type");
@@ -895,7 +917,7 @@ public class AccWebSerivce extends BaseWebService{
             ar.setMessage("网络繁忙，请稍候重试！");
         }   
         return ar;
-    }
+    }*/
     /**
      * @describe:跳往转账页面
      * @author: zhangchunming
@@ -1057,15 +1079,15 @@ public class AccWebSerivce extends BaseWebService{
      * @param response
      * @return: AjaxResponse
      */
-    @LoginVerify
+    /*@LoginVerify
     @RequestMapping(value="/getAccTypeList", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse getAccTypeList(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String, Object>();
         try {
-            /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             PageData pd = new PageData();
@@ -1126,7 +1148,7 @@ public class AccWebSerivce extends BaseWebService{
             ar.setMessage("网络繁忙，请稍候重试！");
         }   
         return ar;
-    }
+    }*/
     
     /**
      * @describe:获取银行卡列表
@@ -1309,7 +1331,7 @@ public class AccWebSerivce extends BaseWebService{
      * @param request
      * @return: AjaxResponse
      */
-    @LoginVerify
+   /* @LoginVerify
     @RequestMapping(value="/toExchange", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse toExchange(HttpServletRequest request){
@@ -1339,7 +1361,7 @@ public class AccWebSerivce extends BaseWebService{
             ar.setMessage("网络繁忙，请稍候重试！");
         }   
         return ar;
-    }
+    }*/
     
     /**
      * @describe:合链币-人民币兑换（币种兑换）
@@ -1455,7 +1477,7 @@ public class AccWebSerivce extends BaseWebService{
      * @param page
      * @return: AjaxResponse
      */
-    @LoginVerify
+    /*@LoginVerify
     @RequestMapping(value="/listPageTransferSJS", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse listPageTransferSJS(HttpServletRequest request,Page page){
@@ -1486,7 +1508,7 @@ public class AccWebSerivce extends BaseWebService{
         }   
         return ar;
     }
-    
+    */
     /**
      * @describe:查询账户详情
      * @author: zhangchunming

@@ -12,11 +12,10 @@ import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.*;
 import com.github.pagehelper.PageInfo;
-
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,12 +27,9 @@ import tk.mybatis.mapper.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 /**
  * 账户控制类
  * @author zhangchunming
@@ -1415,9 +1411,10 @@ public class AccWebSerivce extends BaseWebService{
                     return ar;
                 }
             }
-            pd.put("flow_no", OrderGenerater.generateOrderCode(user.getString("usercode")));
+            pd.put("otherno", OrderGenerater.generateFlowNo(RandomStringUtils.randomNumeric(6),"95"));
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("acc_no","95");
+            pd.put("caldate",new Date());
             pd.put("coin_rate",coinPrice);
             pd.put("coin_name",map.get("coin_name"));
             //pd.put("money", new BigDecimal(pd.get("rmb_amnt").toString()));

@@ -1,23 +1,24 @@
 package com.ecochain.ledger.service.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.*;
+import com.github.pagehelper.PageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.AccDetailService;
-import com.ecochain.ledger.service.ShopOrderGoodsService;
-import com.ecochain.ledger.service.ShopOrderInfoService;
-import com.ecochain.ledger.service.UserWalletService;
-import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.Logger;
-import com.github.pagehelper.PageHelper;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component("accDetailService")
 public class AccDetailServiceImpl implements AccDetailService {
     
@@ -31,6 +32,8 @@ public class AccDetailServiceImpl implements AccDetailService {
     private ShopOrderGoodsService shopOrderGoodsService;
     @Resource
     private UserWalletService userWalletService;
+    @Autowired
+    private SysGenCodeService sysGenCodeService;
     
     @Override
     public boolean insertSelective(PageData pd, String versionNo) throws Exception {
@@ -197,6 +200,34 @@ public class AccDetailServiceImpl implements AccDetailService {
             exchangeResult = userWalletService.exchangeHLB2RMB(pd);
         }
         //插入账户流水
+        String kql_url =null;
+        List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
+        for(PageData mapObj:codeList){
+            if("QKL_URL".equals(mapObj.get("code_name"))){
+                kql_url = mapObj.get("code_value").toString();
+            }
+        }
+        logger.info("====================测试代码========start================");
+        String jsonStr = HttpUtil.sendPostData(""+ kql_url+"/get_new_key", "");
+        JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
+        PageData keyPd = new PageData();
+        keyPd.put("data",Base64.getBase64((JSON.toJSONString(pd))));
+        keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
+        System.out.println("keyPd value is ------------->"+ JSON.toJSONString(keyPd));
+        //2. 获取公钥签名
+        String signJsonObjStr =HttpUtil.sendPostData(""+ kql_url+"/send_data_for_sign", JSON.toJSONString(keyPd));
+        JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
+        Map<String, Object> paramentMap =new HashMap<String, Object>();
+        paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        paramentMap.put("data",Base64.getBase64((JSON.toJSONString(pd))));
+        paramentMap.put("sign",signJsonObj.getString("result"));
+        String result1 = HttpUtil.sendPostData(""+ kql_url+"/send_data_to_sys", JSON.toJSONString(paramentMap));
+        JSONObject json = JSON.parseObject(result1);
+        if(StringUtil.isNotEmpty(json.getString("result"))){
+            pd.put("hash",json.getString("result"));
+        }
+        logger.info("====================测试代码=======end=================");
         this.insertSelective(pd, versionNo);
         logger.info("***********************币种兑换**************end********结果exchangeResult："+exchangeResult);
         return exchangeResult;

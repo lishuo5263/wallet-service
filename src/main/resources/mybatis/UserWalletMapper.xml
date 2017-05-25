@@ -522,7 +522,6 @@
         money = money + #{coinPrice}
     where 1=1
     and user_id = #{user_id}
-    and money &gt;= #{rmb_amnt}
   </update>
   <update id="exchangeRMB2HLB" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet 
@@ -531,7 +530,6 @@
         money = money - #{coinPrice}
     where 1=1
     and user_id = #{user_id}
-    and money &gt;= #{rmb_amnt}
   </update>
   
   <!--商城支付扣除合链币 -->

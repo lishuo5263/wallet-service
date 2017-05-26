@@ -131,6 +131,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             pd.put("rela_user_id", String.valueOf(userInfo.get("user_id")));//进区块链
             accDetail.put("rela_userlevel", "");//充值、转账、提现关联级别设为空
             accDetail.put("coin_amnt", pd.getString("coin_amnt"));
+            accDetail.put("coin_name", pd.getString("coin_name"));
             accDetail.put("caldate", DateUtil.getCurrDateTime());
             pd.put("caldate", DateUtil.getCurrDateTime());
             accDetail.put("cntflag", "1");
@@ -149,8 +150,10 @@ public class UserWalletServiceImpl implements UserWalletService {
             }else{
                 accDetail.put("remark1", "我转账给"+(userInfo.getString("account").length()>10?userInfo.getString("account").substring(0, 10)+"...":userInfo.getString("account")));  
             }*/
-            accDetail.put("remark2", userInfo.getString("account"));//对方账号  
-            pd.put("remark2", userInfo.getString("account"));
+            accDetail.put("remark2", pd.getString("account"));//自己账号  
+            accDetail.put("remark3", pd.getString("revbankaccno"));//对方账号  
+            pd.put("remark2", pd.getString("account"));
+            pd.put("remark3", pd.getString("revbankaccno"));
             logger.info("====================测试代码========start================");
             String kql_url =null;
             List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);

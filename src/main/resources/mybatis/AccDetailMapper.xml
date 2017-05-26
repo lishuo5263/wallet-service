@@ -287,33 +287,33 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="listPageAcc" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
-  select otherno,caldate,acc_type,acc_name,rmb_amnt,coin_name,coin_rate,coin_amnt,buy_in_out,remark1,create_time,id,hash from 
+  select otherno,caldate,acc_type,acc_name,rmb_amnt,coin_name,coin_rate,coin_amnt,buy_in_out,remark1,create_time,id,hash,other_account from 
      ( 
        select a.id,a.otherno,substring(a.create_time,1,19)caldate,b.acc_type,b.acc_name,a.coin_name,a.coin_rate,a.buy_in_out,unix_timestamp(a.create_time)create_time,hash,
           case when a.rmb_amnt &gt;0 and (a.buy_in_out = 2 or b.derection = '1') then CONCAT('+',round(a.rmb_amnt,2)) when a.rmb_amnt  = 0 or a.rmb_amnt is null THEN '0'  ELSE CONCAT('-',round(a.rmb_amnt,2))  END as rmb_amnt,
-          case when a.coin_amnt &gt;0 and a.buy_in_out = 1 then CONCAT('+',round(a.coin_amnt,2)) when a.coin_amnt  = 0 or a.coin_amnt is null THEN '0'  ELSE CONCAT('-',round(a.coin_amnt,2))  END as coin_amnt,
+          case when a.coin_amnt &gt;0 and (a.buy_in_out = 1 or a.rela_user_id = #{user_id}) then CONCAT('+',round(a.coin_amnt,2)) when a.coin_amnt  = 0 or a.coin_amnt is null THEN '0'  ELSE CONCAT('-',round(a.coin_amnt,2))  END as coin_amnt,
           case when a.buy_in_out = 1 then CONCAT(a.remark1,'RMB-HLB') when a.buy_in_out = 2 then CONCAT(a.remark1,'HLB-RMB') else a.remark1 END remark1,
-          case when a.user_id = #{user_id} then a.remark3 when a.rela_user_id = #{user_id} then a.remark2 else a.remark3 end other_account 
+          case when a.user_id = #{user_id} then a.remark3 when a.rela_user_id = #{user_id} then a.remark2 else '系统平台' end other_account 
         from acc_detail a,acc_def b
         where 1=1
         and (a.user_id = #{user_id} or a.rela_user_id = #{user_id})
         and a.acc_no = b.acc_no
-    <if test="startTime != null and startTime != ''" >
+    <!-- <if test="startTime != null and startTime != ''" >
       and   a.create_time &gt;= #{startTime}
     </if>
     <if test="endTime != null and endTime != ''" >
       and   date(a.create_time) &lt;= #{endTime}
-    </if>
+    </if> -->
     <!-- <if test="pd.acc_type != null and pd.acc_type != ''" >
       and   b.acc_type = #{pd.acc_type}
     </if> -->
-    <if test="acc_type != null and acc_type != '' and acc_type != 1 and acc_type != 15 and acc_type != 24" >
+    <!-- <if test="acc_type != null and acc_type != '' and acc_type != 1 and acc_type != 15 and acc_type != 24" >
       and   b.acc_type = #{acc_type}
     </if>
     <if test="acc_type == 1 or acc_type == 15 or acc_type == 24" >
       and   b.acc_type in ('1','15','24')
-    </if>
-    <if test="startMoney != null and startMoney != ''" >
+    </if> -->
+    <!-- <if test="startMoney != null and startMoney != ''" >
        and   (a.wlbi_amnt &gt;= #{startMoney} or a.wlbao_amnt &gt;= #{startMoney} or a.rmb_amnt &gt;= #{startMoney})
     </if>
     <if test="endMoney != null and endMoney != ''" >
@@ -333,7 +333,7 @@
     </if>
     <if test="remark1 != null and remark1 != ''" >
       and   a.remark1 like  concat('%', #{remark1}, '%')  
-    </if>
+    </if> -->
     )t order by t.caldate desc 
   </select>
   <select id="getAccList" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">

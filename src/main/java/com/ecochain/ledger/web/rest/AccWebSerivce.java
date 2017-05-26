@@ -651,6 +651,7 @@ public class AccWebSerivce extends BaseWebService{
         @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "revbankaccno", value = "对方账号", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "money", value = "转账金额", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "coin_name", value = "币种名称", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "remark4", value = "备注", required = false, paramType = "query", dataType = "String")
     })
     public AjaxResponse transferAccount(HttpServletRequest request,HttpServletResponse response){
@@ -664,6 +665,7 @@ public class AccWebSerivce extends BaseWebService{
             String userType = user.getString("user_type");
             PageData pd = new PageData();
             pd = this.getPageData();
+            pd.put("account", user.getString("account"));
             pd.put("revbankaccno", pd.getString("revbankaccno")==null?"":pd.getString("revbankaccno").trim());
             pd.put("money", pd.getString("money")==null?"":pd.getString("money").trim());
             if(StringUtil.isEmpty(pd.getString("money"))){
@@ -785,6 +787,7 @@ public class AccWebSerivce extends BaseWebService{
             data.put("create_time", DateUtil.dateToStamp(DateUtil.getCurrDateTime()));
             data.put("revbankaccno", pd.getString("revbankaccno"));
             data.put("money", pd.getString("coin_amnt"));
+            data.put("coin_name", pd.getString("coin_name"));
             data.put("remark1","转账-HLB");//说明
             data.put("remark4", pd.getString("remark4"));//备注
             ar.setData(data);

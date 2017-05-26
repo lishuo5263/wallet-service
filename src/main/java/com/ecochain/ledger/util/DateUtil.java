@@ -246,7 +246,7 @@ public class DateUtil {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = simpleDateFormat.parse(s);
         long ts = date.getTime();
-        res = String.valueOf(ts);
+        res = String.valueOf(ts).substring(0, 10);
         return res;
     }
     

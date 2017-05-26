@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,6 @@ import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.constants.CookieConstant;
-import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.AccDetailService;
 import com.ecochain.ledger.service.DigitalCoinService;
@@ -652,7 +650,8 @@ public class AccWebSerivce extends BaseWebService{
     @ApiImplicitParams({
         @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "revbankaccno", value = "对方账号", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "money", value = "转账金额", required = true, paramType = "query", dataType = "String")
+        @ApiImplicitParam(name = "money", value = "转账金额", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "remark4", value = "备注", required = false, paramType = "query", dataType = "String")
     })
     public AjaxResponse transferAccount(HttpServletRequest request,HttpServletResponse response){
         logBefore(logger, "---------转三界石----transferAccount-----------");
@@ -770,7 +769,7 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("operator", user.getString("account"));
             pd.remove("money");
             //生成支付号
-            Long tMaxno =sysMaxnumService.findMaxNo("payno", Constant.VERSION_NO);
+            /*Long tMaxno =sysMaxnumService.findMaxNo("payno", Constant.VERSION_NO);
             if(tMaxno==null){
                 logger.info("payno  tSysMaxnum findMaxNo  is null!");
                 ar.setSuccess(false);
@@ -778,10 +777,17 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.SYS_ERROR);
                 return ar;
             }
-            String pay_no =tMaxno.toString();
-            pd.put("pay_no", pay_no);
+            String pay_no =tMaxno.toString();*/
+            String flowno =OrderGenerater.generateOrderNo();
+            pd.put("flowno", flowno);
             userWalletService.transferAccount(pd, Constant.VERSION_NO);
-            
+            data.put("flowno", flowno);
+            data.put("create_time", DateUtil.dateToStamp(DateUtil.getCurrDateTime()));
+            data.put("revbankaccno", pd.getString("revbankaccno"));
+            data.put("money", pd.getString("coin_amnt"));
+            data.put("remark1","转账-HLB");//说明
+            data.put("remark4", pd.getString("remark4"));//备注
+            ar.setData(data);
             ar.setSuccess(true);
             ar.setMessage("转账成功！");
         } catch (Exception e) {

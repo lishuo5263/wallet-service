@@ -137,7 +137,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             pd.put("cntflag", "1");//进区块链
             accDetail.put("status", "6");
             pd.put("status", "6");
-            accDetail.put("otherno", pd.getString("pay_no"));
+            accDetail.put("otherno", pd.getString("flowno"));
             accDetail.put("other_amnt", pd.getString("hlb_amnt"));
             accDetail.put("other_source", "转出合链币");
             pd.put("other_source", "转出合链币");

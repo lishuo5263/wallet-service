@@ -1,7 +1,9 @@
 package com.ecochain.ledger.service.impl;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
@@ -18,9 +22,12 @@ import com.ecochain.ledger.service.SysGenCodeService;
 import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.util.Base64;
 import com.ecochain.ledger.util.DateUtil;
 import com.ecochain.ledger.util.FormatNum;
+import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.Logger;
+import com.ecochain.ledger.util.StringUtil;
 import com.ecochain.ledger.util.Validator;
 import com.ecochain.ledger.util.sms.SMSUtil;
 
@@ -94,8 +101,8 @@ public class UserWalletServiceImpl implements UserWalletService {
         boolean updateAddResult = false;
         if(updateSubResult){
             PageData wallet = new PageData();
-            wallet.put("hlb_amnt", pd.getString("coin_amnt"));
-            wallet.put("user_id", String.valueOf(userInfo.get("user_id")));//对方手机号
+            wallet.put("coin_amnt", pd.getString("coin_amnt"));
+            wallet.put("user_id", String.valueOf(userInfo.get("user_id")));//对方user_id
             wallet.put("operator", pd.getString("operator"));
             updateAddResult = updateAdd(wallet, versionNo);
             logger.info("------------------内部转账----向钱包加钱updateAddResult：---------------"+updateAddResult);
@@ -118,24 +125,63 @@ public class UserWalletServiceImpl implements UserWalletService {
             PageData accDetail = new PageData();
             accDetail.put("user_id", pd.get("user_id"));
             accDetail.put("acc_no", "08");
+            pd.put("acc_no", "08");//进区块链
             accDetail.put("user_type", pd.getString("user_type"));
             accDetail.put("rela_user_id", String.valueOf(userInfo.get("user_id")));//对方账户
+            pd.put("rela_user_id", String.valueOf(userInfo.get("user_id")));//进区块链
             accDetail.put("rela_userlevel", "");//充值、转账、提现关联级别设为空
             accDetail.put("coin_amnt", pd.getString("coin_amnt"));
             accDetail.put("caldate", DateUtil.getCurrDateTime());
+            pd.put("caldate", DateUtil.getCurrDateTime());
             accDetail.put("cntflag", "1");
+            pd.put("cntflag", "1");//进区块链
             accDetail.put("status", "6");
+            pd.put("status", "6");
             accDetail.put("otherno", pd.getString("pay_no"));
             accDetail.put("other_amnt", pd.getString("hlb_amnt"));
             accDetail.put("other_source", "转出合链币");
+            pd.put("other_source", "转出合链币");
             accDetail.put("operator", pd.getString("operator"));
             accDetail.put("remark1","转账-HLB");
+            pd.put("remark1", "转账-HLB");
             /*if(Validator.isMobile(userInfo.getString("account"))){
                 accDetail.put("remark1", "我转账给"+FormatNum.convertPhone(userInfo.getString("account")));  
             }else{
                 accDetail.put("remark1", "我转账给"+(userInfo.getString("account").length()>10?userInfo.getString("account").substring(0, 10)+"...":userInfo.getString("account")));  
             }*/
             accDetail.put("remark2", userInfo.getString("account"));//对方账号  
+            pd.put("remark2", userInfo.getString("account"));
+            logger.info("====================测试代码========start================");
+            String kql_url =null;
+            List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
+            for(PageData mapObj:codeList){
+                if("QKL_URL".equals(mapObj.get("code_name"))){
+                    kql_url = mapObj.get("code_value").toString();
+                }
+            }
+            
+//            String jsonStr = HttpUtil.sendPostData("http://192.168.200.83:8332/get_new_key", "");
+            String jsonStr = HttpUtil.sendPostData(kql_url+"/get_new_key", "");
+            JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
+            PageData keyPd = new PageData();
+            keyPd.put("data",Base64.getBase64((JSON.toJSONString(pd))));
+            keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+            keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
+            System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
+            //2. 获取公钥签名
+            String signJsonObjStr =HttpUtil.sendPostData(kql_url+"/send_data_for_sign",JSON.toJSONString(keyPd));
+            JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
+            Map<String, Object> paramentMap =new HashMap<String, Object>();
+            paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+            paramentMap.put("data",Base64.getBase64((JSON.toJSONString(pd))));
+            paramentMap.put("sign",signJsonObj.getString("result"));
+            String result = HttpUtil.sendPostData(kql_url+"/send_data_to_sys", JSON.toJSONString(paramentMap));
+            JSONObject json = JSON.parseObject(result);
+            if(StringUtil.isNotEmpty(json.getString("result"))){
+                accDetail.put("hash", json.getString("result")); 
+            }
+            logger.info("====================测试代码=======end=================");
+            
             accDetailService.insertSelective(accDetail, Constant.VERSION_NO);
             /*//插入对方账户流水
             PageData accDetail1 = new PageData();

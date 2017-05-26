@@ -652,11 +652,12 @@ public class AccWebSerivce extends BaseWebService{
     @ApiImplicitParams({
         @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "revbankaccno", value = "对方账号", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "money", value = "密码", required = true, paramType = "query", dataType = "String")
+        @ApiImplicitParam(name = "money", value = "转账金额", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse transferAccount(HttpServletRequest request,HttpServletResponse response){
         logBefore(logger, "---------转三界石----transferAccount-----------");
         AjaxResponse ar = new AjaxResponse();
+        Map<String,Object> data =  new HashMap<String,Object>();
         try {
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
@@ -780,6 +781,7 @@ public class AccWebSerivce extends BaseWebService{
             String pay_no =tMaxno.toString();
             pd.put("pay_no", pay_no);
             userWalletService.transferAccount(pd, Constant.VERSION_NO);
+            
             ar.setSuccess(true);
             ar.setMessage("转账成功！");
         } catch (Exception e) {
@@ -800,7 +802,7 @@ public class AccWebSerivce extends BaseWebService{
      * @param response
      * @return: AjaxResponse
      */
-    /*@LoginVerify
+    @LoginVerify
     @RequestMapping(value="/recharge", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse recharge(HttpServletRequest request,HttpServletResponse response){
@@ -862,7 +864,7 @@ public class AccWebSerivce extends BaseWebService{
             logAfter(logger);
         }   
         return ar;
-    }*/
+    }
     
     /**
      * @describe:跳往充值页面

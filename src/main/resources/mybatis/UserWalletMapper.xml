@@ -182,8 +182,8 @@
       <if test="money != null">
         money = money - #{money},
       </if>
-      <if test="hlb_amnt != null">
-        hlb_amnt = hlb_amnt - #{hlb_amnt},
+      <if test="coin_amnt != null">
+        hlb_amnt = hlb_amnt - #{coin_amnt},
       </if>
       <if test="froze_wlbi_amnt != null">
         froze_wlbi_amnt = froze_wlbi_amnt - #{froze_wlbi_amnt},
@@ -213,8 +213,8 @@
      <if test="money != null">
        and money &gt;= #{money}
      </if>
-     <if test="hlb_amnt != null">
-       and hlb_amnt &gt;= #{hlb_amnt}
+     <if test="coin_amnt != null">
+       and hlb_amnt &gt;= #{coin_amnt}
      </if>
      <if test="froze_wlbi_amnt != null">
        and froze_wlbi_amnt &gt;= #{froze_wlbi_amnt}
@@ -242,8 +242,8 @@
       <if test="money != null">
         money = money + #{money},
       </if>
-      <if test="hlb_amnt != null">
-        hlb_amnt = hlb_amnt + #{hlb_amnt},
+      <if test="coin_amnt != null">
+        hlb_amnt = hlb_amnt + #{coin_amnt},
       </if>
       <if test="froze_wlbi_amnt != null">
         froze_wlbi_amnt = froze_wlbi_amnt + #{froze_wlbi_amnt},

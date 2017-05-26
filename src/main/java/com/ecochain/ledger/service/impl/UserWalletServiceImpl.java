@@ -125,7 +125,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             accDetail.put("caldate", DateUtil.getCurrDateTime());
             accDetail.put("cntflag", "1");
             accDetail.put("status", "6");
-//            accDetail.put("otherno", payOrder.getString("pay_no"));
+            accDetail.put("otherno", pd.getString("pay_no"));
             accDetail.put("other_amnt", pd.getString("hlb_amnt"));
             accDetail.put("other_source", "转出合链币");
             accDetail.put("operator", pd.getString("operator"));

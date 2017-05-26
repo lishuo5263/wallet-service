@@ -786,7 +786,7 @@ public class AccWebSerivce extends BaseWebService{
             data.put("flowno", flowno);
             data.put("create_time", DateUtil.dateToStamp(DateUtil.getCurrDateTime()));
             data.put("revbankaccno", pd.getString("revbankaccno"));
-            data.put("money", pd.getString("coin_amnt"));
+            data.put("money", "-"+pd.getString("coin_amnt"));
             data.put("coin_name", pd.getString("coin_name"));
             data.put("remark1","转账-HLB");//说明
             data.put("remark4", pd.getString("remark4"));//备注

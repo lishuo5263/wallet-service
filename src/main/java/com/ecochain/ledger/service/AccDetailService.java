@@ -192,4 +192,13 @@ public interface AccDetailService {
      * @return: PageData
      */
     PageData getAccDetail(PageData pd) throws Exception;
+    /**
+     * @describe:根据otherno和acc_no查询账户流水
+     * @author: zhangchunming
+     * @date: 2017年5月31日下午9:36:39
+     * @param otherno
+     * @throws Exception
+     * @return: PageData
+     */
+//    PageData getAccDetailByOtherNo(String otherno,String acc_no)throws Exception;
 }

@@ -612,21 +612,22 @@ public class AccWebSerivce extends BaseWebService{
      * @return: AjaxResponse
      */
     @LoginVerify
-    @RequestMapping(value="/getWallet", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping("/getWallet")
+    @ApiOperation(nickname = "查询账户余额", value = "查询账户余额", notes = "查询账户余额")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse getWallet(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String,Object>();
         try {
-           /* String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
-            Map<String,Object> map= digitalCoinService.getCoinPrice(pd.getString("exchangeCoin"));
+            Map<String,Object> map= digitalCoinService.getCoinPrice("HLB");
             String coinPrice  = map.get("coin_rate").toString().split(":")[0];
             String hlb_amnt =String.valueOf(userWallet.get("hlb_amnt"));
-            BigDecimal totalMoney = new BigDecimal(hlb_amnt).multiply(new BigDecimal(coinPrice));
+            BigDecimal totalMoney = new BigDecimal(hlb_amnt).multiply(new BigDecimal(coinPrice)).add(new BigDecimal(String.valueOf(userWallet.get("money"))));
             userWallet.put("totalMoney", totalMoney);
             data.put("userWallet", userWallet);
             ar.setData(data);

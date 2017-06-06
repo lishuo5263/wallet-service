@@ -148,7 +148,8 @@ public class UsersWebService extends BaseWebService {
 	@ApiOperation(nickname = "登陆接口", value = "用户登陆", notes = "用户登陆！")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "query", dataType = "String")
+        @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "source", value = "来源：APP或其他，APP的必填", required = false, paramType = "query", dataType = "String")
 	})
 	public AjaxResponse login(HttpServletRequest request,HttpServletResponse response){
 	    AjaxResponse ar = new AjaxResponse();

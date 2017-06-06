@@ -623,6 +623,11 @@ public class AccWebSerivce extends BaseWebService{
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
+            Map<String,Object> map= digitalCoinService.getCoinPrice(pd.getString("exchangeCoin"));
+            String coinPrice  = map.get("coin_rate").toString().split(":")[0];
+            String hlb_amnt =String.valueOf(userWallet.get("hlb_amnt"));
+            BigDecimal totalMoney = new BigDecimal(hlb_amnt).multiply(new BigDecimal(coinPrice));
+            userWallet.put("totalMoney", totalMoney);
             data.put("userWallet", userWallet);
             ar.setData(data);
             ar.setSuccess(true);

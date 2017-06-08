@@ -222,6 +222,7 @@ public class UsersWebService extends BaseWebService {
     @ApiOperation(nickname = "用户注册", value = "用户注册", notes = "用户注册")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "account", value = "登陆账号，仅支持手机号注册", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "user_name", value = "用户名", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "password", value = "密码，6-16位数字", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse register(HttpServletRequest request,HttpServletResponse response){
@@ -233,6 +234,7 @@ public class UsersWebService extends BaseWebService {
             logger.info("--------------register  pd value is "+pd.toString());
             String account = StringUtil.isEmpty(pd.getString("account"))?null:pd.getString("account").trim();
             String password = StringUtil.isEmpty(pd.getString("password"))?null:pd.getString("password").trim();
+            String user_name = StringUtil.isEmpty(pd.getString("user_name"))?null:pd.getString("user_name").trim();
             if(StringUtil.isEmpty(account)){
                 ar.setSuccess(false);
                 ar.setMessage("请输入登陆账号！");
@@ -251,6 +253,12 @@ public class UsersWebService extends BaseWebService {
                 ar.setErrorCode(CodeConstant.ERROE_PASSWORD_LETTER_NUM);
                 return ar;
             }*/
+            if(StringUtil.isEmpty(user_name)){
+                ar.setSuccess(false);
+                ar.setMessage("用户名不能为空！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
             if(StringUtil.isEmpty(password)){
                 ar.setSuccess(false);
                 ar.setMessage("请输入密码！");
@@ -276,7 +284,7 @@ public class UsersWebService extends BaseWebService {
             pd.put("account", account);
             pd.put("user_type", 1);//买家
             pd.put("mobile_phone", account);//买家
-            pd.put("user_name", account);//买家
+            pd.put("user_name", user_name);//买家
             pd.put("status", "1");//会员状态默认启用
             pd.put("password", password);
             pd.put("lastlogin_ip", InternetUtil.getRemoteAddr(request));
@@ -616,7 +624,71 @@ public class UsersWebService extends BaseWebService {
         return ar;
     }
     
-    
+    /**
+     * @describe:设置交易密码
+     * @author: zhangchunming
+     * @date: 2017年5月31日下午7:53:07
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @PostMapping("/setTransPassword")
+    @ApiOperation(nickname = "设置交易密码", value = "设置交易密码", notes = "设置交易密码")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "trans_password", value = "交易密码", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "comfirm_trans_password", value = "确认交易密码", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse setTransPassword(HttpServletRequest request){
+        logBefore(logger,"----------设置交易密码-------------");
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = this.getPageData();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("user_id", String.valueOf(user.get("id")));
+            if(StringUtil.isEmpty(pd.getString("trans_password"))){
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                ar.setMessage("请输入交易密码！");
+                ar.setSuccess(false);
+                return ar;
+            }
+            
+            if(StringUtil.isEmpty(pd.getString("comfirm_trans_password"))){
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                ar.setMessage("请输入确认密码！");
+                ar.setSuccess(false);
+                return ar;
+            }
+            
+            if(!pd.getString("trans_password").equals(pd.getString("comfirm_trans_password"))){
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                ar.setMessage("两次密码设置不一致！");
+                ar.setSuccess(false);
+                return ar;
+            }
+            pd.put("trans_password", MD5Util.getMd5Code(pd.getString("trans_password")));
+            boolean setTransPassword = userDetailsService.setTransPassword(pd);
+            if(setTransPassword){
+                ar.setSuccess(true);
+                ar.setMessage("交易密码设置成功！");
+                return ar;
+            }else{
+                ar.setSuccess(false);
+                ar.setErrorCode(CodeConstant.UPDATE_FAIL);
+                ar.setMessage("交易密码设置失败！");
+                return ar;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
+        logAfter(logger);
+        return ar;
+    }
     public static void main(String[] args) {
       //初始  
         /*BigInteger num = new BigInteger("0");  

@@ -38,7 +38,6 @@
     from shop_order_info
     where 1=1
     and order_no = #{order_no}
-    and user_id = #{user_id}
   </select>
   <delete id="deleteById" parameterType="java.lang.Integer" >
     delete from shop_order_info

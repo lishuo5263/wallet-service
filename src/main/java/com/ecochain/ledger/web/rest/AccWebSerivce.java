@@ -661,7 +661,7 @@ public class AccWebSerivce extends BaseWebService{
         @ApiImplicitParam(name = "remark4", value = "备注", required = false, paramType = "query", dataType = "String")
     })
     public AjaxResponse transferAccount(HttpServletRequest request,HttpServletResponse response){
-        logBefore(logger, "---------转三界石----transferAccount-----------");
+        logBefore(logger, "---------转HLB----transferAccount-----------");
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data =  new HashMap<String,Object>();
         try {

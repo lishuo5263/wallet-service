@@ -37,9 +37,11 @@ import com.ecochain.ledger.service.ShopOrderInfoService;
 import com.ecochain.ledger.service.ShopSupplierService;
 import com.ecochain.ledger.service.SysGenCodeService;
 import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.util.AjaxResponse;
 import com.ecochain.ledger.util.Base64;
 import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.MD5Util;
 import com.ecochain.ledger.util.OrderGenerater;
 import com.ecochain.ledger.util.RequestUtils;
 import com.ecochain.ledger.util.SessionUtil;
@@ -71,6 +73,8 @@ public class ShopOrderInfoWebService extends BaseWebService {
     private StoreOrderInfoService storeOrderInfoService;*/
     @Autowired
     private ShopSupplierService shopSupplierService;
+    @Autowired
+    private UsersDetailsService usersDetailsService;
     /*@Autowired
     private StoreInfoService storeInfoService;*/
 
@@ -1395,7 +1399,8 @@ public class ShopOrderInfoWebService extends BaseWebService {
     @ApiImplicitParams({
         @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "order_no", value = "订单号", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "order_amount", value = "付款金额", required = true, paramType = "query", dataType = "String")
+        @ApiImplicitParam(name = "order_amount", value = "付款金额", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "trans_password", value = "交易密码", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse payNow(HttpServletRequest request) {
         Map<String, Object> data = new HashMap<String, Object>();
@@ -1405,6 +1410,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
         try {
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("user_name", user.getString("user_name"));
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("seeds", user.getString("seeds"));
             pd.put("user_type", String.valueOf(user.getString("user_type")));
@@ -1419,6 +1425,20 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 ar.setSuccess(false);
                 ar.setMessage("订单号不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            if(StringUtil.isEmpty(pd.getString("trans_password"))){
+                ar.setMessage("交易密码不能为空！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                ar.setSuccess(false);
+                return ar;
+            }
+            pd.put("trans_password", MD5Util.getMd5Code(pd.getString("trans_password")));
+            Boolean existTransPassword = usersDetailsService.isExistTransPassword(pd);
+            if(!existTransPassword){
+                ar.setMessage("交易密码错误！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                ar.setSuccess(false);
                 return ar;
             }
             /*if(StringUtil.isEmpty(pd.getString("order_amount"))){
@@ -1463,7 +1483,9 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 return ar;
             }
             pd.put("order_no", shopOrderInfo.getString("order_no"));
+            pd.put("shop_order_no", shopOrderInfo.getString("order_no"));
             pd.put("order_id", String.valueOf(shopOrderInfo.get("order_id")));
+            pd.put("shop_order_id", String.valueOf(shopOrderInfo.get("order_id")));
             pd.put("order_amount", shopOrderInfo.get("order_amount"));
             pd.put("mobile_phone", user.getString("mobile_phone"));
 

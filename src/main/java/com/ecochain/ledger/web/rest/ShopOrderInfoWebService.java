@@ -1410,6 +1410,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
         try {
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
+            pd.remove("CSESSIONID");
             pd.put("user_name", user.getString("user_name"));
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("seeds", user.getString("seeds"));

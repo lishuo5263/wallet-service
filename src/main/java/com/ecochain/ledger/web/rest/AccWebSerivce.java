@@ -671,6 +671,7 @@ public class AccWebSerivce extends BaseWebService{
             String userType = user.getString("user_type");
             PageData pd = new PageData();
             pd = this.getPageData();
+            pd.remove("CSESSIONID");
             pd.put("bussType", "transferAccount");
             pd.put("user_name", user.getString("user_name"));
             pd.put("create_time", DateUtil.getCurrDateTime());
@@ -1410,6 +1411,7 @@ public class AccWebSerivce extends BaseWebService{
             pd = this.getPageData();
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
+            pd.remove("CSESSIONID");//add by zhangchunming
             pd.put("bussType", "currencyExchange");
             pd.put("user_name", user.getString("user_name"));
             pd.put("create_time", DateUtil.getCurrDateTime());

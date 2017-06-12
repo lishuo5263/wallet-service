@@ -194,9 +194,9 @@ public class AccDetailServiceImpl implements AccDetailService {
         logger.info("***********************币种兑换**************start********");
         
         boolean exchangeResult = false;
-        if("1".equals(pd.getString("buy_in_out"))&&"HLB".equals(pd.getString("coin_name"))){//买进，人民币减少，合链币增加
+        if("1".equals(pd.getString("buy_in_out"))&&"HLC".equals(pd.getString("coin_name"))){//买进，人民币减少，合链币增加
             exchangeResult = userWalletService.exchangeRMB2HLB(pd);
-        }else if("2".equals(pd.getString("buy_in_out"))&&"HLB".equals(pd.getString("coin_name"))){//卖出，人民币增加，合链币减少
+        }else if("2".equals(pd.getString("buy_in_out"))&&"HLC".equals(pd.getString("coin_name"))){//卖出，人民币增加，合链币减少
             exchangeResult = userWalletService.exchangeHLB2RMB(pd);
         }
         //插入账户流水

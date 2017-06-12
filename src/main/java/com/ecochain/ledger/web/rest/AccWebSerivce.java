@@ -624,7 +624,7 @@ public class AccWebSerivce extends BaseWebService{
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
-            Map<String,Object> map= digitalCoinService.getCoinPrice("HLB");
+            Map<String,Object> map= digitalCoinService.getCoinPrice("HLC");
             String coinPrice  = map.get("coin_rate").toString().split(":")[0];
             String hlb_amnt =String.valueOf(userWallet.get("hlb_amnt"));
             BigDecimal totalMoney = new BigDecimal(hlb_amnt).multiply(new BigDecimal(coinPrice)).add(new BigDecimal(String.valueOf(userWallet.get("money"))));
@@ -1397,7 +1397,7 @@ public class AccWebSerivce extends BaseWebService{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CSESSIONID", value = "CSESSIONID", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "exchange_num", value = "购买个数", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "buy_in_out", value = "兑换类型 列如： 1：RMB->HLB  2:HLB->RMB", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "buy_in_out", value = "兑换类型 列如： 1：RMB->HLC  2:HLC->RMB", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "exchangeCoin", value = "兑换的币种 列如：HLB", required = true, paramType = "query", dataType = "String"),
             //@ApiImplicitParam(name = "rmb_amnt", value = "当前用户人民币数额", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "errorCode", value = "-118 人民币数额不正确- 50 账户余额不足 -15 参数有误 -34 系统异常", required = false, paramType = "query", dataType = "String"),

@@ -1,35 +1,21 @@
 package com.ecochain.ledger.service.impl;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.AccDetailService;
-import com.ecochain.ledger.service.PayOrderService;
-import com.ecochain.ledger.service.SysGenCodeService;
-import com.ecochain.ledger.service.UsersDetailsService;
-import com.ecochain.ledger.service.UserLoginService;
-import com.ecochain.ledger.service.UserWalletService;
-import com.ecochain.ledger.util.Base64;
-import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.FormatNum;
-import com.ecochain.ledger.util.HttpUtil;
-import com.ecochain.ledger.util.Logger;
-import com.ecochain.ledger.util.StringUtil;
-import com.ecochain.ledger.util.Validator;
-import com.ecochain.ledger.util.sms.SMSUtil;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.*;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component("userWalletService")
 public class UserWalletServiceImpl implements UserWalletService {
@@ -143,8 +129,8 @@ public class UserWalletServiceImpl implements UserWalletService {
             accDetail.put("other_source", "转出合链币");
             pd.put("other_source", "转出合链币");
             accDetail.put("operator", pd.getString("operator"));
-            accDetail.put("remark1","转账-HLB");
-            pd.put("remark1", "转账-HLB");
+            accDetail.put("remark1","转账-HLC");
+            pd.put("remark1", "转账-HLC");
             /*if(Validator.isMobile(userInfo.getString("account"))){
                 accDetail.put("remark1", "我转账给"+FormatNum.convertPhone(userInfo.getString("account")));  
             }else{
@@ -152,7 +138,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             }*/
             accDetail.put("remark2", pd.getString("account"));//自己账号  
             accDetail.put("remark3", pd.getString("revbankaccno"));//对方账号  
-            pd.put("remark2", pd.getString("account"));
+           pd.put("remark2", pd.getString("account"));
             pd.put("remark3", pd.getString("revbankaccno"));
             logger.info("====================测试代码========start================");
             String kql_url =null;

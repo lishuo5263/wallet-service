@@ -652,7 +652,7 @@ public class AccWebSerivce extends BaseWebService{
     @LoginVerify
     @RequestMapping(value="/transferAccount", method=RequestMethod.POST)
     @PostMapping("/login")
-    @ApiOperation(nickname = "转HLB", value = "转HLB", notes = "转HLB！")
+    @ApiOperation(nickname = "转HLC", value = "转HLC", notes = "转HLC！")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "revbankaccno", value = "对方账号", required = true, paramType = "query", dataType = "String"),
@@ -661,7 +661,7 @@ public class AccWebSerivce extends BaseWebService{
         @ApiImplicitParam(name = "remark4", value = "备注", required = false, paramType = "query", dataType = "String")
     })
     public AjaxResponse transferAccount(HttpServletRequest request,HttpServletResponse response){
-        logBefore(logger, "---------转HLB----transferAccount-----------");
+        logBefore(logger, "---------转HLC----transferAccount-----------");
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data =  new HashMap<String,Object>();
         try {
@@ -794,7 +794,7 @@ public class AccWebSerivce extends BaseWebService{
             data.put("revbankaccno", pd.getString("revbankaccno"));
             data.put("money", "-"+pd.getString("coin_amnt"));
             data.put("coin_name", pd.getString("coin_name"));
-            data.put("remark1","转账-HLB");//说明
+            data.put("remark1","转账-HLC");//说明
             data.put("remark4", pd.getString("remark4"));//备注
             ar.setData(data);
             ar.setSuccess(true);

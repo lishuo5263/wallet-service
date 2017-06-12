@@ -671,6 +671,9 @@ public class AccWebSerivce extends BaseWebService{
             String userType = user.getString("user_type");
             PageData pd = new PageData();
             pd = this.getPageData();
+            pd.put("bussType", "transferAccount");
+            pd.put("user_name", user.getString("user_name"));
+            pd.put("create_time", DateUtil.getCurrDateTime());
             pd.put("account", user.getString("account"));
             pd.put("revbankaccno", pd.getString("revbankaccno")==null?"":pd.getString("revbankaccno").trim());
             pd.put("money", pd.getString("money")==null?"":pd.getString("money").trim());
@@ -1407,6 +1410,9 @@ public class AccWebSerivce extends BaseWebService{
             pd = this.getPageData();
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("bussType", "currencyExchange");
+            pd.put("user_name", user.getString("user_name"));
+            pd.put("create_time", DateUtil.getCurrDateTime());
             logger.info("************币种兑换 pd value is"+pd.toString());
             if(!Validator.isMoney4(pd.getString("exchange_num"))){
                 ar.setMessage("兑换数额格式有误，必须为正数哦！");
@@ -1450,7 +1456,8 @@ public class AccWebSerivce extends BaseWebService{
                     return ar;
                 }
             }
-            pd.put("otherno", OrderGenerater.generateFlowNo(RandomStringUtils.randomNumeric(6),"95"));
+            pd.put("flowno", OrderGenerater.generateOrderNo());
+            pd.put("otherno", pd.getString("flowno"));
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("acc_no","95");
             pd.put("caldate",new Date());

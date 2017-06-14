@@ -189,7 +189,7 @@ public class AccDetailServiceImpl implements AccDetailService {
     }
 
     @Override
-    public boolean currencyExchange(PageData pd, String versionNo) throws Exception {
+    public PageData currencyExchange(PageData pd, String versionNo) throws Exception {
         
         logger.info("***********************币种兑换**************start********");
         
@@ -230,7 +230,7 @@ public class AccDetailServiceImpl implements AccDetailService {
         logger.info("====================测试代码=======end=================");
         this.insertSelective(pd, versionNo);
         logger.info("***********************币种兑换**************end********结果exchangeResult："+exchangeResult);
-        return exchangeResult;
+        return pd;
     }
     
     @Override

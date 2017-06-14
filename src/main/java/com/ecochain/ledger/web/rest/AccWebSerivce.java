@@ -1,30 +1,6 @@
 package com.ecochain.ledger.web.rest;
 
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import tk.mybatis.mapper.util.StringUtil;
-
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.annotation.LoginVerify;
 import com.ecochain.ledger.base.BaseWebService;
@@ -32,22 +8,24 @@ import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.AccDetailService;
-import com.ecochain.ledger.service.DigitalCoinService;
-import com.ecochain.ledger.service.PayOrderService;
-import com.ecochain.ledger.service.SysGenCodeService;
-import com.ecochain.ledger.service.SysMaxnumService;
-import com.ecochain.ledger.service.UserLoginService;
-import com.ecochain.ledger.service.UserWalletService;
-import com.ecochain.ledger.service.UsersDetailsService;
-import com.ecochain.ledger.util.AjaxResponse;
-import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.Logger;
-import com.ecochain.ledger.util.OrderGenerater;
-import com.ecochain.ledger.util.RequestUtils;
-import com.ecochain.ledger.util.SessionUtil;
-import com.ecochain.ledger.util.Validator;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.*;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.util.StringUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 账户控制类
@@ -1411,6 +1389,7 @@ public class AccWebSerivce extends BaseWebService{
             pd = this.getPageData();
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
+            Map<String,Object> data =  new HashMap<String,Object>();
             pd.remove("CSESSIONID");//add by zhangchunming
             pd.put("bussType", "currencyExchange");
             pd.put("user_name", user.getString("user_name"));
@@ -1473,8 +1452,15 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("status","6");
             pd.put("cntflag","1");
             pd.put("remark1","币种兑换");
-            boolean currencyExchange = accDetailService.currencyExchange(pd, Constant.VERSION_NO);
-            if(currencyExchange){
+            PageData currencyExchange = accDetailService.currencyExchange(pd, Constant.VERSION_NO);
+            if(StringUtil.isNotEmpty(currencyExchange.getString("hash"))){
+                data.put("create_time", DateUtil.dateToStamp(DateUtil.getCurrDateTime()));
+                data.put("money", "+"+pd.getString("coin_amnt"));
+                data.put("coin_name", map.get("coin_name"));
+                data.put("remark1","兑换-HLC");//说明
+                data.put("remark4", pd.getString("remark4"));//备注
+                data.put("hash",currencyExchange.getString("hash"));
+                ar.setData(data);
                 ar.setSuccess(true);
                 ar.setMessage("兑换成功！");
                 return ar;

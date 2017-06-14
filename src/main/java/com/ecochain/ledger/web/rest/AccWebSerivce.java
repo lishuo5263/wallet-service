@@ -1437,7 +1437,7 @@ public class AccWebSerivce extends BaseWebService{
                     return ar;
                 }
             }
-            pd.put("flowno", OrderGenerater.generateOrderNo());
+            data.put("flowno", OrderGenerater.generateOrderNo());
             pd.put("otherno", pd.getString("flowno"));
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("acc_no","95");
@@ -1455,7 +1455,11 @@ public class AccWebSerivce extends BaseWebService{
             PageData currencyExchange = accDetailService.currencyExchange(pd, Constant.VERSION_NO);
             if(StringUtil.isNotEmpty(currencyExchange.getString("hash"))){
                 data.put("create_time", DateUtil.dateToStamp(DateUtil.getCurrDateTime()));
-                data.put("money", "+"+pd.getString("coin_amnt"));
+                if ("2".equals(pd.getString("buy_in_out"))) {//HLB->RMB
+                    data.put("money", "+"+new BigDecimal(coinPrice).multiply(new BigDecimal(pd.get("exchange_num").toString())));
+                }else{
+                    data.put("money", "+"+pd.getString("coin_amnt"));
+                }
                 data.put("coin_name", map.get("coin_name"));
                 data.put("remark1","兑换-HLC");//说明
                 data.put("remark4", pd.getString("remark4"));//备注

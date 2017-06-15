@@ -185,6 +185,7 @@ public class UsersWebService extends BaseWebService {
                     String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
                     SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
                     data.put("CSESSIONID", Base64.getBase64(sessionId));
+                    data.put("user_name", userInfo.getString("user_name"));
                     ar.setData(data);
                     ar.setSuccess(true);
                     ar.setMessage("登陆成功！");

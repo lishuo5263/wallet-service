@@ -1437,7 +1437,8 @@ public class AccWebSerivce extends BaseWebService{
                     return ar;
                 }
             }
-            data.put("flowno", OrderGenerater.generateOrderNo());
+            pd.put("flowno", OrderGenerater.generateOrderNo());
+            data.put("flowno", pd.getString("flowno"));
             pd.put("otherno", pd.getString("flowno"));
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("acc_no","95");

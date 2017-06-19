@@ -145,9 +145,9 @@ public class UsersWebService extends BaseWebService {
 	 * 请求登录，验证用户
 	 */
 	@PostMapping("/login")
-	@ApiOperation(nickname = "登陆接口", value = "用户登陆", notes = "用户登陆！")
+	@ApiOperation(nickname = "登录接口", value = "用户登录", notes = "用户登录！")
 	@ApiImplicitParams({
-        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "account", value = "登录账号", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "source", value = "来源：APP或其他，APP的必填", required = false, paramType = "query", dataType = "String")
 	})
@@ -161,7 +161,7 @@ public class UsersWebService extends BaseWebService {
             String password = StringUtil.isEmpty(pd.getString("password"))?null:pd.getString("password").trim();
             if(StringUtil.isEmpty(account)){
                 ar.setSuccess(false);
-                ar.setMessage("请输入登陆账号！");
+                ar.setMessage("请输入登录账号！");
                 ar.setErrorCode(CodeConstant.USER_NO_EXISTS);
                 return ar;
             }
@@ -188,7 +188,7 @@ public class UsersWebService extends BaseWebService {
                     data.put("user_name", userInfo.getString("user_name"));
                     ar.setData(data);
                     ar.setSuccess(true);
-                    ar.setMessage("登陆成功！");
+                    ar.setMessage("登录成功！");
                     return ar;
                 }else{
                     ar.setSuccess(false);
@@ -222,7 +222,7 @@ public class UsersWebService extends BaseWebService {
     @PostMapping("/register")
     @ApiOperation(nickname = "用户注册", value = "用户注册", notes = "用户注册")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "account", value = "登陆账号，仅支持手机号注册", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "account", value = "登录账号，仅支持手机号注册", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "user_name", value = "用户名", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "password", value = "密码，6-16位数字", required = true, paramType = "query", dataType = "String")
     })
@@ -238,7 +238,7 @@ public class UsersWebService extends BaseWebService {
             String user_name = StringUtil.isEmpty(pd.getString("user_name"))?null:pd.getString("user_name").trim();
             if(StringUtil.isEmpty(account)){
                 ar.setSuccess(false);
-                ar.setMessage("请输入登陆账号！");
+                ar.setMessage("请输入登录账号！");
                 ar.setErrorCode(CodeConstant.USER_NO_EXISTS);
                 return ar;
             }
@@ -367,9 +367,9 @@ public class UsersWebService extends BaseWebService {
      * @return
      */
     @PostMapping(value="/logout")
-    @ApiOperation(nickname = "退出登陆", value = "退出登陆", notes = "退出登陆！")
+    @ApiOperation(nickname = "退出登录", value = "退出登录", notes = "退出登录！")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "CSESSIONID", value = "登陆token", required = true, paramType = "query", dataType = "String")
+        @ApiImplicitParam(name = "CSESSIONID", value = "登录token", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse logout(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
@@ -390,7 +390,7 @@ public class UsersWebService extends BaseWebService {
     @PostMapping("/forgetpwd")
     @ApiOperation(nickname = "忘记密码", value = "忘记密码，输入新密码", notes = "忘记密码，输入新密码！")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "account", value = "登录账号", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "password", value = "新密码", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "cfPassWord", value = "确认密码", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "vcode", value = "验证码", required = true, paramType = "query", dataType = "String")
@@ -405,7 +405,7 @@ public class UsersWebService extends BaseWebService {
             String vcode  =request.getParameter("vcode");
             if(StringUtil.isEmpty(account)){
                 ar.setSuccess(false);
-                ar.setMessage("登陆账号不能为空，请重新输入");
+                ar.setMessage("登录账号不能为空，请重新输入");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }

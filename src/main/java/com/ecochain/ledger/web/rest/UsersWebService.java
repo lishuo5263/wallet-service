@@ -6,18 +6,20 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,9 +32,13 @@ import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.model.UserCardChargeInfo;
+import com.ecochain.ledger.model.UserCrad;
 import com.ecochain.ledger.service.SendVodeService;
 import com.ecochain.ledger.service.ShopOrderInfoService;
 import com.ecochain.ledger.service.SysGenCodeService;
+import com.ecochain.ledger.service.UserCardChargeInfoService;
+import com.ecochain.ledger.service.UserCardService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.service.UsersDetailsService;
@@ -45,7 +51,6 @@ import com.ecochain.ledger.util.SessionUtil;
 import com.ecochain.ledger.util.StringUtil;
 import com.ecochain.ledger.util.Validator;
 import com.ecochain.ledger.util.sms.SMSUtil;
-import com.github.pagehelper.PageInfo;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
@@ -68,6 +73,10 @@ public class UsersWebService extends BaseWebService {
     @Autowired
     private SysGenCodeService sysGenCodeService;
     
+    private UserCardService userCardService;
+    @Autowired
+    private UserCardChargeInfoService userCardChargeInfoService;
+
     @Resource(name="userDetailsService")
     private UsersDetailsService userDetailsService;
     
@@ -80,20 +89,182 @@ public class UsersWebService extends BaseWebService {
      * 获取登录用户的IPinfomodel
      * @throws Exception 
      */
-/*  public void getRemortIP(String USERNAME) throws Exception {  
+/*  public void getRemortIP(String USERNAME) throws Exception {
         PageData pd = new PageData();
         HttpServletRequest request = this.getRequest();
         String ip = "";
-        if (request.getHeader("x-forwarded-for") == null) {  
-            ip = request.getRemoteAddr();  
+        if (request.getHeader("x-forwarded-for") == null) {
+            ip = request.getRemoteAddr();
         }else{
-            ip = request.getHeader("x-forwarded-for");  
+            ip = request.getHeader("x-forwarded-for");
         }
         pd.put("USERNAME", USERNAME);
         pd.put("IP", ip);
         userDetailsService.saveIP(pd);
     }  */
-    
+
+
+    /**
+     * @describe:充值信息展示
+     * @author: lisandro
+     * @date: 2017年7月18日16:26:29
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @ResponseBody
+    @PostMapping("/showChargeInfo")
+    @ApiOperation(nickname = "充值信息展示", value = "充值信息展示", notes = "充值信息展示！")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse showChargeInfo(HttpServletRequest request, Page page)throws Exception{
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            int remark=Random.class.newInstance().nextInt(98)+1;
+            String strNew = "";
+            String str = "abcdefghijklmnopqrstuvwxyz";
+            char[] b = str.toCharArray();
+            for(int i=0;i<4;i++){
+                int index =(int) (Math.random()*b.length);
+                strNew += b[index];
+            }
+            Map<String,Object> chargeInfo =new HashMap();
+            chargeInfo.put("acceptNo","6222020200112232123");
+            chargeInfo.put("acceptName","北京和链共赢科技有限公司");
+            chargeInfo.put("companyBankName","工商银行望京支行");
+            chargeInfo.put("remark",strNew.toUpperCase());
+            chargeInfo.put("remarkPrice",remark <10 ?new String("0"+remark):remark);
+            UserCardChargeInfo userCardChargeInfo =new UserCardChargeInfo();
+            userCardChargeInfo.setStatus("0");
+            userCardChargeInfo.setCreateTime(new Date());
+            userCardChargeInfo.setUserId((Integer) user.get("id"));
+            userCardChargeInfo.setRemark(chargeInfo.get("remark").toString());
+            userCardChargeInfo.setAccepteNo(chargeInfo.get("acceptNo").toString());
+            userCardChargeInfo.setAcceptName(chargeInfo.get("acceptName").toString());
+            userCardChargeInfo.setCompanyBankName(chargeInfo.get("companyBankName").toString());
+            userCardChargeInfo.setRemarkPrice(Integer.valueOf(chargeInfo.get("remarkPrice").toString()));
+            userCardChargeInfoService.insert(userCardChargeInfo);
+            return fastReturn(chargeInfo,true,"充值信息展示！",CodeConstant.SC_OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            ar = fastReturn("系统异常,充值信息展示失败！", false, "系统异常,充值信息展示失败！", CodeConstant.SYS_ERROR);
+        }
+        return ar;
+    }
+
+    /**
+     * @describe:添加银行卡
+     * @author: lisandro
+     * @date: 2017年7月18日16:26:29
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @ResponseBody
+    @GetMapping("/addBankCard")
+    @ApiOperation(nickname = "添加银行卡", value = "添加银行卡", notes = "失败返回示列：" +
+            "{\n" +
+            "  \"errorCode\": -22,\n" +
+            "  \"message\": \"您已有此银行卡，请勿重复添加！\",\n" +
+            "  \"page\": null,\n" +
+            "  \"data\": \"您已有此银行卡，请勿重复添加!\",\n" +
+            "  \"success\": false\n" +
+            "}！")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cardNo", value = "卡号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "bankName", value = "银行名称", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "isDefault", value = "1为默认此卡", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+
+    })
+    public AjaxResponse addBankCard(HttpServletRequest request, Page page)throws Exception{
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("userId", String.valueOf(user.get("id")));
+            if(StringUtil.isNotEmpty(pd.getString("bankName"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))){
+                if(userCardService.findCardByCardNo(pd) > 0){
+                    return fastReturn("您已有此银行卡，请勿重复添加!",false,"您已有此银行卡，请勿重复添加！",CodeConstant.BANK_EXISTS);
+                }
+                UserCrad userCrad=new UserCrad();
+                userCrad.setStatus(1);
+                userCrad.setCreateTime(new Date());
+                userCrad.setBankName(pd.getString("bankName"));
+                userCrad.setCardNo(Integer.valueOf(pd.getString("cardNo")));
+                userCrad.setIsDefault(pd.getString("isDefault") != null ? pd.getString("isDefault"):"0");
+                if(userCardService.addBankCard(userCrad) > 0){
+                    return fastReturn(true,true,"添加银行卡成功！",CodeConstant.SC_OK);
+                }else{
+                    ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+                }
+            }else{
+                return fastReturn("缺少参数，添加银行卡失败!",false,"缺少参数，添加银行卡失败！",CodeConstant.PARAM_ERROR);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+        }
+        return ar;
+    }
+
+    /**
+     * @describe:设置默认银行卡
+     * @author: lisandro
+     * @date: 2017年7月18日22:34:01
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @ResponseBody
+    @GetMapping("/setDefaultCard")
+    @ApiOperation(nickname = "设置默认银行卡", value = "添加银行卡", notes = "设置默认银行卡")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cardNo", value = "卡号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "bankName", value = "银行名称", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "isDefault", value = "1为默认此卡", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+
+    })
+    public AjaxResponse setDefaultCard(HttpServletRequest request, Page page)throws Exception{
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("userId", String.valueOf(user.get("id")));
+            if(StringUtil.isNotEmpty(pd.getString("bankName"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))){
+                if(userCardService.findCardByCardNo(pd) > 0){
+                    return fastReturn("您已有此银行卡，请勿重复添加!",false,"您已有此银行卡，请勿重复添加！",CodeConstant.BANK_EXISTS);
+                }
+                UserCrad userCrad=new UserCrad();
+                userCrad.setStatus(1);
+                userCrad.setCreateTime(new Date());
+                userCrad.setBankName(pd.getString("bankName"));
+                userCrad.setCardNo(Integer.valueOf(pd.getString("cardNo")));
+                userCrad.setIsDefault(pd.getString("isDefault") != null ? pd.getString("isDefault"):"0");
+                if(userCardService.addBankCard(userCrad) > 0){
+                    return fastReturn(true,true,"添加银行卡成功！",CodeConstant.SC_OK);
+                }else{
+                    ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+                }
+            }else{
+                return fastReturn("缺少参数，添加银行卡失败!",false,"缺少参数，添加银行卡失败！",CodeConstant.PARAM_ERROR);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+        }
+        return ar;
+    }
 
     /*@RequestMapping(value="/listPageUser",method = RequestMethod.POST)
     @ResponseBody
@@ -835,7 +1006,7 @@ public class UsersWebService extends BaseWebService {
         }
         return ar;
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws  Exception{
       //初始  
         /*BigInteger num = new BigInteger("0");  
         num = num.setBit(2);  
@@ -853,7 +1024,14 @@ public class UsersWebService extends BaseWebService {
         System.out.println("KzopQgjVwAG2cqEHLWLJ9DKU5LpiUjcbREKoX3LbVgzPVC4S3Hynl");
         System.out.println(Base64.getBase64("KzopQgjVwAG2cqEHLWLJ9DKU5LpiUjcbREKoX3LbVgzPVC4S3Hynl"));
         System.out.println(Base64.getFromBase64("S3pvcFFnalZ3QUcyY3FFSExXTEo5REtVNUxwaVVqY2JSRUtvWDNMYlZnelBWQzRTM0h5bmw="));*/
-        
+        String str = "abcdefghijklmnopqrstuvwxyz";
+        String strNew = "";
+        char[] b = str.toCharArray();
+        for(int i=0;i<4;i++){
+            int index =(int) (Math.random()*b.length);
+            strNew += b[index];
+        }
+        System.out.println(strNew);
         String base64 = Base64.getBase64("9fd50096398d4b428d57da0f4bffbb67");
         System.out.println("base64="+base64);
         

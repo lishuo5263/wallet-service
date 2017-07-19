@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecochain.ledger.mapper.UserCardChargeInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.ecochain.ledger.model.UserCardChargeInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="accepte_no" property="accepteNo" jdbcType="VARCHAR" />
+    <result column="accept_name" property="acceptName" jdbcType="VARCHAR" />
+    <result column="company_bank_name" property="companyBankName" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="remark_price" property="remarkPrice" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, accepte_no, accept_name, company_bank_name, remark, remark_price, status, 
+    create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_card_charge_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from user_card_charge_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.UserCardChargeInfo" >
+    insert into user_card_charge_info (id, user_id, accepte_no, 
+      accept_name, company_bank_name, remark, 
+      remark_price, status, create_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{accepteNo,jdbcType=VARCHAR},
+      #{acceptName,jdbcType=VARCHAR}, #{companyBankName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{remarkPrice,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.UserCardChargeInfo" >
+    insert into user_card_charge_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="accepteNo != null" >
+        accepte_no,
+      </if>
+      <if test="acceptName != null" >
+        accept_name,
+      </if>
+      <if test="companyBankName != null" >
+        company_bank_name,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="remarkPrice != null" >
+        remark_price,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="accepteNo != null" >
+        #{accepteNo,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptName != null" >
+        #{acceptName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyBankName != null" >
+        #{companyBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="remarkPrice != null" >
+        #{remarkPrice,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ecochain.ledger.model.UserCardChargeInfo" >
+    update user_card_charge_info
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="accepteNo != null" >
+        accepte_no = #{accepteNo,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptName != null" >
+        accept_name = #{acceptName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyBankName != null" >
+        company_bank_name = #{companyBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="remarkPrice != null" >
+        remark_price = #{remarkPrice,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ecochain.ledger.model.UserCardChargeInfo" >
+    update user_card_charge_info
+    set user_id = #{userId,jdbcType=INTEGER},
+      accepte_no = #{accepteNo,jdbcType=VARCHAR},
+      accept_name = #{acceptName,jdbcType=VARCHAR},
+      company_bank_name = #{companyBankName,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      remark_price = #{remarkPrice,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

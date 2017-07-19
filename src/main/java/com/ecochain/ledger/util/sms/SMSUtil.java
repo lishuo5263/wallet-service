@@ -24,8 +24,8 @@ import com.ecochain.ledger.util.MD5Util;
 public class SMSUtil {
     /*private static String username = "mmb888";
     private static String password = "j2mJTEpC";*/
-    private static String username = "sj888";
-    private static String password = "E7SS4Ibz";
+    public static String username = "sj888";
+    public static String password = "E7SS4Ibz";
 //  private static String username = "sanjie";
 //  private static String password = "San16888";
     public static String notice_productid = "887362";//管理商通知专用

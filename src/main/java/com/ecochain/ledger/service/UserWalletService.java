@@ -246,6 +246,15 @@ public interface UserWalletService {
      */
     boolean withDrawalSubMoney(PageData pd)throws Exception;
     /**
+     * @describe:提现扣除金额（RMB、BTC、LTC等）
+     * @author: zhangchunming
+     * @date: 2017年7月18日下午6:21:00
+     * @param pd
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean withDrawalSub(PageData pd)throws Exception;
+    /**
      * @describe:提现成功扣除冻结人民币余额
      * @author: zhangchunming
      * @date: 2016年12月21日下午6:38:16
@@ -282,6 +291,42 @@ public interface UserWalletService {
      * @return: boolean
      */
     boolean exchangeRMB2HLB(PageData pd)throws Exception;
+    /**
+     * @describe:人民币兑换虚拟币
+     * @author: zhangchunming
+     * @date: 2017年7月18日下午3:18:29
+     * @param pd
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean exchangeRMB2Coin(PageData pd)throws Exception;
+    /**
+     * @describe:虚拟币兑换人民币
+     * @author: zhangchunming
+     * @date: 2017年7月18日下午3:19:08
+     * @param pd
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean exchangeCoin2RMB(PageData pd)throws Exception;
+    /**
+     * @describe:公司主账号卖掉虚拟币，增加人民币
+     * @author: zhangchunming
+     * @date: 2017年7月18日下午3:18:29
+     * @param pd
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean companySubCoin(PageData pd)throws Exception;
+    /**
+     * @describe:公司主账号买进虚拟币，减少人民币
+     * @author: zhangchunming
+     * @date: 2017年7月18日下午3:19:08
+     * @param pd
+     * @throws Exception
+     * @return: boolean
+     */
+    boolean companyAddCoin(PageData pd)throws Exception;
     /**
      * @describe:通过合链币支付
      * @author: zhangchunming

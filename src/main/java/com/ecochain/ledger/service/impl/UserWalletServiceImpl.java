@@ -8,11 +8,13 @@ import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.*;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,19 +77,20 @@ public class UserWalletServiceImpl implements UserWalletService {
     @Transactional(propagation=Propagation.REQUIRED)
     public boolean transferAccount(PageData pd, String versionNo) throws Exception {
         logger.info("------------------内部转账start---------------");
+        if("BTC".equals(pd.getString("coin_name"))){//比特币转账
+            pd.put("btc_amnt", pd.getString("coin_amnt"));
+        }
         boolean updateSubResult = updateSub(pd, versionNo);
         logger.info("------------------内部转账----从钱包扣钱updateSubResult："+updateSubResult);
-        /*String mobile_phone = pd.getString("revbankaccno");//revbankaccno对方账户即对方手机号
-        PageData usersDetails = usersDetailsService.findbyPhone(mobile_phone, Constant.VERSION_NO);*/
-       /* PageData userLoginPD = new PageData();
-        userLoginPD.put("account", pd.getString("revbankaccno"));*/
         
         //获取对方信息
         PageData userInfo = userLoginService.getUserInfoByAccount(pd.getString("revbankaccno"), Constant.VERSION_NO);
         boolean updateAddResult = false;
         if(updateSubResult){
             PageData wallet = new PageData();
-            wallet.put("coin_amnt", pd.getString("coin_amnt"));
+            if("BTC".equals(pd.getString("coin_name"))){//比特币转账
+                wallet.put("btc_amnt", pd.getString("coin_amnt"));
+            }
             wallet.put("user_id", String.valueOf(userInfo.get("user_id")));//对方user_id
             wallet.put("operator", pd.getString("operator"));
             updateAddResult = updateAdd(wallet, versionNo);
@@ -95,18 +98,6 @@ public class UserWalletServiceImpl implements UserWalletService {
             logger.info("------------------内部转账end---------转账结果："+(updateAddResult&&updateSubResult));
         }
         if(updateAddResult&&updateSubResult){
-            /*//生成支付订单
-            PageData payOrder = new PageData();
-            payOrder.put("user_id", pd.get("user_id"));
-            payOrder.put("pay_no", pd.getString("pay_no"));//支付号
-            payOrder.put("fee_type", "3");//转三界石
-            payOrder.put("cuy_type", "1");//1-三界通2-三界宝3-人民币
-            payOrder.put("txamnt", pd.getString("future_currency"));//1-三界通2-三界宝3-人民币
-            payOrder.put("status", "1");//0-待审核 1-成功 2-失败
-            payOrder.put("revbankaccno", pd.getString("revbankaccno"));//revbankaccno对方账户即对方手机号
-            payOrder.put("txdate", DateUtil.getCurrDateTime());
-            payOrder.put("operator", pd.getString("operator"));
-            payOrderService.insertSelective(payOrder, Constant.VERSION_NO);*/
             //生成账户流水
             PageData accDetail = new PageData();
             accDetail.put("user_id", pd.get("user_id"));
@@ -131,16 +122,11 @@ public class UserWalletServiceImpl implements UserWalletService {
             accDetail.put("operator", pd.getString("operator"));
             accDetail.put("remark1","转账-HLC");
             pd.put("remark1", "转账-HLC");
-            /*if(Validator.isMobile(userInfo.getString("account"))){
-                accDetail.put("remark1", "我转账给"+FormatNum.convertPhone(userInfo.getString("account")));  
-            }else{
-                accDetail.put("remark1", "我转账给"+(userInfo.getString("account").length()>10?userInfo.getString("account").substring(0, 10)+"...":userInfo.getString("account")));  
-            }*/
             accDetail.put("remark2", pd.getString("account"));//自己账号  
             accDetail.put("remark3", pd.getString("revbankaccno"));//对方账号  
            pd.put("remark2", pd.getString("account"));
             pd.put("remark3", pd.getString("revbankaccno"));
-            logger.info("====================测试代码========start================");
+            /*logger.info("====================测试代码========start================");
             String kql_url =null;
             List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
             for(PageData mapObj:codeList){
@@ -148,8 +134,6 @@ public class UserWalletServiceImpl implements UserWalletService {
                     kql_url = mapObj.get("code_value").toString();
                 }
             }
-            
-//            String jsonStr = HttpUtil.sendPostData("http://192.168.200.83:8332/get_new_key", "");
             String jsonStr = HttpUtil.sendPostData(kql_url+"/get_new_key", "");
             JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
             PageData keyPd = new PageData();
@@ -169,52 +153,10 @@ public class UserWalletServiceImpl implements UserWalletService {
             if(StringUtil.isNotEmpty(json.getString("result"))){
                 accDetail.put("hash", json.getString("result")); 
             }
-            logger.info("====================测试代码=======end=================");
+            logger.info("====================测试代码=======end=================");*/
             
             accDetailService.insertSelective(accDetail, Constant.VERSION_NO);
-            /*//插入对方账户流水
-            PageData accDetail1 = new PageData();
-            accDetail1.put("user_id", userInfo.get("user_id"));
-            accDetail1.put("acc_no", "34");
-            accDetail1.put("user_type", userInfo.getString("user_type"));
-            accDetail1.put("rela_user_id", pd.get("user_id"));//转账人的user_id
-            accDetail1.put("wlbi_amnt", pd.getString("future_currency"));
-            accDetail1.put("caldate", DateUtil.getCurrDateTime());
-            accDetail1.put("cntflag", "1");
-            accDetail1.put("status", "4");
-            accDetail1.put("otherno", payOrder.getString("pay_no"));
-            accDetail1.put("other_amnt", pd.getString("future_currency"));
-            accDetail1.put("other_source", "转入三界石");
-            accDetail1.put("operator", pd.getString("operator"));
-            //获取当前登陆用户的登陆信息
-            PageData userLogin = userLoginService.getUserLoginByUserId(String.valueOf(pd.get("user_id")), Constant.VERSION_NO);
-            if(Validator.isMobile(userLogin.getString("account"))){
-                accDetail1.put("remark1", FormatNum.convertPhone(userLogin.getString("account"))+"转给我");  
-            }else{
-                accDetail1.put("remark1", userLogin.getString("account").length()>10?userLogin.getString("account").substring(0, 10)+"...转给我":userLogin.getString("account")+"转给我");  
-            }
-            accDetail1.put("remark2", userLogin.getString("account"));  
-            accDetailService.insertSelective(accDetail1, Constant.VERSION_NO);*/
         }
-        /*if(updateAddResult&&updateSubResult){
-            List<PageData> codeList =sysGenCodeService.findByGroupCode("SENDSMS_FLAG", Constant.VERSION_NO);
-            String smsflag ="";
-            for(PageData mapObj:codeList){
-                if("SENDSMS_FLAG".equals(mapObj.get("code_name"))){
-                    smsflag = mapObj.get("code_value").toString();
-                }
-            }
-            if("1".equals(smsflag)){
-                PageData userInfo_self = userLoginService.getUserInfoByUserId(String.valueOf(pd.get("user_id")), versionNo);
-                PageData userInfo_other = userLoginService.getUserInfoByUserId(String.valueOf(userInfo.get("user_id")), versionNo);
-                
-                String content_self = "尊敬的会员"+userInfo_self.getString("account")+"您好，您已成功向账户"+userInfo_other.getString("account")+"转账"+pd.getString("future_currency")+"个三界石。如非本人操作，请联系客服！";
-                SMSUtil.sendSMS_ChinaNet1(userInfo_self.getString("mobile_phone"), content_self, SMSUtil.notice_productid);
-                String content_other = "尊敬的会员"+userInfo_other.getString("account")+"您好，账户"+userInfo_self.getString("account")+"给您转账了"+pd.getString("future_currency")+"个三界石。请登录账号查收。";
-                SMSUtil.sendSMS_ChinaNet1(userInfo_other.getString("mobile_phone"), content_other, SMSUtil.notice_productid);
-            }
-        }*/
-        
         return(updateAddResult&&updateSubResult);
     }
 
@@ -385,5 +327,30 @@ public class UserWalletServiceImpl implements UserWalletService {
     @Override
     public boolean payNowByHLB(PageData pd, String versionNo) throws Exception {
         return (Integer)dao.update("UserWalletMapper.payNowByHLB", pd)>0;//用户扣钱
+    }
+
+    @Override
+    public boolean exchangeRMB2Coin(PageData pd) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.exchangeRMB2Coin", pd)>0;
+    }
+
+    @Override
+    public boolean exchangeCoin2RMB(PageData pd) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.exchangeCoin2RMB", pd)>0;
+    }
+
+    @Override
+    public boolean companySubCoin(PageData pd) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.companySubCoin", pd)>0;
+    }
+
+    @Override
+    public boolean companyAddCoin(PageData pd) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.companyAddCoin", pd)>0;
+    }
+
+    @Override
+    public boolean withDrawalSub(PageData pd) throws Exception {
+        return (Integer)dao.update("UserWalletMapper.withDrawalSub", pd)>0;
     }
 }

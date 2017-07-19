@@ -1,23 +1,25 @@
 package com.ecochain.ledger.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.*;
-import com.ecochain.ledger.util.*;
-import com.github.pagehelper.PageHelper;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.AccDetailService;
+import com.ecochain.ledger.service.ShopOrderGoodsService;
+import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.SysGenCodeService;
+import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.Logger;
+import com.github.pagehelper.PageHelper;
 
 @Component("accDetailService")
 public class AccDetailServiceImpl implements AccDetailService {
@@ -189,17 +191,28 @@ public class AccDetailServiceImpl implements AccDetailService {
     }
 
     @Override
-    public PageData currencyExchange(PageData pd, String versionNo) throws Exception {
+    public boolean currencyExchange(PageData pd, String versionNo) throws Exception {
         
         logger.info("***********************币种兑换**************start********");
         
         boolean exchangeResult = false;
-        if("1".equals(pd.getString("buy_in_out"))&&"HLC".equals(pd.getString("coin_name"))){//买进，人民币减少，合链币增加
-            exchangeResult = userWalletService.exchangeRMB2HLB(pd);
-        }else if("2".equals(pd.getString("buy_in_out"))&&"HLC".equals(pd.getString("coin_name"))){//卖出，人民币增加，合链币减少
-            exchangeResult = userWalletService.exchangeHLB2RMB(pd);
+        boolean companySubCoin = false;
+        if("1".equals(pd.getString("buy_in_out"))){//买进，人民币减少，虚拟币增加
+            exchangeResult = userWalletService.exchangeRMB2Coin(pd);
+            logger.info("用户买进虚拟币，exchangeResult is"+exchangeResult);
+            if(exchangeResult){
+                companySubCoin = userWalletService.companySubCoin(pd); 
+                logger.info("用户买进虚拟币，companySubCoin is"+companySubCoin);
+            }
+        }else if("2".equals(pd.getString("buy_in_out"))){//卖出，人民币增加，虚拟币减少
+            exchangeResult = userWalletService.exchangeCoin2RMB(pd);
+            logger.info("用户卖出虚拟币，exchangeResult is"+exchangeResult);
+            if(exchangeResult){
+                companySubCoin = userWalletService.companyAddCoin(pd);
+                logger.info("用户卖出虚拟币，companySubCoin is"+companySubCoin);
+            }
         }
-        //插入账户流水
+       /* //插入账户流水
         String kql_url =null;
         List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
         for(PageData mapObj:codeList){
@@ -227,10 +240,10 @@ public class AccDetailServiceImpl implements AccDetailService {
         if(StringUtil.isNotEmpty(json.getString("result"))){
             pd.put("hash",json.getString("result"));
         }
-        logger.info("====================测试代码=======end=================");
+        logger.info("====================测试代码=======end=================");*/
         this.insertSelective(pd, versionNo);
         logger.info("***********************币种兑换**************end********结果exchangeResult："+exchangeResult);
-        return pd;
+        return (exchangeResult&&companySubCoin);
     }
     
     @Override

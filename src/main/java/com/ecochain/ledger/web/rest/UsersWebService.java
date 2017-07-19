@@ -32,6 +32,7 @@ import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.SendVodeService;
 import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.SysGenCodeService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.service.UsersDetailsService;
@@ -43,6 +44,7 @@ import com.ecochain.ledger.util.RequestUtils;
 import com.ecochain.ledger.util.SessionUtil;
 import com.ecochain.ledger.util.StringUtil;
 import com.ecochain.ledger.util.Validator;
+import com.ecochain.ledger.util.sms.SMSUtil;
 import com.github.pagehelper.PageInfo;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -63,6 +65,8 @@ public class UsersWebService extends BaseWebService {
     private SendVodeService sendVodeService;
     @Autowired
     private ShopOrderInfoService shopOrderInfoService;
+    @Autowired
+    private SysGenCodeService sysGenCodeService;
     
     @Resource(name="userDetailsService")
     private UsersDetailsService userDetailsService;
@@ -91,40 +95,7 @@ public class UsersWebService extends BaseWebService {
     }  */
     
 
-    /**
-     * @describe:查询接收转账资产账户信息
-     * @author: lishuo
-     * @date: 2017年3月10日09:49:02
-     * @param request
-     * @return: AjaxResponse
-     */
-    @RequestMapping(value="/findAcceptInfo",method = RequestMethod.POST)
-    @ResponseBody
-    public AjaxResponse findAcceptInfo(HttpServletRequest request, Page page)throws Exception{
-        AjaxResponse ar = new AjaxResponse();
-        PageData pd = new PageData();
-        pd = this.getPageData();
-        try {
-            if(StringUtil.isNotEmpty(pd.getString("real_account"))){
-                PageData pageData =this.userDetailsService.findAcceptInfo(pd);
-                if(pageData==null ||pageData.get("user_id")==null){
-                    return fastReturn("接口参数异常,账户"+pd.getString("real_account")+"缺少rela_user_id,资产转入转出失败！", false, "接口参数异常,账户"+pd.getString("real_account")+"缺少rela_user_id,资产转入转出失败！", CodeConstant.NEED_ACCEPT_INTO);
-                }else if(pageData.get("public_key")==null){
-                    return  fastReturn("接口参数异常,账户"+pd.getString("real_account")+"缺少relauser_public_key,资产转入转出失败！", false, "接口参数异常,账户"+pd.getString("real_account")+"缺少relauser_public_key,资产转入转出失败！", CodeConstant.NEED_ACCEPT_INTO);
-                }else{
-                    return fastReturn(pageData,true,"查询接收转账资产账户信息成功！", CodeConstant.SC_OK);
-                }
-            }else{
-                ar = fastReturn("接口参数异常,缺少property_id,查询接收转账资产账户信息成功失败！", false, "接口参数异常,缺少property_id,查询接收转账资产账户信息成功失败！", CodeConstant.PARAM_ERROR);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            ar = fastReturn("系统异常,资产转入转出失败！", false, "系统异常,资产转入转出失败！", CodeConstant.SYS_ERROR);
-        }
-        return ar;
-    }
-    
-    @RequestMapping(value="/listPageUser",method = RequestMethod.POST)
+    /*@RequestMapping(value="/listPageUser",method = RequestMethod.POST)
     @ResponseBody
     public AjaxResponse listPageUser(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
@@ -132,13 +103,13 @@ public class UsersWebService extends BaseWebService {
         Map<String,Object> data = new HashMap<String,Object>();
         List<PageData> listPageUser = userDetailsService.listPageUsers(pd);
         data.put("pageInfo", new PageInfo<PageData>(listPageUser));
-        /*data.put("pd", pd);
+        data.put("pd", pd);
         data.put("page", pd.getPage());
-        data.put("rows", pd.getRows());*/
+        data.put("rows", pd.getRows());
         ar.setSuccess(true);
         ar.setData(data);
         return ar;
-    }
+    }*/
 	
 	
 	/**
@@ -211,7 +182,7 @@ public class UsersWebService extends BaseWebService {
         return ar;
     }
     
-    /**
+	 /**
      * @describe:注册
      * @author: zhangchunming
      * @date: 2017年3月2日下午3:36:32
@@ -222,9 +193,11 @@ public class UsersWebService extends BaseWebService {
     @PostMapping("/register")
     @ApiOperation(nickname = "用户注册", value = "用户注册", notes = "用户注册")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "account", value = "登录账号，仅支持手机号注册", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "user_name", value = "用户名", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "password", value = "密码，6-16位数字", required = true, paramType = "query", dataType = "String")
+        @ApiImplicitParam(name = "user_name", value = "会员名称（中英文字符均可、4-8个字符以内）", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "创建密码（字母数字组合，6-16个字符以内）", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "confirmPassword", value = "确认密码", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "account", value = "输入手机号（11位数字）", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "vcode", value = "手机短信验证码", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse register(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
@@ -236,66 +209,110 @@ public class UsersWebService extends BaseWebService {
             String account = StringUtil.isEmpty(pd.getString("account"))?null:pd.getString("account").trim();
             String password = StringUtil.isEmpty(pd.getString("password"))?null:pd.getString("password").trim();
             String user_name = StringUtil.isEmpty(pd.getString("user_name"))?null:pd.getString("user_name").trim();
-            if(StringUtil.isEmpty(account)){
-                ar.setSuccess(false);
-                ar.setMessage("请输入登录账号！");
-                ar.setErrorCode(CodeConstant.USER_NO_EXISTS);
-                return ar;
-            }
-            if(!Validator.isMobile(account)){
-                ar.setSuccess(false);
-                ar.setMessage("账号格式不正确！");
-                ar.setErrorCode(CodeConstant.MOBILE_ERROR);
-                return ar;
-            }
-            /*if(!Validator.isAccountByLetterAndNum(account)){
-                ar.setSuccess(false);
-                ar.setMessage("用户名应包含字母和数字哦，请重新设置！");
-                ar.setErrorCode(CodeConstant.ERROE_PASSWORD_LETTER_NUM);
-                return ar;
-            }*/
+            String vcode = StringUtil.isEmpty(pd.getString("vcode"))?null:pd.getString("vcode").trim();
+            String confirmPassword = StringUtil.isEmpty(pd.getString("confirmPassword"))?null:pd.getString("confirmPassword").trim();
             if(StringUtil.isEmpty(user_name)){
                 ar.setSuccess(false);
-                ar.setMessage("用户名不能为空！");
+                ar.setMessage("请输入会员名称！");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
+            
+            if(user_name.length()<4||user_name.length()>8){
+                ar.setSuccess(false);
+                ar.setMessage("请输入4-8个字符！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            
             if(StringUtil.isEmpty(password)){
                 ar.setSuccess(false);
                 ar.setMessage("请输入密码！");
-                ar.setErrorCode(CodeConstant.ERROE_PASSWORD_NULL);
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
             
             if(password.length()<6||password.length()>16){
                 ar.setSuccess(false);
-                ar.setMessage("密码应为6-16位数，请重新设置");
-                ar.setErrorCode(CodeConstant.ERROE_PASSWORD_6_16);
+                ar.setMessage("密码为6-16字母或数字组合，请重新设置");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
+            /*if(!Validator.isAccountByLetterAndNum(password)){
+                ar.setSuccess(false);
+                ar.setMessage("密码为6-16字母数字组合，请重新设置");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }*/
+            
+            if(StringUtil.isEmpty(confirmPassword)){
+                ar.setSuccess(false);
+                ar.setMessage("确认密码不能为空！");
+                ar.setErrorCode(CodeConstant.ERROE_CONFIRM_PASSWORD_NULL);
+                return ar;
+            }
+            if(!pd.getString("password").equals(confirmPassword)){
+                ar.setSuccess(false);
+                ar.setMessage("两次密码输入不一致！");
+                ar.setErrorCode(CodeConstant.ERROE_PASSWORD_DIFFERENT);
+                return ar;
+            }
+            
+            if(StringUtil.isEmpty(account)){
+                ar.setSuccess(false);
+                ar.setMessage("请输入手机号！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            if(!Validator.isMobile(account)){
+                ar.setSuccess(false);
+                ar.setMessage("手机号格式不正确！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            
+            if(StringUtil.isEmpty(vcode)){
+                ar.setSuccess(false);
+                ar.setMessage("请输入验证码！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            
+            //半小时之内的短信验证码有效
+            String tVcode =sendVodeService.findVcodeByPhone(pd.getString("account"),Constant.CUR_SYS_CODE); 
+           /* if(tVcode==null||!pd.getString("vcode").equals(tVcode)){
+                ar.setSuccess(false);
+                ar.setMessage("验证码输入不正确！");
+                return ar;
+            }*/
+            if(tVcode==null){
+                ar.setSuccess(false);
+                ar.setMessage("验证码已失效，请重新获取");
+                ar.setErrorCode(CodeConstant.OVERTIME_VCODE);
+                return ar;
+            }else if(!pd.getString("vcode").equalsIgnoreCase(tVcode)){
+                ar.setSuccess(false);
+                ar.setMessage("验证码错误，请重新输入");
+                ar.setErrorCode(CodeConstant.ERROR_VCODE);
+                return ar;
+            }
+            
             
             password = MD5Util.getMd5Code(password);
             //判断用户是否已存在
             if(userDetailsService.findIsExist(account,Constant.VERSION_NO)){
                 ar.setSuccess(false);
-                ar.setMessage("该账号已注册！");
+                ar.setMessage("该手机号已注册！");
                 ar.setErrorCode(CodeConstant.ACCOUNT_EXISTS);
                 return ar;
             }
             pd.put("account", account);
-            pd.put("user_type", 1);//买家
+            pd.put("user_type", 1);
             pd.put("mobile_phone", account);//买家
-            pd.put("user_name", user_name);//买家
             pd.put("status", "1");//会员状态默认启用
             pd.put("password", password);
             pd.put("lastlogin_ip", InternetUtil.getRemoteAddr(request));
             pd.put("lastlogin_port", InternetUtil.getRemotePort(request));
-            
-            /*String jsonStr = HttpUtil.sendPostData("http://192.168.10.47:8332/get_new_key", "");
-            String jsonStr = HttpUtil.sendPostData(""+ PocConstants.BlockChainURLTest+"/get_new_key", "");
-            JSONObject jsonObj = JSONObject.parseObject(jsonStr);
-            pd.put("public_key", jsonObj.getJSONObject("result").getString("PubKey"));
-            pd.put("address", jsonObj.getJSONObject("result").getString("PubKey"));*/
             
             if(!userDetailsService.addUser(pd,Constant.VERSION_NO)){            
                 ar.setSuccess(false);
@@ -688,6 +705,134 @@ public class UsersWebService extends BaseWebService {
             ar.setErrorCode(CodeConstant.SYS_ERROR);
         }
         logAfter(logger);
+        return ar;
+    }
+    
+    /**
+     * @describe:发送验证码
+     * @author: zhangchunming
+     * @date: 2017年7月18日下午8:37:44
+     * @param request
+     * @param response
+     * @return: AjaxResponse
+     */
+    @PostMapping("/sendVcode")
+    @ApiOperation(nickname = "发送短信验证码", value = "发送短信验证码", notes = "发送短信验证码")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "phone", value = "手机号", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse sendVcode(HttpServletRequest request,HttpServletResponse response){
+        AjaxResponse ar = new AjaxResponse();
+        try {
+            PageData pd  = new PageData();
+            pd = this.getPageData();
+            String phone = StringUtil.isEmpty(pd.getString("phone"))?null:pd.getString("phone").trim();
+            if(StringUtil.isEmpty(pd.getString("phone"))){
+                ar.setSuccess(false);
+                ar.setMessage("请输入手机号！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            
+            List<PageData> codeList =sysGenCodeService.findByGroupCode("SENDSMS_FLAG", Constant.VERSION_NO);
+            String smsflag ="";
+            String sms_day_num = "";
+            String sms_half_hour_num = "";
+            for(PageData mapObj:codeList){
+                if("SENDSMS_FLAG".equals(mapObj.get("code_name"))){
+                    smsflag = mapObj.get("code_value").toString();
+                    logger.info("---------发送验证码--------短信发送标识smsflag："+smsflag);
+                }else if("SMS_DAY_NUM".equals(mapObj.get("code_name"))){
+                    sms_day_num = mapObj.get("code_value").toString();
+                    logger.info("---------发送验证码--------短信每天限量sms_day_num："+sms_day_num);
+                }else if("SMS_HALF_HOUR_NUM".equals(mapObj.get("code_name"))){
+                    sms_half_hour_num = mapObj.get("code_value").toString();
+                    logger.info("---------发送验证码--------短信半小时限量sms_half_hour_num："+sms_half_hour_num);
+                }
+            }
+            if(StringUtil.isEmpty(smsflag)||StringUtil.isEmpty(sms_day_num)||StringUtil.isEmpty(sms_half_hour_num)){
+                ar.setSuccess(false);
+                ar.setMessage("系统短信参数配置有误");
+                ar.setErrorCode(CodeConstant.SYS_ERROR);
+                return ar;
+            }
+            pd.put("sms_day_num", sms_day_num);
+            //判断短信发送量是否超出限制
+            Integer findCountBy30Minute = sendVodeService.findCountBy30Minute(phone, Constant.VERSION_NO);
+            if(findCountBy30Minute>=Integer.valueOf(sms_half_hour_num)){
+                ar.setSuccess(false);
+                ar.setMessage("验证码发送太频繁，请半小时后操作！");
+                ar.setErrorCode(CodeConstant.ERROE_SMS_FREQUENTLY);
+                return ar;
+            }
+            Integer findCountByDay = sendVodeService.findCountByDay(phone, Constant.VERSION_NO);
+            if(findCountByDay>=Integer.valueOf(sms_day_num)){
+                ar.setSuccess(false);
+                ar.setMessage("验证码发送量超出当天限制，请明天再进行操作！");
+                ar.setErrorCode(CodeConstant.ERROE_SMS_OVER);
+                return ar;
+            }
+            String vCode = "";//验证码
+            String content = "";//发送内容
+            if("0".equals(smsflag)){
+                vCode = "888888";
+            }else{
+                String mobile_code = (int)((Math.random()*9+1)*100000)+"";
+                content = new String("您正在注册合链钱包账号，验证码："+mobile_code+"，打死也不能告诉别人哦！");
+                if(StringUtil.isNotEmpty(content)){
+                    pd.put("phone", phone);
+                    pd.put("content", content);
+                    pd.put("productid", SMSUtil.vcode_productid);
+//                    Boolean sendSms = logSmsService.sendSms(pd, Constant.VERSION_NO);
+                    List<PageData> smsList =sysGenCodeService.findByGroupCode("SMS", Constant.VERSION_NO);
+                    String username = null;
+                    String password = null;
+                    for(PageData mapObj:smsList){
+                        if("USERNAME".equals(mapObj.get("code_name"))){
+                            username = mapObj.get("code_value").toString();
+                        }else if("PASSWORD".equals(mapObj.get("code_name"))){
+                            password = mapObj.get("code_value").toString();
+                        }
+                    }
+                    SMSUtil.username = username;
+                    SMSUtil.password = password;
+                    Boolean sendSms = SMSUtil.sendSMS_ChinaNet1(phone, content, SMSUtil.vcode_productid);//发送成功，验证码插入数据库
+                    if(sendSms!=null&&sendSms){
+                        vCode = mobile_code;
+                    }else if((sendSms!=null&&!sendSms)||sendSms==null){
+                        ar.setSuccess(false);
+                        ar.setMessage("验证码发送失败");
+                        ar.setErrorCode(CodeConstant.SMS_GET_ERROR);
+                        return ar;
+                    }else{
+                        ar.setSuccess(false);
+                        ar.setMessage("当日获取手机验证码数量已达上限！");
+                        ar.setErrorCode(CodeConstant.SMS_GET_ERROR);
+                        return ar;
+                    }
+                }else{
+                    ar.setSuccess(false);
+                    ar.setMessage("短信内容不能为空！");
+                    ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                    return ar;
+                }
+                
+            }
+            pd.put("vcode", vCode);
+            pd.put("phone", phone);
+            if(!sendVodeService.addVcode(pd, Constant.VERSION_NO)){//验证码进库
+                logger.info("addVcode fail ,phone is "+phone +"!");             
+            }
+            ar.setSuccess(true);
+            ar.setMessage("验证码发送成功！");
+            return ar;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
         return ar;
     }
     public static void main(String[] args) {

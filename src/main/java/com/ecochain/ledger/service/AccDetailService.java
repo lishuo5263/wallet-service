@@ -171,7 +171,7 @@ public interface AccDetailService {
      * @throws Exception
      * @return: boolean
      */
-    PageData currencyExchange(PageData pd,String versionNo) throws Exception;
+    boolean currencyExchange(PageData pd,String versionNo) throws Exception;
     
     /**
      * @describe:分页查询账户流水

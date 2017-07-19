@@ -99,7 +99,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         }else{
             throw new RuntimeException("===================掉动态库失败================================");
         }*/
-        logger.info("创建用户结束**************************end**************************");
+        /*logger.info("创建用户结束**************************end**************************");
         
         logger.info("====================测试代码========start================");
         String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
@@ -111,7 +111,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         tpd.put("id", pd.get("user_id"));
         logger.info("调动态库tpd value="+tpd.toString());
         this.updateByIdSelective(tpd, versionNo);
-        logger.info("====================测试代码========end================");
+        logger.info("====================测试代码========end================");*/
         
         return true;
     }

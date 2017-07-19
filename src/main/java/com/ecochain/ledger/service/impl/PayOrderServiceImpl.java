@@ -160,15 +160,16 @@ public class PayOrderServiceImpl implements PayOrderService {
     @Transactional(propagation =Propagation.REQUIRED)
     public boolean applyWithDrawal(PageData pd,String versionNo) throws Exception {
         boolean addPayOrderResult = this.insertSelective(pd, Constant.VERSION_NO);
-        boolean withDrawalSubMoney = false;
+        boolean withDrawalSub = false;
         if(addPayOrderResult){
             PageData userWallet = new PageData();
             userWallet.put("user_id", String.valueOf(pd.get("user_id")));
             userWallet.put("money", pd.getString("money"));
-            withDrawalSubMoney = userWalletService.withDrawalSubMoney(userWallet);
+            userWallet.put("coin_name", pd.getString("coin_name"));
+            withDrawalSub = userWalletService.withDrawalSub(userWallet);
         }
-        logger.info("************申请提现*********总结果(addPayOrderResult&&withDrawalSubMoney):"+(addPayOrderResult&&withDrawalSubMoney));
-        return (addPayOrderResult&&withDrawalSubMoney);
+        logger.info("************申请提现*********总结果(addPayOrderResult&&withDrawalSubMoney):"+(addPayOrderResult&&withDrawalSub));
+        return (addPayOrderResult&&withDrawalSub);
     }
 
     @Override

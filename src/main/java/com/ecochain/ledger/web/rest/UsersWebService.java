@@ -168,11 +168,61 @@ public class UsersWebService extends BaseWebService {
                     return fastReturn("您已有此银行卡，请勿重复添加!",false,"您已有此银行卡，请勿重复添加！",CodeConstant.BANK_EXISTS);
                 }
                 UserCrad userCrad=new UserCrad();
-                userCrad.setBankName(pd.getString("bankName"));
-                userCrad.setCardNo(Integer.valueOf(pd.getString("cardNo")));
-                userCrad.setUserId(1);
                 userCrad.setStatus(1);
                 userCrad.setCreateTime(new Date());
+                userCrad.setBankName(pd.getString("bankName"));
+                userCrad.setCardNo(Integer.valueOf(pd.getString("cardNo")));
+                userCrad.setIsDefault(pd.getString("isDefault") != null ? pd.getString("isDefault"):"0");
+                if(userCardService.addBankCard(userCrad) > 0){
+                    return fastReturn(true,true,"添加银行卡成功！",CodeConstant.SC_OK);
+                }else{
+                    ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+                }
+            }else{
+                return fastReturn("缺少参数，添加银行卡失败!",false,"缺少参数，添加银行卡失败！",CodeConstant.PARAM_ERROR);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+        }
+        return ar;
+    }
+
+    /**
+     * @describe:设置默认银行卡
+     * @author: lisandro
+     * @date: 2017年7月18日22:34:01
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @ResponseBody
+    @GetMapping("/setDefaultCard")
+    @ApiOperation(nickname = "设置默认银行卡", value = "添加银行卡", notes = "设置默认银行卡")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cardNo", value = "卡号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "bankName", value = "银行名称", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "isDefault", value = "1为默认此卡", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+
+    })
+    public AjaxResponse setDefaultCard(HttpServletRequest request, Page page)throws Exception{
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("userId", String.valueOf(user.get("id")));
+            if(StringUtil.isNotEmpty(pd.getString("bankName"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))){
+                if(userCardService.findCardByCardNo(pd) > 0){
+                    return fastReturn("您已有此银行卡，请勿重复添加!",false,"您已有此银行卡，请勿重复添加！",CodeConstant.BANK_EXISTS);
+                }
+                UserCrad userCrad=new UserCrad();
+                userCrad.setStatus(1);
+                userCrad.setCreateTime(new Date());
+                userCrad.setBankName(pd.getString("bankName"));
+                userCrad.setCardNo(Integer.valueOf(pd.getString("cardNo")));
                 userCrad.setIsDefault(pd.getString("isDefault") != null ? pd.getString("isDefault"):"0");
                 if(userCardService.addBankCard(userCrad) > 0){
                     return fastReturn(true,true,"添加银行卡成功！",CodeConstant.SC_OK);

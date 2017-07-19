@@ -1,28 +1,5 @@
 package com.ecochain.ledger.web.rest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.annotation.LoginVerify;
@@ -34,25 +11,23 @@ import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.UserCardChargeInfo;
 import com.ecochain.ledger.model.UserCrad;
-import com.ecochain.ledger.service.SendVodeService;
-import com.ecochain.ledger.service.ShopOrderInfoService;
-import com.ecochain.ledger.service.SysGenCodeService;
-import com.ecochain.ledger.service.UserCardChargeInfoService;
-import com.ecochain.ledger.service.UserCardService;
-import com.ecochain.ledger.service.UserLoginService;
-import com.ecochain.ledger.service.UserService;
-import com.ecochain.ledger.service.UsersDetailsService;
-import com.ecochain.ledger.util.AjaxResponse;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.*;
 import com.ecochain.ledger.util.Base64;
-import com.ecochain.ledger.util.InternetUtil;
-import com.ecochain.ledger.util.MD5Util;
-import com.ecochain.ledger.util.RequestUtils;
-import com.ecochain.ledger.util.SessionUtil;
-import com.ecochain.ledger.util.StringUtil;
-import com.ecochain.ledger.util.Validator;
 import com.ecochain.ledger.util.sms.SMSUtil;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /*
  * 总入口
@@ -72,7 +47,7 @@ public class UsersWebService extends BaseWebService {
     private ShopOrderInfoService shopOrderInfoService;
     @Autowired
     private SysGenCodeService sysGenCodeService;
-    
+    @Autowired
     private UserCardService userCardService;
     @Autowired
     private UserCardChargeInfoService userCardChargeInfoService;
@@ -200,6 +175,7 @@ public class UsersWebService extends BaseWebService {
                 userCrad.setBankName(pd.getString("bankName"));
                 userCrad.setCardNo(Integer.valueOf(pd.getString("cardNo")));
                 userCrad.setIsDefault(pd.getString("isDefault") != null ? pd.getString("isDefault"):"0");
+                userCrad.setUserId(Integer.valueOf(pd.getString("userId")));
                 if(userCardService.addBankCard(userCrad) > 0){
                     return fastReturn(true,true,"添加银行卡成功！",CodeConstant.SC_OK);
                 }else{
@@ -228,8 +204,6 @@ public class UsersWebService extends BaseWebService {
     @ApiOperation(nickname = "设置默认银行卡", value = "添加银行卡", notes = "设置默认银行卡")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "cardNo", value = "卡号", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "bankName", value = "银行名称", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "isDefault", value = "1为默认此卡", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
 
     })
@@ -241,27 +215,18 @@ public class UsersWebService extends BaseWebService {
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             pd.put("userId", String.valueOf(user.get("id")));
-            if(StringUtil.isNotEmpty(pd.getString("bankName"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))&&StringUtil.isNotEmpty(pd.getString("cardNo"))){
-                if(userCardService.findCardByCardNo(pd) > 0){
-                    return fastReturn("您已有此银行卡，请勿重复添加!",false,"您已有此银行卡，请勿重复添加！",CodeConstant.BANK_EXISTS);
-                }
-                UserCrad userCrad=new UserCrad();
-                userCrad.setStatus(1);
-                userCrad.setCreateTime(new Date());
-                userCrad.setBankName(pd.getString("bankName"));
-                userCrad.setCardNo(Integer.valueOf(pd.getString("cardNo")));
-                userCrad.setIsDefault(pd.getString("isDefault") != null ? pd.getString("isDefault"):"0");
-                if(userCardService.addBankCard(userCrad) > 0){
-                    return fastReturn(true,true,"添加银行卡成功！",CodeConstant.SC_OK);
+            if(StringUtil.isNotEmpty(pd.getString("cardNo"))) {
+                /*if(userCardService.setDefaultCard(pd)){
+                    ar = fastReturn("设置默认银行卡成功！", true, "设置默认银行卡成功！", CodeConstant.SYS_ERROR);
                 }else{
-                    ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+                    ar = fastReturn("系统异常,设置默认银行卡失败！", false, "系统异常,设置默认银行卡失败！", CodeConstant.SYS_ERROR);
                 }
             }else{
-                return fastReturn("缺少参数，添加银行卡失败!",false,"缺少参数，添加银行卡失败！",CodeConstant.PARAM_ERROR);
+                return fastReturn("缺少参数，设置默认银行卡失败!",false,"缺少参数，设置默认银行卡失败！",CodeConstant.PARAM_ERROR);*/
             }
         }catch (Exception e){
             e.printStackTrace();
-            ar = fastReturn("系统异常,添加银行卡失败！", false, "系统异常,添加银行卡失败！", CodeConstant.SYS_ERROR);
+            ar = fastReturn("系统异常,设置默认银行卡失败！", false, "系统异常,设置默认银行卡失败！", CodeConstant.SYS_ERROR);
         }
         return ar;
     }

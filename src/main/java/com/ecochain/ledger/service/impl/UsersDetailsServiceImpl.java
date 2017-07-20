@@ -9,20 +9,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.SysGenCodeService;
 import com.ecochain.ledger.service.UsersDetailsService;
-import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.Logger;
+import com.ecochain.ledger.util.RestUtil;
 import com.github.pagehelper.PageHelper;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-
-import java.util.List;
 
 @Service("userDetailsService")
 public class UsersDetailsServiceImpl implements UsersDetailsService{
@@ -30,6 +24,8 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
     private Logger logger = Logger.getLogger(this.getClass());
     @Resource(name = "daoSupport")
     private DaoSupport dao;
+    @Resource
+    private SysGenCodeService sysGenCodeService;
     
     @Override
     public PageData getUserByAccAndPass(PageData pd, String versionNo) throws Exception {
@@ -62,14 +58,14 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         pd.put("money", 1000000);
         dao.save("UserWalletMapper.insertSelective", pd);
         
-        StringBuffer buf = new StringBuffer();
+        /* StringBuffer buf = new StringBuffer();
         while(buf.length()<32){
             buf.append(pd.get("user_id")+pd.getString("account"));
         }
         String seedsStr = buf.substring(0, 32)+"\0";
         logger.info("seeds="+seedsStr);
         
-        /*byte[] seedsByte = seedsStr.getBytes();
+        byte[] seedsByte = seedsStr.getBytes();
         byte[] pubkeyByte = new byte[64];
         byte[] prikeyByte = new byte[64];
         byte[] errmsgByte = new byte[64];
@@ -113,6 +109,23 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         this.updateByIdSelective(tpd, versionNo);
         logger.info("====================测试代码========end================");*/
         
+        logger.info("===========注册创建钱包=========区块链钱包接口调用========start================");
+        String kql_url =null;
+        List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
+        for(PageData mapObj:codeList){
+            if("QKL_URL".equals(mapObj.get("code_name"))){
+                kql_url = mapObj.get("code_value").toString();
+            }
+        }
+        String jsonStr = RestUtil.restPostPath(kql_url+"/test/create/"+pd.getString("account")+"/"+pd.getString("password"));
+        JSONObject jsonObj = JSONObject.parseObject(jsonStr);
+        PageData tpd = new PageData();
+        tpd.put("public_key", jsonObj.getString("data"));
+        tpd.put("address", jsonObj.getString("data"));
+        tpd.put("id", pd.get("user_id"));
+        logger.info("调动态库tpd value="+tpd.toString());
+        this.updateByIdSelective(tpd, versionNo);
+        logger.info("==========注册创建钱包==========区块链钱包接口调用========end================");
         return true;
     }
 

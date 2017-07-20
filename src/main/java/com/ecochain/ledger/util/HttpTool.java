@@ -130,7 +130,7 @@ public class HttpTool {
         httpURLConnection.setDoOutput(true);
         httpURLConnection.setRequestMethod("POST");
         httpURLConnection.setRequestProperty("Accept-Charset", "utf-8");
-        httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//        httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
         httpURLConnection.setRequestProperty("Content-Length", String.valueOf(parameterData.length()));
 
@@ -202,11 +202,12 @@ public class HttpTool {
             System.out.println("get_data_from_sys -------------->"+getBlockInfo);
         }*/
 
-        StringBuffer stringBuffer = new StringBuffer().append("\"").append("e3230f30c2b53f8d6b6a44dd2eb5a5eef255b1234dfcbcd5899396f77ac5def1").append("\"");
+        /*StringBuffer stringBuffer = new StringBuffer().append("\"").append("e3230f30c2b53f8d6b6a44dd2eb5a5eef255b1234dfcbcd5899396f77ac5def1").append("\"");
         String getBlockInfo = doPost("http://192.168.10.47:8332/get_data_from_sys", stringBuffer.toString());
         Map m = (Map) com.alibaba.fastjson.JSON.parse(getBlockInfo);
         Map m3 = (Map) com.alibaba.fastjson.JSON.parse(com.alibaba.fastjson.JSON.parse(m.get("result").toString()).toString());
         System.out.println(m);
-        System.out.println(m3);
+        System.out.println(m3);*/
+       System.out.println(doPost("http://192.168.200.86:8001/test/create/张春明011/20917c851c4a54f2a054390dac9085b7", "")); 
     }
 }

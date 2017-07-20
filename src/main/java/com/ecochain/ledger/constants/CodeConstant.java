@@ -520,4 +520,8 @@ public interface CodeConstant {
 	 * 人民币不正确
 	 */
 	public final short ERROR_RMB =-118;
+	/**
+     * 银行卡号已绑定
+     */
+	public final short ERROR_BANK_BINDED =-119;
 }

@@ -1,8 +1,10 @@
 package com.ecochain.ledger.mapper;
 
-import com.ecochain.ledger.model.DigitalCoin;
-
+import java.util.List;
 import java.util.Map;
+
+import com.ecochain.ledger.model.DigitalCoin;
+import com.ecochain.ledger.model.PageData;
 
 public interface DigitalCoinMapper {
     int deleteByPrimaryKey(Integer id);
@@ -18,4 +20,6 @@ public interface DigitalCoinMapper {
     int updateByPrimaryKey(DigitalCoin record);
 
     Map getCoinPrice(String coinName);
+    
+    List<PageData> getAllCoinPrice();
 }

@@ -5,20 +5,30 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 import tk.mybatis.mapper.util.StringUtil;
+
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.annotation.LoginVerify;
 import com.ecochain.ledger.base.BaseWebService;
@@ -325,8 +335,9 @@ public class AccWebSerivce extends BaseWebService{
     @ApiImplicitParams({
         @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "coin_name", value = "币种名称", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "revbankaccno", value = "银行账号", required = true, paramType = "query", dataType = "String"),
-        @ApiImplicitParam(name = "revbankdepname", value = "开户行", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "address", value = "提现地址", required = false, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "revbankaccno", value = "银行账号", required = false, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "revbankdepname", value = "开户行", required = false, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "amount", value = "提现数量", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "network_fee", value = "网络手续费", required = false, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "trans_password", value = "资金密码", required = true, paramType = "query", dataType = "String"),
@@ -340,6 +351,7 @@ public class AccWebSerivce extends BaseWebService{
             logger.info("**************提现*******pd value is "+pd.toString());
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("account", user.getString("account"));
             pd.put("user_id", String.valueOf(user.get("id")));
 //            String userType = user.getString("user_type");
             /*boolean hasWithDrawaling = payOrderService.isHasWithDrawaling(String.valueOf(user.get("id")));
@@ -387,13 +399,13 @@ public class AccWebSerivce extends BaseWebService{
                     ar.setErrorCode(CodeConstant.PARAM_ERROR);
                     return ar;
                 }
-                if(!Validator.isMoney2(pd.getString("amount"))){
+                if(!Validator.isMoney4(pd.getString("amount"))){
                     ar.setSuccess(false);
                     ar.setMessage("提币数量格式有误，请按提示输入");
                     ar.setErrorCode(CodeConstant.PARAM_ERROR);
                     return ar;
                 }
-                if(!StringUtil.isEmpty(pd.getString("network_fee"))){
+                if(StringUtil.isEmpty(pd.getString("network_fee"))){
                     ar.setSuccess(false);
                     ar.setMessage("请输入网络手续费！");
                     ar.setErrorCode(CodeConstant.PARAM_ERROR);
@@ -415,12 +427,12 @@ public class AccWebSerivce extends BaseWebService{
                 return ar;
             }
             
-            if(StringUtil.isEmpty(pd.getString("pay_type"))){
+            /*if(StringUtil.isEmpty(pd.getString("pay_type"))){
                 ar.setSuccess(false);
                 ar.setMessage("请选择提现账号");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }
+            }*/
             /*if("1".equals(pd.getString("pay_type"))){//1-支付宝 2-微信 3-银联  
                if(StringUtil.isEmpty(pd.getString("revbankaccno"))){//提现账号（支付宝/银行卡号）
                    ar.setSuccess(false);
@@ -483,42 +495,42 @@ public class AccWebSerivce extends BaseWebService{
             
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
             if("RMB".equals(pd.getString("coin_name"))){
-                if((new BigDecimal(pd.getString("money"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("money"))))>0){
+                if((new BigDecimal(pd.getString("amount"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("money"))))>0){
                     ar.setSuccess(false);
                     ar.setMessage("您的余额不足！");
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
             }else if("BTC".equals(pd.getString("coin_name"))){
-                if((new BigDecimal(pd.getString("money"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("btc_amnt"))))>0){
+                if((new BigDecimal(pd.getString("amount"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("btc_amnt"))))>0){
                     ar.setSuccess(false);
                     ar.setMessage("您的余额不足！");
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
             }else if("LTC".equals(pd.getString("coin_name"))){
-                if((new BigDecimal(pd.getString("money"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("ltc_amnt"))))>0){
+                if((new BigDecimal(pd.getString("amount"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("ltc_amnt"))))>0){
                     ar.setSuccess(false);
                     ar.setMessage("您的余额不足！");
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
             }else if("ETH".equals(pd.getString("coin_name"))){
-                if((new BigDecimal(pd.getString("money"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("eth_amnt"))))>0){
+                if((new BigDecimal(pd.getString("amount"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("eth_amnt"))))>0){
                     ar.setSuccess(false);
                     ar.setMessage("您的余额不足！");
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
             }else if("ETC".equals(pd.getString("coin_name"))){
-                if((new BigDecimal(pd.getString("money"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("etc_amnt"))))>0){
+                if((new BigDecimal(pd.getString("amount"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("etc_amnt"))))>0){
                     ar.setSuccess(false);
                     ar.setMessage("您的余额不足！");
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
             }else if("HLC".equals(pd.getString("coin_name"))){
-                if((new BigDecimal(pd.getString("money"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("hlc_amnt"))))>0){
+                if((new BigDecimal(pd.getString("amount"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("hlc_amnt"))))>0){
                     ar.setSuccess(false);
                     ar.setMessage("您的余额不足！");
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
@@ -597,7 +609,7 @@ public class AccWebSerivce extends BaseWebService{
            /* if(StringUtil.isNotEmpty(pd.getString("name"))){
                 pd.put("remark2", pd.getString("name"));//持卡人姓名或支付宝姓名
             }*/
-            pd.put("txamnt", pd.getString("money"));//1-人民币 2-BTC 3-LTC 4-ETH 5-ETC 6-HLC
+            pd.put("txamnt", pd.getString("amount"));//1-人民币 2-BTC 3-LTC 4-ETH 5-ETC 6-HLC
             pd.put("status", "1");//0-待审核 1-成功 2-失败（无需审核直接成功！）
             pd.put("txdate", DateUtil.getCurrDateTime());
             pd.put("confirm_time", pd.getString("txdate"));//确认时间（无需审核直接成功！）
@@ -754,11 +766,63 @@ public class AccWebSerivce extends BaseWebService{
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
-            Map<String,Object> map= digitalCoinService.getCoinPrice("HLC");
-            String coinPrice  = map.get("coin_rate").toString().split(":")[0];
-            String hlb_amnt =String.valueOf(userWallet.get("hlb_amnt"));
-            BigDecimal totalMoney = new BigDecimal(hlb_amnt).multiply(new BigDecimal(coinPrice)).add(new BigDecimal(String.valueOf(userWallet.get("money"))));
+            BigDecimal totalMoney = new BigDecimal(String.valueOf(userWallet.get("money")));
+            List<PageData> listCoin = digitalCoinService.getAllCoinPrice();
+            BigDecimal hlc_money = new BigDecimal("0");
+            BigDecimal btc_money = new BigDecimal("0");
+            BigDecimal ltc_money = new BigDecimal("0");
+            BigDecimal eth_money = new BigDecimal("0");
+            BigDecimal etc_money = new BigDecimal("0");
+            for(PageData coin:listCoin){
+                if("HLC".equals(coin.getString("coin_name"))){//合链币
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    userWallet.put("hlc_rate", coinPrice);
+                    String hlc_amnt =String.valueOf(userWallet.get("hlc_amnt"));
+                    hlc_money = new BigDecimal(hlc_amnt).multiply(new BigDecimal(coinPrice));
+                    totalMoney = hlc_money.add(totalMoney);
+                }else if("BTC".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    userWallet.put("btc_rate", coinPrice);
+                    String btc_amnt =String.valueOf(userWallet.get("btc_amnt"));
+                    btc_money = new BigDecimal(btc_amnt).multiply(new BigDecimal(coinPrice));
+                    totalMoney = btc_money.add(totalMoney);
+                    userWallet.put("btc_address", user.getString("address"));
+                }else if("LTC".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    userWallet.put("ltc_rate", coinPrice);
+                    String ltc_amnt =String.valueOf(userWallet.get("ltc_amnt"));
+                    ltc_money = new BigDecimal(ltc_amnt).multiply(new BigDecimal(coinPrice));
+                    totalMoney = ltc_money.add(totalMoney);
+                }else if("ETH".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    userWallet.put("eth_rate", coinPrice);
+                    String eth_amnt =String.valueOf(userWallet.get("eth_amnt"));
+                    eth_money = new BigDecimal(eth_amnt).multiply(new BigDecimal(coinPrice));
+                    totalMoney = eth_money.add(totalMoney);
+                }else if("ETC".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    userWallet.put("etc_rate", coinPrice);
+                    String etc_amnt =String.valueOf(userWallet.get("etc_amnt"));
+                    etc_money = new BigDecimal(etc_amnt).multiply(new BigDecimal(coinPrice));
+                    totalMoney = etc_money.add(totalMoney);
+                }
+            }
+            String hlc_percent = hlc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
+            String btc_percent = btc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
+            String ltc_percent = ltc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
+            String eth_percent = eth_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
+            String etc_percent = etc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
+           
+            String money = String.valueOf(userWallet.get("money"));
+            String money_percent = new BigDecimal(money).multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
+            userWallet.put("hlc_percent", hlc_percent);
+            userWallet.put("btc_percent", btc_percent);
+            userWallet.put("ltc_percent", ltc_percent);
+            userWallet.put("eth_percent", eth_percent);
+            userWallet.put("etc_percent", etc_percent);
+            userWallet.put("money_percent", money_percent);
             userWallet.put("totalMoney", totalMoney);
+            
             data.put("userWallet", userWallet);
             ar.setData(data);
             ar.setSuccess(true);
@@ -814,9 +878,15 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            if(!Validator.isMoney(pd.getString("money"))){
+            if(!Validator.isMoney4(pd.getString("money"))){
                 ar.setSuccess(false);
-                ar.setMessage("转账金额必须为正整数");
+                ar.setMessage("转账金额格式有误！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            if(new BigDecimal(pd.getString("money")).compareTo(new BigDecimal("0"))==0){
+                ar.setSuccess(false);
+                ar.setMessage("转账金额不得为0！");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
@@ -1079,15 +1149,15 @@ public class AccWebSerivce extends BaseWebService{
      * @param response
      * @return: AjaxResponse
      */
-    @LoginVerify
+    /*@LoginVerify
     @RequestMapping(value="/toTransferAcc", method=RequestMethod.POST)
     @ResponseBody
     public AjaxResponse toTransferAcc(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String, Object>();
         try {
-            /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             String userType = user.getString("user_type");
@@ -1135,7 +1205,7 @@ public class AccWebSerivce extends BaseWebService{
             ar.setMessage("网络繁忙，请稍候重试！");
         }   
         return ar;
-    }
+    }*/
     /**
      * @describe:跳往提现页面
      * @author: zhangchunming
@@ -1568,6 +1638,12 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
+            if(new BigDecimal(pd.getString("exchange_num")).compareTo(new BigDecimal("0"))==0){
+                ar.setSuccess(false);
+                ar.setMessage("兑换数额不得为0！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
             Map<String,Object> map= digitalCoinService.getCoinPrice(pd.getString("coin_name"));
             String coinPrice  = map.get("coin_rate").toString().split(":")[0];
@@ -1614,7 +1690,7 @@ public class AccWebSerivce extends BaseWebService{
                 }
                 data.put("coin_name", pd.getString("coin_name"));
                 data.put("remark1","兑换-"+pd.getString("coin_name"));//说明
-                data.put("remark4", pd.getString("remark4"));//备注
+//                data.put("remark4", pd.getString("remark4"));//备注
 //                data.put("hash",currencyExchange.getString("hash"));
                 ar.setData(data);
                 ar.setSuccess(true);
@@ -1756,7 +1832,7 @@ public class AccWebSerivce extends BaseWebService{
     
     @LoginVerify
     @PostMapping("/addBank")
-    @ApiOperation(nickname = "添加银行卡", value = "添加银行卡", notes = "添加银行卡")
+    @ApiOperation(nickname = "添加银行卡", value = "添加银行卡", notes = "添加银行卡，错误码：-15参数错误（按返回信息提示）、-34网络繁忙！、-49绑定失败！、-119此卡号已绑定，请勿重复绑定！")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
         @ApiImplicitParam(name = "bank_name", value = "开户行", required = true, paramType = "query", dataType = "String"),
@@ -1783,6 +1859,13 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setSuccess(false);
                 return ar;
             }
+            boolean exist = userBankService.isExist(pd);
+            if(exist){
+                ar.setMessage("此卡号已绑定，请勿重复绑定！");
+                ar.setErrorCode(CodeConstant.ERROR_BANK_BINDED);
+                ar.setSuccess(false);
+                return ar;
+            }
             boolean insert = userBankService.insert(pd);
             if(insert){
                 ar.setData(data);
@@ -1800,6 +1883,94 @@ public class AccWebSerivce extends BaseWebService{
             ar.setSuccess(false);
             ar.setErrorCode(CodeConstant.SYS_ERROR);
             ar.setMessage("网络繁忙，请稍候重试！");
+        }   
+        return ar;
+    }
+    
+    
+    /**
+     * @describe:设置默认银行卡
+     * @author: lisandro
+     * @date: 2017年7月18日22:34:01
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @PostMapping("/setDefaultCard")
+    @ApiOperation(nickname = "设置默认银行卡", value = "设置默认银行卡", notes = "设置默认银行卡")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "主键", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "is_default", value = "1为默认此卡", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+
+    })
+    public AjaxResponse setDefaultCard(HttpServletRequest request)throws Exception{
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            pd.put("user_id", String.valueOf(user.get("id")));
+            if(StringUtil.isEmpty(pd.getString("id"))){
+                ar.setMessage("请输入ID！");
+                ar.setSuccess(false);
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            boolean setDefault = userBankService.setDefault(pd);
+            if(setDefault){
+                ar.setMessage("设置成功！");
+                ar.setSuccess(true);
+                return ar;
+            }else{
+                ar.setErrorCode(CodeConstant.UPDATE_FAIL);
+                ar.setMessage("设置失败！");
+                ar.setSuccess(true);
+                return ar;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+            ar.setMessage("网络繁忙，请稍候重试！");
+        }
+        return ar;
+    }
+    
+    
+    
+    @PostMapping("/rechargeBTC")
+    @ApiOperation(nickname = "充值比特币", value = "充值比特币", notes = "充值比特币")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "address", value = "充值地址", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse rechargeBTC(HttpServletRequest request,HttpServletResponse response){
+        logBefore(logger, "----------充值BTC----recharge");
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd =  new PageData();
+        pd = this.getPageData();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+            headers.setContentType(type);
+            headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+            HttpEntity<String> formEntity = new HttpEntity<String>(pd.getString("address"), headers);
+            String result = null;
+            for (int i = 0; i < 10; i++) {
+                result = restTemplate.postForObject("http://faucet.xeno-genesis.com/", formEntity, String.class);
+            }
+            ar.setMessage(result);
+            ar.setSuccess(true);
+            return ar;
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+            ar.setMessage("网络繁忙，请稍候重试！");
+        }finally{
+            logAfter(logger);
         }   
         return ar;
     }

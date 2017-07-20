@@ -199,17 +199,17 @@ public class AccDetailServiceImpl implements AccDetailService {
         boolean companySubCoin = false;
         if("1".equals(pd.getString("buy_in_out"))){//买进，人民币减少，虚拟币增加
             exchangeResult = userWalletService.exchangeRMB2Coin(pd);
-            logger.info("用户买进虚拟币，exchangeResult is"+exchangeResult);
+            logger.info("用户买进虚拟币，exchangeResult is "+exchangeResult);
             if(exchangeResult){
                 companySubCoin = userWalletService.companySubCoin(pd); 
-                logger.info("用户买进虚拟币，companySubCoin is"+companySubCoin);
+                logger.info("用户买进虚拟币，companySubCoin is "+companySubCoin);
             }
         }else if("2".equals(pd.getString("buy_in_out"))){//卖出，人民币增加，虚拟币减少
             exchangeResult = userWalletService.exchangeCoin2RMB(pd);
-            logger.info("用户卖出虚拟币，exchangeResult is"+exchangeResult);
+            logger.info("用户卖出虚拟币，exchangeResult is "+exchangeResult);
             if(exchangeResult){
                 companySubCoin = userWalletService.companyAddCoin(pd);
-                logger.info("用户卖出虚拟币，companySubCoin is"+companySubCoin);
+                logger.info("用户卖出虚拟币，companySubCoin is "+companySubCoin);
             }
         }
        /* //插入账户流水

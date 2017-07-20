@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PayOrderMapper" >
+  <sql id="Base_Column_List" >
+    id, pay_no, rela_payno, order_no, fee_type, fee_rate,pay_type, cuy_type, txamnt, txdate, rela_amnt,rela_cuytype,status, 
+    user_id,revorgname, revbankaccno, revbankdepname, bank_tradeno,bank_tradestatus,create_time, modify_time,confirm_time, operator, remark1, 
+    remark2, remark3, remark4, remark5,is_lock,pay_hash
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from pay_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+   <select id="selectByPayno" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.String" >
+    select 
+	    id, pay_no, rela_payno, order_no, fee_type, fee_rate,pay_type, cuy_type, round(txamnt,2)txamnt, txdate, round(rela_amnt,2)rela_amnt,rela_cuytype,status, 
+	    user_id,revorgname, revbankaccno, revbankdepname, bank_tradeno,bank_tradestatus,substring(create_time,1,19)create_time, modify_time,confirm_time, operator, remark1, 
+	    remark2, remark3, remark4, remark5,is_lock
+    from pay_order
+    where pay_no = #{pay_no,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from pay_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into pay_order (pay_no, rela_payno, 
+      order_no, fee_type,fee_rate, pay_type, 
+      cuy_type, txamnt, txdate, rela_amnt,rela_cuytype,
+      status, user_id,revorgname, revbankaccno, 
+      revbankdepname,bank_tradeno,bank_tradestatus, create_time, modify_time,confirm_time,
+      operator, remark1, remark2, 
+      remark3, remark4, remark5
+      )
+    values (#{pay_no,jdbcType=VARCHAR}, #{rela_payno,jdbcType=VARCHAR}, 
+      #{order_no,jdbcType=VARCHAR}, #{fee_type,jdbcType=VARCHAR},#{fee_rate,jdbcType=VARCHAR}, #{pay_type,jdbcType=VARCHAR}, 
+      #{cuy_type,jdbcType=VARCHAR}, #{txamnt,jdbcType=DECIMAL}, #{txdate,jdbcType=TIMESTAMP}, 
+      #{rela_amnt},#{rela_cuytype},
+      #{status,jdbcType=VARCHAR},#{user_id}, #{revorgname,jdbcType=VARCHAR}, #{revbankaccno,jdbcType=VARCHAR}, 
+      #{revbankdepname,jdbcType=VARCHAR}, #{bank_tradeno,jdbcType=VARCHAR}, #{bank_tradestatus,jdbcType=VARCHAR}, now(), now(),#{confirm_time},
+      #{operator,jdbcType=VARCHAR}, #{remark1,jdbcType=VARCHAR}, #{remark2,jdbcType=VARCHAR}, 
+      #{remark3,jdbcType=VARCHAR}, #{remark4,jdbcType=VARCHAR}, #{remark5,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into pay_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pay_no != null" >
+        pay_no,
+      </if>
+      <if test="rela_payno != null" >
+        rela_payno,
+      </if>
+      <if test="order_no != null" >
+        order_no,
+      </if>
+      <if test="fee_type != null" >
+        fee_type,
+      </if>
+       <if test="fee_rate != null" >
+        fee_rate,
+      </if>
+      <if test="pay_type != null" >
+        pay_type,
+      </if>
+      <if test="cuy_type != null" >
+        cuy_type,
+      </if>
+      <if test="txamnt != null" >
+        txamnt,
+      </if>
+      <if test="txdate != null" >
+        txdate,
+      </if>
+      <if test="rela_amnt != null" >
+        rela_amnt,
+      </if>
+      <if test="rela_cuytype != null" >
+        rela_cuytype,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="user_id != null" >
+        user_id,
+      </if>
+      <if test="revorgname != null" >
+        revorgname,
+      </if>
+      <if test="revbankaccno != null" >
+        revbankaccno,
+      </if>
+      <if test="revbankdepname != null" >
+        revbankdepname,
+      </if>
+       <if test="bank_tradeno != null" >
+        bank_tradeno,
+      </if>
+      <if test="bank_tradestatus != null" >
+        bank_tradestatus,
+      </if>
+        create_time,
+        modify_time,
+       <if test="confirm_time != null" >
+        confirm_time,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="pay_hash != null" >
+        pay_hash,
+      </if>
+      <if test="remark1 != null" >
+        remark1,
+      </if>
+      <if test="remark2 != null" >
+        remark2,
+      </if>
+      <if test="remark3 != null" >
+        remark3,
+      </if>
+      <if test="remark4 != null" >
+        remark4,
+      </if>
+      <if test="remark5 != null" >
+        remark5,
+      </if>     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pay_no != null" >
+        #{pay_no,jdbcType=VARCHAR},
+      </if>
+      <if test="rela_payno != null" >
+        #{rela_payno,jdbcType=VARCHAR},
+      </if>
+      <if test="order_no != null" >
+        #{order_no,jdbcType=VARCHAR},
+      </if>
+      <if test="fee_type != null" >
+        #{fee_type,jdbcType=VARCHAR},
+      </if>
+      <if test="fee_rate != null" >
+        #{fee_rate,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_type != null" >
+        #{pay_type,jdbcType=VARCHAR},
+      </if>
+      <if test="cuy_type != null" >
+        #{cuy_type,jdbcType=VARCHAR},
+      </if>
+      <if test="txamnt != null" >
+        #{txamnt,jdbcType=DECIMAL},
+      </if>
+      <if test="txdate != null" >
+        #{txdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rela_amnt != null" >
+        #{rela_amnt},
+      </if>
+      <if test="rela_cuytype != null" >
+        #{rela_cuytype},
+      </if>     
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+        <if test="user_id != null" >
+        #{user_id,jdbcType=VARCHAR},
+      </if>
+      <if test="revorgname != null" >
+        #{revorgname,jdbcType=VARCHAR},
+      </if>
+      <if test="revbankaccno != null" >
+        #{revbankaccno,jdbcType=VARCHAR},
+      </if>
+      <if test="revbankdepname != null" >
+        #{revbankdepname,jdbcType=VARCHAR},
+      </if>
+      <if test="bank_tradeno != null" >
+        #{bank_tradeno,jdbcType=VARCHAR},
+      </if>
+      <if test="bank_tradestatus != null" >
+        #{bank_tradestatus,jdbcType=VARCHAR},
+      </if>
+        now(),
+        now(),
+      <if test="confirm_time != null" >
+        #{confirm_time},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_hash != null" >
+        #{pay_hash,jdbcType=VARCHAR},
+      </if>
+      <if test="remark1 != null" >
+        #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark3 != null" >
+        #{remark3,jdbcType=VARCHAR},
+      </if>
+      <if test="remark4 != null" >
+        #{remark4,jdbcType=VARCHAR},
+      </if>
+      <if test="remark5 != null" >
+        #{remark5,jdbcType=VARCHAR},
+      </if>    
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update pay_order
+    <set >  
+      <if test="rela_payno != null" >
+        rela_payno = #{rela_payno,jdbcType=VARCHAR},
+      </if>
+      <if test="order_no != null" >
+        order_no = #{order_no,jdbcType=VARCHAR},
+      </if>
+      <if test="fee_type != null" >
+        fee_type = #{fee_type,jdbcType=VARCHAR},
+      </if>
+       <if test="fee_rate != null" >
+        fee_rate = #{fee_rate,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_type != null" >
+        pay_type = #{pay_type,jdbcType=VARCHAR},
+      </if>
+      <if test="cuy_type != null" >
+        cuy_type = #{cuy_type,jdbcType=VARCHAR},
+      </if>
+      <if test="txamnt != null" >
+        txamnt = #{txamnt,jdbcType=DECIMAL},
+      </if>
+      <if test="txdate != null" >
+        txdate = #{txdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rela_amnt != null" >
+        rela_amnt = #{rela_amnt},
+      </if>
+      <if test="rela_cuytype != null" >
+        rela_cuytype = #{rela_cuytype},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+       <if test="user_id != null" >
+        user_id = #{user_id,jdbcType=VARCHAR},
+      </if>
+      <if test="revorgname != null" >
+        revorgname = #{revorgname,jdbcType=VARCHAR},
+      </if>
+      <if test="revbankaccno != null" >
+        revbankaccno = #{revbankaccno,jdbcType=VARCHAR},
+      </if>
+      <if test="revbankdepname != null" >
+        revbankdepname = #{revbankdepname,jdbcType=VARCHAR},
+      </if>
+      <if test="bank_tradeno != null" >
+        bank_tradeno = #{bank_tradeno,jdbcType=VARCHAR},
+      </if>
+      <if test="bank_tradestatus != null" >
+        bank_tradestatus = #{bank_tradestatus,jdbcType=VARCHAR},
+      </if>
+       <if test="confirm_time != null" >
+        confirm_time = #{confirm_time},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="remark1 != null" >
+        remark1 = #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        remark2 = #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark3 != null" >
+        remark3 = #{remark3,jdbcType=VARCHAR},
+      </if>
+      <if test="remark4 != null" >
+        remark4 = #{remark4,jdbcType=VARCHAR},
+      </if>
+      <if test="remark5 != null" >
+        remark5 = #{remark5,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where pay_no = #{pay_no,jdbcType=VARCHAR}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update pay_order
+    set pay_no = #{pay_no,jdbcType=VARCHAR},
+      rela_payno = #{rela_payno,jdbcType=VARCHAR},
+      order_no = #{order_no,jdbcType=VARCHAR},
+      fee_type = #{fee_type,jdbcType=VARCHAR},
+      fee_rate = #{fee_rate,jdbcType=VARCHAR},
+      pay_type = #{pay_type,jdbcType=VARCHAR},
+      cuy_type = #{cuy_type,jdbcType=VARCHAR},
+      txamnt = #{txamnt,jdbcType=DECIMAL},
+      txdate = #{txdate,jdbcType=TIMESTAMP},
+      rela_amnt = #{rela_amnt,jdbcType=DECIMAL},
+      rela_cuytype = #{rela_cuytype,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      user_id = #{user_id,jdbcType=VARCHAR},
+      revorgname = #{revorgname,jdbcType=VARCHAR},
+      revbankaccno = #{revbankaccno,jdbcType=VARCHAR},
+      revbankdepname = #{revbankdepname,jdbcType=VARCHAR},
+      bank_tradeno = #{bank_tradeno,jdbcType=VARCHAR},
+      bank_tradestatus = #{bank_tradestatus,jdbcType=VARCHAR},         
+      confirm_time = #{confirm_time,jdbcType=VARCHAR},
+      operator = #{operator,jdbcType=VARCHAR},
+      remark1 = #{remark1,jdbcType=VARCHAR},
+      remark2 = #{remark2,jdbcType=VARCHAR},
+      remark3 = #{remark3,jdbcType=VARCHAR},
+      remark4 = #{remark4,jdbcType=VARCHAR},
+      remark5 = #{remark5,jdbcType=VARCHAR}    
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateStatusByPayNo" parameterType="com.ecochain.ledger.model.PageData">
+    update pay_order
+    <set >
+        <if test="status != null" >
+            status = #{status},
+        </if>
+        <if test="bank_tradeno != null" >
+            bank_tradeno = #{bank_tradeno},
+        </if>
+        <if test="bank_tradestatus != null" >
+            bank_tradestatus = #{bank_tradestatus},
+        </if>
+        <if test="confirm_time != null" >
+            confirm_time = #{confirm_time},
+        </if>
+    </set>
+    where pay_no = #{pay_no}
+  </update>
+    <!--分页查询提现记录 -->
+  <!-- <select id="listPageWithDrawal" parameterType="page" resultType="com.ecochain.ledger.model.PageData">
+    select pay_no,substring(txdate,1,19) txdate,ROUND(txamnt,2)txamnt,
+    case when pay_type = '1' then CONCAT('支付宝（',revbankaccno,'）') when pay_type='2' then CONCAT('微信（',revbankaccno,'）') when pay_type='3' then CONCAT(revorgname,'（尾号',RIGHT(revbankaccno,4),'）') end pay_type ,
+	case when status = '0' or status = '3' then '处理中' when status='1' then '提现成功' when status='2' then '提现失败' end status 
+	from pay_order 
+	where fee_type = '2'
+	and user_id = #{pd.user_id}
+	order by create_time desc
+  </select> -->
+  <update id="updateWithDrawalSuccess">
+        update pay_order set confirm_time = NOW() where `status` = '1' and fee_type = '2'
+  </update>
+  <select id="isLockPayOrder" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from pay_order where pay_no = #{pay_no} and is_lock = '1'
+  </select>
+  <update id="lockPayOrder" parameterType="java.lang.String">
+      update pay_order set is_lock = '1' where pay_no = #{pay_no}
+  </update>
+  <update id="unlockPayOrder" parameterType="java.lang.String">
+      update pay_order set is_lock = '0' where pay_no = #{pay_no}
+  </update>
+    <!--提现成功或者拒绝时设置确认时间 -->
+  <update id="updateConfirmTime">
+      update pay_order set confirm_time = NOW() where fee_type = '2' and  `status` = '1' and confirm_time is null
+  </update>
+  <select id="isHasWithDrawaling" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from pay_order 
+	where 1=1
+	and user_id = #{user_id} 
+	and fee_type = '2'
+	and `status` in ('0','3')
+  </select>
+  <!-- <select id="listPageRecharge" parameterType="page" resultType="com.ecochain.ledger.model.PageData">
+    select pay_no,substring(txdate, 1, 19) txdate,ROUND(txamnt, 2) txamnt,
+    CASE WHEN pay_type = '1' THEN '支付宝' WHEN pay_type = '2' THEN '微信'  WHEN pay_type = '3' THEN revorgname END pay_type,
+    round(rela_amnt, 2) rela_amnt
+    from pay_order 
+    where fee_type = '1'
+    and user_id = #{pd.user_id}
+    order by create_time desc
+  </select> -->
+    <!--查询提现需发送的短信内容及手机号 -->
+  <select id="getWithDrawalSms" resultType="com.ecochain.ledger.model.PageData">
+	select CONCAT('尊敬的会员',d.account,'您好，您的提现申请已经审核通过，我们已向您的账号',d.revbankaccno,'转账',d.txamnt,'元，请注意查收！')sms,d.mobile_phone from (
+        SELECT
+          b.mobile_phone,c.account,round(a.txamnt,2)txamnt,
+            CASE WHEN a.pay_type = '1' THEN CONCAT('（支付宝[',a.revbankaccno,']）') WHEN a.pay_type = '2' THEN CONCAT('（微信[',a.revbankaccno,']）') WHEN a.pay_type = '3' THEN CONCAT('（',a.revorgname,'[尾号',right(a.revbankaccno,4),']）') end revbankaccno
+        FROM
+            pay_order a,users_details b,user_login c
+        WHERE 1 = 1
+        AND a.user_id = b.id
+        AND a.user_id = c.user_id
+        AND a.fee_type = '2'
+        AND a.`status` = '1'
+        AND a.confirm_time is NULL
+    )d
+  </select>
+  <update id="updateStatusByHash" parameterType="com.ecochain.ledger.model.PageData">
+    update pay_order 
+	set confirm_time = #{confirm_time},
+	`status` = #{status}
+	where pay_hash in
+    <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+      #{item}   
+    </foreach> 
+  </update>
+</mapper>

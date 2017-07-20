@@ -107,4 +107,8 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <select id="getAllCoinPrice"  resultType="com.ecochain.ledger.model.PageData">
+    SELECT <include refid="Base_Column_List" /> FROM `digital_coin` 
+  </select>
 </mapper>

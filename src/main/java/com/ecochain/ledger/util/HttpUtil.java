@@ -12,6 +12,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.regex.Pattern;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 /**
  * Http操作辅助工具
  */
@@ -114,14 +121,15 @@ public class HttpUtil {
 			// Post 请求不能使用缓存
 			connection.setUseCaches(false);
 			connection.setInstanceFollowRedirects(true);
-			connection.setRequestProperty("Content-Type",
-					"application/x-www-form-urlencoded");
+//			connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+			connection.setRequestProperty("Content-Type","application/json");
+			connection.setRequestProperty("Accept", "*/*"); // 设置接收数据的格式
 			connection.connect();
 			// 发送流数据
 			out = new DataOutputStream(connection.getOutputStream());
 			//content = URLEncoder.encode(content, "utf-8");
 			// DataOutputStream.writeBytes将字符串中的16位的unicode字符以8位的字符形式写道流里面
-			out.writeBytes(content);
+//			out.writeBytes(content);
 			out.flush();
 			out.close();
 			//获取结果
@@ -277,7 +285,25 @@ public class HttpUtil {
         return bout.toByteArray();
     }
     public static void main(String[] args) {
-        String post = postJson(url, params);
-        System.out.println(post);
+       /* String post = postJson(url, params);
+        System.out.println(post);*/
+        try {
+//            System.out.println(sendPostData("http://192.168.200.86:8001/test/create/张春明010/20917c851c4a54f2a054390dac9085b7", ""));
+        
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://192.168.200.86:8001/{net}/create/{userName}/{passWord}";
+            HttpHeaders headers = new HttpHeaders();
+            MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+            headers.setContentType(type);
+            Map<String, Object> urlVariables = new HashMap<String, Object>();
+            urlVariables.put("net", "test");
+            urlVariables.put("userName", "test123112");
+            urlVariables.put("passWord", "123456");
+            String resultDataDto = restTemplate.postForObject(url, null, String.class, urlVariables);
+            System.out.println(resultDataDto);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

@@ -1,11 +1,14 @@
 package com.ecochain.ledger.service.impl;
 
-import com.ecochain.ledger.mapper.DigitalCoinMapper;
-import com.ecochain.ledger.service.DigitalCoinService;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import com.ecochain.ledger.mapper.DigitalCoinMapper;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.DigitalCoinService;
 
 /**
  * Created by LiShuo on 2017/05/23.
@@ -19,5 +22,10 @@ public class DigitalCoinServiceImpl implements DigitalCoinService {
     @Override
     public Map getCoinPrice(String coinName) {
         return  digitalCoinMapper.getCoinPrice(coinName);
+    }
+
+    @Override
+    public List<PageData> getAllCoinPrice() {
+        return digitalCoinMapper.getAllCoinPrice();
     }
 }

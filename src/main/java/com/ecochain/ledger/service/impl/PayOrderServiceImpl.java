@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.Page;
@@ -16,8 +17,10 @@ import com.ecochain.ledger.service.AccDetailService;
 import com.ecochain.ledger.service.PayLogService;
 import com.ecochain.ledger.service.PayOrderService;
 import com.ecochain.ledger.service.SysGenCodeService;
+import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserWalletService;
 import com.ecochain.ledger.util.Logger;
+import com.ecochain.ledger.util.RestUtil;
 import com.ecochain.ledger.util.sms.SMSUtil;
 
 @Component("payOrderService")
@@ -38,6 +41,8 @@ public class PayOrderServiceImpl implements PayOrderService {
     private PayOrderService payOrderService;
     @Resource
     private SysGenCodeService sysGenCodeService;
+    @Resource
+    private UserLoginService userLoginService;
 
     @Override
     public boolean deleteById(Integer id, String versionNo) throws Exception {
@@ -164,11 +169,31 @@ public class PayOrderServiceImpl implements PayOrderService {
         if(addPayOrderResult){
             PageData userWallet = new PageData();
             userWallet.put("user_id", String.valueOf(pd.get("user_id")));
-            userWallet.put("money", pd.getString("money"));
-            userWallet.put("coin_name", pd.getString("coin_name"));
+            userWallet.put("money", pd.getString("amount"));//提现金额或者提现数量
+            userWallet.put("coin_name", pd.getString("coin_name"));//币种名称
             withDrawalSub = userWalletService.withDrawalSub(userWallet);
         }
         logger.info("************申请提现*********总结果(addPayOrderResult&&withDrawalSubMoney):"+(addPayOrderResult&&withDrawalSub));
+        if(!"RMB".equals(pd.getString("coin_name"))){
+            logger.info("============提现========区块链钱包接口调用========start================");
+            String kql_url =null;
+            List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
+            for(PageData mapObj:codeList){
+                if("QKL_URL".equals(mapObj.get("code_name"))){
+                    kql_url = mapObj.get("code_value").toString();
+                }
+            }
+            PageData userLoginInfo = userLoginService.getUserLoginByAccount(pd.getString("account"), versionNo);
+            String jsonStr = RestUtil.restGetPath(kql_url+"/sendMoney/"+pd.getString("account")+"/"+userLoginInfo.getString("password")+"/"+pd.getString("amount")+"/"+pd.getString("address"));
+            JSONObject jsonObj = JSONObject.parseObject(jsonStr);
+           /* PageData tpd = new PageData();
+            tpd.put("public_key", jsonObj.getString("data"));
+            tpd.put("address", jsonObj.getString("data"));
+            tpd.put("id", pd.get("user_id"));
+            logger.info("调动态库tpd value="+tpd.toString());
+            this.updateByIdSelective(tpd, versionNo);*/
+            logger.info("==========提现==========区块链钱包接口调用========end================");
+        }
         return (addPayOrderResult&&withDrawalSub);
     }
 

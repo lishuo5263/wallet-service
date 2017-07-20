@@ -328,6 +328,7 @@ public class UsersWebService extends BaseWebService {
                     SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
                     data.put("CSESSIONID", Base64.getBase64(sessionId));
                     data.put("user_name", userInfo.getString("user_name"));
+                    data.put("address", userInfo.getString("address"));
                     ar.setData(data);
                     ar.setSuccess(true);
                     ar.setMessage("登录成功！");

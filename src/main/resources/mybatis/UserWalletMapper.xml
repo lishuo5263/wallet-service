@@ -164,17 +164,26 @@
   </update>
   <select id="getWalletByUserId" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.String">
 <!--     select * from user_wallet where user_id = #{user_id} -->
-	select  user_id,future_currency,future_treasure,ROUND(money,2)money,sanrelarmb_amnt,hlc_amnt,
-	        last_caldate,froze_rmb_amnt,froze_wlbao_amnt,froze_wlbi_amnt ,hlc_amnt,froze_hlc_amnt
+	select  user_id,btc_amnt,ltc_amnt,ROUND(money,2)money,eth_amnt,etc_amnt,hlc_amnt,
+	        last_caldate,froze_rmb_amnt,froze_btc_amnt,froze_ltc_amnt ,froze_eth_amnt,froze_etc_amnt,froze_hlc_amnt
 	from user_wallet 
 	where user_id = #{user_id}
   </select>
-    <!--   从钱包减钱（三界宝、三界通、人民币） -->
+    <!--   从钱包减钱 -->
   <update id="updateSub" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet
     <set>
-      <if test="bic_amnt != null">
-        bic_amnt = bic_amnt - #{bic_amnt},
+      <if test="btc_amnt != null">
+        btc_amnt = btc_amnt - #{btc_amnt},
+      </if>
+      <if test="ltc_amnt != null">
+        ltc_amnt = ltc_amnt - #{ltc_amnt},
+      </if>
+      <if test="eth_amnt != null">
+        eth_amnt = eth_amnt - #{eth_amnt},
+      </if>
+      <if test="etc_amnt != null">
+        etc_amnt = etc_amnt - #{etc_amnt},
       </if>
       <if test="hlc_amnt != null">
         hlc_amnt = hlc_amnt - #{hlc_amnt},
@@ -182,8 +191,17 @@
       <if test="money != null">
         money = money - #{money},
       </if>
-      <if test="froze_bic_amnt != null">
-        froze_bic_amnt = froze_bic_amnt - #{froze_bic_amnt},
+      <if test="froze_btc_amnt != null">
+        froze_btc_amnt = froze_btc_amnt - #{froze_btc_amnt},
+      </if>
+      <if test="froze_ltc_amnt != null">
+        froze_ltc_amnt = froze_ltc_amnt - #{froze_ltc_amnt},
+      </if>
+      <if test="froze_eth_amnt != null">
+        froze_eth_amnt = froze_eth_amnt - #{froze_eth_amnt},
+      </if>
+      <if test="froze_etc_amnt != null">
+        froze_etc_amnt = froze_etc_amnt - #{froze_etc_amnt},
       </if>
       <if test="froze_hlc_amnt != null">
         froze_hlc_amnt = froze_hlc_amnt - #{froze_hlc_amnt},
@@ -198,8 +216,17 @@
     </set>
     where 1=1
     and user_id = #{user_id}
-    <if test="bic_amnt != null">
-       and bic_amnt &gt;= #{bic_amnt}
+    <if test="btc_amnt != null">
+       and btc_amnt &gt;= #{btc_amnt}
+     </if>
+    <if test="ltc_amnt != null">
+       and ltc_amnt &gt;= #{ltc_amnt}
+     </if>
+    <if test="eth_amnt != null">
+       and eth_amnt &gt;= #{eth_amnt}
+     </if>
+    <if test="etc_amnt != null">
+       and etc_amnt &gt;= #{etc_amnt}
      </if>
      <if test="hlc_amnt != null">
        and hlc_amnt &gt;= #{hlc_amnt}
@@ -207,8 +234,17 @@
      <if test="money != null">
        and money &gt;= #{money}
      </if>
-     <if test="froze_bic_amnt != null">
-       and froze_bic_amnt &gt;= #{froze_bic_amnt}
+     <if test="froze_btc_amnt != null">
+       and froze_btc_amnt &gt;= #{froze_btc_amnt}
+     </if>
+     <if test="froze_ltc_amnt != null">
+       and froze_ltc_amnt &gt;= #{froze_ltc_amnt}
+     </if>
+     <if test="froze_eth_amnt != null">
+       and froze_eth_amnt &gt;= #{froze_eth_amnt}
+     </if>
+     <if test="froze_etc_amnt != null">
+       and froze_etc_amnt &gt;= #{froze_etc_amnt}
      </if>
      <if test="froze_hlc_amnt != null">
        and froze_hlc_amnt &gt;= #{froze_hlc_amnt}
@@ -221,8 +257,17 @@
   <update id="updateAdd" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet
     <set>
-      <if test="bic_amnt != null">
-        bic_amnt = bic_amnt + #{bic_amnt},
+      <if test="btc_amnt != null">
+        btc_amnt = btc_amnt + #{btc_amnt},
+      </if>
+      <if test="ltc_amnt != null">
+        ltc_amnt = ltc_amnt + #{ltc_amnt},
+      </if>
+      <if test="eth_amnt != null">
+        eth_amnt = eth_amnt + #{eth_amnt},
+      </if>
+      <if test="etc_amnt != null">
+        etc_amnt = etc_amnt + #{etc_amnt},
       </if>
       <if test="hlc_amnt != null">
         hlc_amnt = hlc_amnt + #{hlc_amnt},
@@ -230,8 +275,17 @@
       <if test="money != null">
         money = money + #{money},
       </if>
-      <if test="froze_bic_amnt != null">
-        froze_bic_amnt = froze_bic_amnt + #{froze_bic_amnt},
+      <if test="froze_btc_amnt != null">
+        froze_btc_amnt = froze_btc_amnt + #{froze_btc_amnt},
+      </if>
+      <if test="froze_ltc_amnt != null">
+        froze_ltc_amnt = froze_ltc_amnt + #{froze_ltc_amnt},
+      </if>
+      <if test="froze_eth_amnt != null">
+        froze_eth_amnt = froze_eth_amnt + #{froze_eth_amnt},
+      </if>
+      <if test="froze_etc_amnt != null">
+        froze_etc_amnt = froze_etc_amnt + #{froze_etc_amnt},
       </if>
       <if test="froze_hlc_amnt != null">
         froze_hlc_amnt = froze_hlc_amnt + #{froze_hlc_amnt},

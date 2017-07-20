@@ -93,4 +93,14 @@
   <select id="getBankList" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
     select bank_name,right(bank_no,4)bank_no from user_bank where user_id = #{user_id}
   </select>
+  
+  <update id="setDefault" parameterType="com.ecochain.ledger.model.PageData">
+        update user_bank set is_default = 1 where user_id = #{user_id} and id = #{id}
+  </update>
+  <update id="cancelDefault" parameterType="com.ecochain.ledger.model.PageData">
+        update user_bank set is_default = 0 where user_id = #{user_id}
+  </update>
+  <select id="isExist" parameterType="com.ecochain.ledger.model.PageData" resultType="java.lang.Integer">
+    select count(1) from user_bank where bank_no = #{bank_no} and user_id = #{user_id}
+  </select>
 </mapper>

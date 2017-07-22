@@ -371,4 +371,7 @@
         and trans_password = #{trans_password} 
         and id = #{user_id}
   </select>
+  <select id="isExistByUserName" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from users_details where user_name = #{user_name}
+  </select>
 </mapper>

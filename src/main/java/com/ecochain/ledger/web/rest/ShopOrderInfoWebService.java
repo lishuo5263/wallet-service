@@ -1,4 +1,4 @@
-package com.ecochain.ledger.web.rest;
+/*package com.ecochain.ledger.web.rest;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -48,9 +48,9 @@ import com.ecochain.ledger.util.SessionUtil;
 import com.ecochain.ledger.util.StringUtil;
 import com.github.pagehelper.PageInfo;
 
-/**
+*//**
  * Created by LiShuo on 2016/10/28.
- */
+ *//*
 @RestController
 @RequestMapping(value = "/api/rest/shopOrder")
 public class ShopOrderInfoWebService extends BaseWebService {
@@ -61,29 +61,29 @@ public class ShopOrderInfoWebService extends BaseWebService {
     private ShopGoodsService shopGoodsService;
     @Autowired
     private ShopOrderGoodsService shopOrderGoodsService;
-   /* @Autowired
-    private CacheManager cacheManager;*/
+    @Autowired
+    private CacheManager cacheManager;
     @Autowired
     private SysGenCodeService sysGenCodeService;
-   /* @Autowired
-    private CalBounsService calBounsService;*/
+    @Autowired
+    private CalBounsService calBounsService;
     @Autowired
     private UserWalletService userWalletService;
-   /* @Autowired
-    private StoreOrderInfoService storeOrderInfoService;*/
+    @Autowired
+    private StoreOrderInfoService storeOrderInfoService;
     @Autowired
     private ShopSupplierService shopSupplierService;
     @Autowired
     private UsersDetailsService usersDetailsService;
-    /*@Autowired
-    private StoreInfoService storeInfoService;*/
+    @Autowired
+    private StoreInfoService storeInfoService;
 
-    /**
+    *//**
      * @describe 商城&店铺取消订单
      * @author: lishuo
      * @date 2016-12-12
-     */
-  /*  @LoginVerify
+     *//*
+    @LoginVerify
     @RequestMapping(value = "/cancleOrder")
     
     public AjaxResponse cancleOrder(HttpServletRequest request, Page page) {
@@ -139,7 +139,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
             return fastReturn(null, false, "取消订单失败，type参数为空！", CodeConstant.PARAM_ERROR);
         }
         return ar;
-    }*/
+    }
 
     //@LoginVerify
 
@@ -226,7 +226,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     }  else {
                         ar = fastReturn(result, true, "生成用户ID为：" + shopOrderGood.get(0).getUserId() + "的订单成功！", CodeConstant.SC_OK);
                     }
-                } /*else if ("1".equals(shopOrderGood.get(0).getIsPromote())) {  //促销商品下单
+                } else if ("1".equals(shopOrderGood.get(0).getIsPromote())) {  //促销商品下单
                     if (shopOrderGood.get(0).getGoodsNumber() > 1) {
                         return fastReturn(null, false, "订单生成失败，秒杀商品每次只能购买1件！", CodeConstant.ERROR_NO_REPEATSECKILLGOODS);
                     }
@@ -283,7 +283,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     } else {
                         ar = fastReturn(result, true, "生成用户ID为：" + shopOrderGood.get(0).getUserId() + "的订单成功！", CodeConstant.SC_OK);
                     }
-                }*/else {
+                }else {
                     ar = fastReturn(null, false, "订单生成失败，csessionid参数为空！", CodeConstant.PARAM_ERROR);
                 }
                 logAfter(logger);
@@ -300,15 +300,15 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * 秒杀订单公共方法
      *
      * @param shopOrderGood
      * @return
      * @author lishuo
      * @date 2017-1-6 15:46:58
-     */
-   /* private synchronized AjaxResponse insertShopOrder(List<ShopOrderGoods> shopOrderGood) throws Exception {
+     *//*
+    private synchronized AjaxResponse insertShopOrder(List<ShopOrderGoods> shopOrderGood) throws Exception {
         String SecKillState = "false";
         boolean redisCategoryKeyFlag = false;
         List<Map<String, Object>> result = new ArrayList();
@@ -322,13 +322,13 @@ public class ShopOrderInfoWebService extends BaseWebService {
             //2016年12月17日 最新规则每人不限制场地一天只能秒杀一个商品
             int secKillCount = this.shopOrderInfoService.querySecKillCount(shopOrderGood.get(0).getUserId());
             if (secKillCount < 1) {
-            *//*
+            
             *1.查询Redis看是否有库存缓存key，无---->查SQL set库存key， 有直接2
             *2.按userId&goodsId查询此用户当天是否购买过此商品，无----->缓存key值-1
             *3.下单前查询此商品的库存， if库存量 >0  进行库存-1， 可进行下单
             *4.下单若失败，对Redis缓存key值进行+1 db库存+1
             *5 TODO 此规则未做多库存商品减库存逻辑
-            *//*
+            
                 redisCategoryKeyFlag = cacheManager.isExist(RedisConstantUtil.SHOPHOTGOODS + shopOrderGood.get(0).getGoodsId());//秒杀商品等同立即购买1订单1个商品
                 if (redisCategoryKeyFlag) { //该秒杀商品有库存
                     if ((Integer) cacheManager.get(RedisConstantUtil.SHOPHOTGOODS + shopOrderGood.get(0).getGoodsId()) > 0) {
@@ -462,14 +462,14 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 return fastReturn(secKillCount, false, "订单生成失败，用户每次秒杀活动只能购买一件商品！", CodeConstant.ERROR_NO_REPEATSECKILL);
             }
         } else {
-            *//*
+            
             *  ！！不限制用户每场秒杀商品数量但仅每个秒杀商品只能购买一次！！
             *1.查询Redis看是否有库存缓存key，无---->查SQL set库存key， 有直接2
             *2.按userId&goodsId查询此用户当天是否购买过此商品，无----->缓存key值-1
             *3.下单前查询此商品的库存， if库存量 >0  进行库存-1， 可进行下单
             *4.下单若失败，对Redis缓存key值进行+1 db库存+1
             *5.秒杀减库存减少多SKU的库存
-            *//*
+            
             if (shopOrderGood.get(0).getIsMutilPrice() != null) {   //SKU秒杀商品下单逻辑
                 if (shopOrderGood.get(0).getIsMutilPrice() == 1) { //多价格减库存下单
                     if (StringUtils.isNotEmpty(shopOrderGood.get(0).getSkuValue())) {
@@ -878,15 +878,15 @@ public class ShopOrderInfoWebService extends BaseWebService {
             }
         }
         return fastReturn(null, false, "系统异常，生成用户ID为：" + shopOrderGood.get(0).getUserId() + "的订单失败！", CodeConstant.SYS_ERROR);
-    }*/
+    }
 
-    /**
+    *//**
      * @param request
      * @describe:分页查询订单列表
      * @author: zhangchunming
      * @date: 2016年10月27日上午11:46:28
      * @return: AjaxResponse
-     */
+     *//*
     @LoginVerify
     @PostMapping("/listPageShopOrder")
     @ApiOperation(nickname = "查询订单列表", value = "查询订单列表", notes = "查询订单列表！")
@@ -904,10 +904,10 @@ public class ShopOrderInfoWebService extends BaseWebService {
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             
-            /*//供应商List
+            //供应商List
             List<PageData> supplierList = null;
             //供应商IDList
-            List<Integer> supplierIdList = new ArrayList<Integer>();*/
+            List<Integer> supplierIdList = new ArrayList<Integer>();
             PageData oneSupplier = null;
             if ("4".equals(user.getString("user_type"))) {//供应商
                 //根据user_id查询供应商信息
@@ -920,10 +920,10 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     ar.setErrorCode(CodeConstant.NO_EXISTS);
                     return ar;
                 }
-                /*for(PageData supplier:supplierList){
+                for(PageData supplier:supplierList){
                     supplierIdList.add((Integer)supplier.get("id"));
                 }
-                pd.put("supplierList", supplierList);*/
+                pd.put("supplierList", supplierList);
                 pd.put("supplier_id", String.valueOf(oneSupplier.get("id")));
             } else {
                 pd.put("user_id", String.valueOf(user.get("id")));
@@ -969,13 +969,13 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * @param request
      * @describe:按状态查询商城订单数量
      * @author: zhangchunming
      * @date: 2016年10月28日下午1:10:13
      * @return: AjaxResponse
-     */
+     *//*
     @LoginVerify
     @RequestMapping(value = "/getShopOrderNumByStatus", method = RequestMethod.POST)
 
@@ -984,9 +984,9 @@ public class ShopOrderInfoWebService extends BaseWebService {
         Map<String, Object> data = new HashMap<String, Object>();
         try {
             PageData pd = new PageData();
-            /*pd = this.getPageData();*/
-            /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            pd = this.getPageData();
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             if ("1".equals(user.getString("user_type")) || "2".equals(user.getString("user_type"))) {//普通会员、创业会员
@@ -1018,13 +1018,13 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * @param request
      * @describe:查询订单总数
      * @author: zhangchunming
      * @date: 2016年10月28日下午2:40:23
      * @return: AjaxResponse
-     */
+     *//*
     @LoginVerify
     @RequestMapping(value = "/getOrderTotalNum", method = RequestMethod.POST)
 
@@ -1033,8 +1033,8 @@ public class ShopOrderInfoWebService extends BaseWebService {
         Map<String, Object> data = new HashMap<String, Object>();
         try {
             PageData pd = new PageData();
-            /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             String user_id = String.valueOf(user.get("id"));
@@ -1050,17 +1050,17 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     data.put("shopOrderTotalNum", shopOrderTotalNum);
                 }
 
-            } /*else if ("3".equals(user.getString("user_type"))) { //店铺
+            } else if ("3".equals(user.getString("user_type"))) { //店铺
                 Integer storeId = storeInfoService.getStoreIdByUserId(user_id, Constant.VERSION_NO);
                 if (storeId == null) {
                     logger.error("----------根据用户信息查不到对应的店铺信息---------------");
                     data.put("storeOrderTotalNum", null);
                 } else {
                     pd.put("store_id", storeId);
-                   *//* Integer storeOrderTotalNum = storeOrderInfoService.getStoreOrderTotalNum(pd, Constant.VERSION_NO);
-                    data.put("storeOrderTotalNum", storeOrderTotalNum);*//*
+                    Integer storeOrderTotalNum = storeOrderInfoService.getStoreOrderTotalNum(pd, Constant.VERSION_NO);
+                    data.put("storeOrderTotalNum", storeOrderTotalNum);
                 }
-            }*/ else {//普通会员、创业会员
+            } else {//普通会员、创业会员
                 pd.put("user_id", user_id);
                 Integer shopOrderTotalNum = shopOrderInfoService.getShopOrderTotalNum(pd, Constant.VERSION_NO);
                 //Integer storeOrderTotalNum = storeOrderInfoService.getStoreOrderTotalNum(pd, Constant.VERSION_NO);
@@ -1077,14 +1077,14 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * @param request
      * @describe:确认收货,更改订单状态
      * @author: zhangchunming
      * @date: 2016年11月08日下午17:23:50
      * @return: AjaxResponse
-     */
-   /* @LoginVerify
+     *//*
+    @LoginVerify
     @RequestMapping(value="/confirmReceipt", method=RequestMethod.POST)
 
     public AjaxResponse confirmReceipt(HttpServletRequest request){
@@ -1211,16 +1211,16 @@ public class ShopOrderInfoWebService extends BaseWebService {
             ar.setErrorCode(CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
 //    @LoginVerify
-    /*@RequestMapping(value = "/confirmReceipt", method = RequestMethod.POST)
+    @RequestMapping(value = "/confirmReceipt", method = RequestMethod.POST)
 
     public AjaxResponse confirmReceipt(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
-            *//*String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
-            JSONObject user = JSONObject.parseObject(userstr);*//*
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
             PageData pd = new PageData();
             pd = this.getPageData();
 //            pd.put("user_id", String.valueOf(user.get("id")));
@@ -1308,7 +1308,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
         }
         return ar;
     }
-*/
+
     //@LoginVerify
     @RequestMapping(value = "/deliverGoods", method = RequestMethod.GET)
     @ApiOperation(nickname = "deliverGoods", value = "物流确认发货", notes = "物流确认发货！！")
@@ -1322,8 +1322,8 @@ public class ShopOrderInfoWebService extends BaseWebService {
     public AjaxResponse deliverGoods(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
-            /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
+            String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
+            String userstr = SessionUtil.getAttibuteForUser(key);
 
 
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
@@ -1386,13 +1386,13 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * @param request
      * @describe:立即支付
      * @author: zhangchunming
      * @date: 2016年11月9日下午9:59:50
      * @return: AjaxResponse
-     */
+     *//*
     @LoginVerify
     @PostMapping("/payNow")
     @ApiOperation(nickname = "立即支付", value = "立即支付", notes = "立即支付！")
@@ -1416,12 +1416,12 @@ public class ShopOrderInfoWebService extends BaseWebService {
             pd.put("seeds", user.getString("seeds"));
             pd.put("user_type", String.valueOf(user.getString("user_type")));
             pd.put("operator", String.valueOf(user.getString("account")));
-            /*if(StringUtil.isEmpty(pd.getString("order_id"))){
+            if(StringUtil.isEmpty(pd.getString("order_id"))){
                 ar.setSuccess(false);
                 ar.setMessage("订单ID不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }*/
+            }
             if (StringUtil.isEmpty(pd.getString("order_no"))) {
                 ar.setSuccess(false);
                 ar.setMessage("订单号不能为空");
@@ -1442,12 +1442,12 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 ar.setSuccess(false);
                 return ar;
             }
-            /*if(StringUtil.isEmpty(pd.getString("order_amount"))){
+            if(StringUtil.isEmpty(pd.getString("order_amount"))){
                 ar.setSuccess(false);
                 ar.setMessage("付款金额不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }*/
+            }
 //            PageData shopOrderInfo = shopOrderInfoService.selectById(Integer.valueOf(pd.getString("order_id")), Constant.VERSION_NO);
             PageData shopOrderInfo = shopOrderInfoService.getShopOrderByOrderNo(pd, Constant.VERSION_NO);
             if ("2".equals(shopOrderInfo.getString("order_status"))) {//已支付
@@ -1529,13 +1529,13 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * @param request
      * @describe:根据订单号查询订单信息
      * @author: zhangchunming
      * @date: 2016年11月14日下午3:39:04
      * @return: AjaxResponse
-     */
+     *//*
     @LoginVerify
     @RequestMapping(value = "/getShopOrderByOrderNo", method = RequestMethod.POST)
 
@@ -1568,14 +1568,14 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * @param request
      * @describe:商品退货关闭订单
      * @author: zhangchunming
      * @date: 2016年12月26日下午4:06:47
      * @return: AjaxResponse
-     */
-    /*@RequestMapping(value = "/refundGoods", method = RequestMethod.POST)
+     *//*
+    @RequestMapping(value = "/refundGoods", method = RequestMethod.POST)
     
     public AjaxResponse refundGoods(HttpServletRequest request) {
         Map<String, Object> data = new HashMap<String, Object>();
@@ -1615,7 +1615,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     ar.setMessage("操作失败！");
                     return ar;
                 }
-                *//*if("10".equals(pd.getString("state"))){//一键退款
+                if("10".equals(pd.getString("state"))){//一键退款
                     if(refundResult){
                         ar.setSuccess(true);
                         ar.setMessage("操作成功！"); 
@@ -1637,7 +1637,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                         ar.setMessage("操作失败！"); 
                         return ar;
                     }
-                }*//*
+                }
             }
             //同意退款退货
             if ("11".equals(pd.getString("state")) || "13".equals(pd.getString("state"))) {
@@ -1674,9 +1674,10 @@ public class ShopOrderInfoWebService extends BaseWebService {
             ar.setErrorCode(CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
     public static void main(String[] args) {
         System.out.println(Integer.valueOf("2147483647"));
     }
 }
+*/

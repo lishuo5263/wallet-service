@@ -1,4 +1,4 @@
-package com.ecochain.ledger.web.rest;
+/*package com.ecochain.ledger.web.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,10 +30,10 @@ import com.ecochain.ledger.util.Base64;
 import com.ecochain.ledger.util.DateUtil;
 import com.ecochain.ledger.util.HttpTool;
 import com.ecochain.ledger.util.Logger;
-/**
+*//**
  * 账户控制类
  * @author zhangchunming
- */
+ *//*
 @RestController
 @RequestMapping(value = "/api/block")
 @Api(value = "账户管理")
@@ -45,13 +45,13 @@ public class BlockDataWebService extends BaseWebService{
     private SysGenCodeService sysGenCodeService;
 
 
-    /**
+    *//**
      * @describe:获取最新的记录数据
      * @author: zhangchunming
      * @date: 2017年5月25日下午2:35:14
      * @param request
      * @return: AjaxResponse
-     */
+     *//*
     @PostMapping("/getDataList")
     @ApiOperation(nickname = "获取最新的记录数据", value = "获取最新的记录数据", notes = "获取最新的记录数据")
     @ApiImplicitParams({
@@ -94,13 +94,13 @@ public class BlockDataWebService extends BaseWebService{
         return ar;
     }
     
-    /**
+    *//**
      * @describe:查询区块列表
      * @author: zhangchunming
      * @date: 2017年5月25日下午2:37:37
      * @param request
      * @return: AjaxResponse
-     */
+     *//*
     @PostMapping("/getBlockList")
     @ApiOperation(nickname = "获取最新的区块数据", value = "获取最新的区块数据", notes = "获取最新的区块数据")
     @ApiImplicitParams({
@@ -142,13 +142,13 @@ public class BlockDataWebService extends BaseWebService{
         return ar;
     }
     
-    /**
+    *//**
      * @describe:按日期查询区块数据
      * @author: zhangchunming
      * @date: 2017年5月25日下午2:39:44
      * @param request
      * @return: AjaxResponse
-     */
+     *//*
     @PostMapping("/getBlockByDate")
     @ApiOperation(nickname = "按日期查询区块数据", value = "按日期查询区块数据", notes = "按日期查询区块数据")
     @ApiImplicitParams({
@@ -185,13 +185,13 @@ public class BlockDataWebService extends BaseWebService{
         return ar;
     }
     
-    /**
+    *//**
      * @describe:根据hash值查询交易数据
      * @author: zhangchunming
      * @date: 2017年5月25日下午2:45:14
      * @param request
      * @return: AjaxResponse
-     */
+     *//*
     @PostMapping("/getDataByHash")
     @ApiOperation(nickname = "根据hash值查询交易数据", value = "根据hash值查询交易数据", notes = "根据hash值查询交易数据")
     @ApiImplicitParams({
@@ -232,13 +232,13 @@ public class BlockDataWebService extends BaseWebService{
         }   
         return ar;
     }
-    /**
+    *//**
      * @describe:根据区块hash值查询区块高度
      * @author: zhangchunming
      * @date: 2017年5月25日下午2:55:23
      * @param request
      * @return: AjaxResponse
-     */
+     *//*
     @PostMapping("/getBlockHeight")
     @ApiOperation(nickname = "根据区块hash值查询区块高度", value = "根据区块hash值查询区块高度", notes = "根据区块hash值查询区块高度")
     @ApiImplicitParams({
@@ -278,13 +278,13 @@ public class BlockDataWebService extends BaseWebService{
         return ar;
     }
     
-    /**
+    *//**
      * @describe:根据区块高度获取区块的Hash
      * @author: zhangchunming
      * @date: 2017年5月25日下午2:57:45
      * @param request
      * @return: AjaxResponse
-     */
+     *//*
     @PostMapping("/getBlockHashByHe")
     @ApiOperation(nickname = "根据区块高度获取区块的Hash", value = "根据区块高度获取区块的Hash", notes = "根据区块高度获取区块的Hash")
     @ApiImplicitParams({
@@ -324,13 +324,13 @@ public class BlockDataWebService extends BaseWebService{
         return ar;
     }
     
-    /**
+    *//**
      * @describe:根据区块哈希查询区块详细
      * @author: zhangchunming
      * @date: 2017年6月5日下午2:03:20
      * @param request
      * @return: AjaxResponse
-     */
+     *//*
     @PostMapping("/getBlockDetail")
     @ApiOperation(nickname = "根据区块hash查询区块详细", value = "根据区块hash查询区块详细", notes = "根据区块hash查询区块详细")
     @ApiImplicitParams({
@@ -370,3 +370,4 @@ public class BlockDataWebService extends BaseWebService{
         return ar;
     }
 }
+*/

@@ -33,11 +33,20 @@
       <if test="user_id != null">
         user_id,
       </if>
-      <if test="future_currency != null">
-        future_currency,
+      <if test="btc_amnt != null">
+        btc_amnt,
       </if>
-      <if test="future_treasure != null">
-        future_treasure,
+      <if test="ltc_amnt != null">
+        ltc_amnt,
+      </if>
+      <if test="eth_amnt != null">
+        eth_amnt,
+      </if>
+      <if test="etc_amnt != null">
+        etc_amnt,
+      </if>
+      <if test="hlc_amnt != null">
+        hlc_amnt,
       </if>
       <if test="money != null">
         money,
@@ -48,11 +57,20 @@
       <if test="syscode != null">
         syscode,
       </if>
-      <if test="froze_wlbi_amnt != null">
-        froze_wlbi_amnt,
+      <if test="froze_hlc_amnt != null">
+        froze_hlc_amnt,
       </if>
-      <if test="froze_wlbao_amnt != null">
-        froze_wlbao_amnt,
+      <if test="froze_btc_amnt != null">
+        froze_btc_amnt,
+      </if>
+      <if test="froze_ltc_amnt != null">
+        froze_ltc_amnt,
+      </if>
+      <if test="froze_eth_amnt != null">
+        froze_eth_amnt,
+      </if>
+      <if test="froze_etc_amnt != null">
+        froze_etc_amnt,
       </if>
       <if test="froze_rmb_amnt != null">
         froze_rmb_amnt,
@@ -69,11 +87,20 @@
       <if test="user_id != null">
         #{user_id,jdbcType=INTEGER},
       </if>
-      <if test="future_currency != null">
-        #{future_currency,jdbcType=DECIMAL},
+      <if test="btc_amnt != null">
+        #{btc_amnt,jdbcType=DECIMAL},
       </if>
-      <if test="future_treasure != null">
-        #{future_treasure,jdbcType=DECIMAL},
+      <if test="ltc_amnt != null">
+        #{ltc_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="eth_amnt != null">
+        #{eth_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="etc_amnt != null">
+        #{etc_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="hlc_amnt != null">
+        #{hlc_amnt,jdbcType=DECIMAL},
       </if>
       <if test="money != null">
         #{money,jdbcType=DECIMAL},
@@ -84,11 +111,20 @@
       <if test="syscode != null">
         #{syscode,jdbcType=VARCHAR},
       </if>
-      <if test="froze_wlbi_amnt != null">
-        #{froze_wlbi_amnt,jdbcType=DECIMAL},
+      <if test="froze_hlc_amnt != null">
+        #{froze_hlc_amnt,jdbcType=DECIMAL},
       </if>
-      <if test="froze_wlbao_amnt != null">
-        #{froze_wlbao_amnt,jdbcType=DECIMAL},
+      <if test="froze_btc_amnt != null">
+        #{froze_btc_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="froze_ltc_amnt != null">
+        #{froze_ltc_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="froze_eth_amnt != null">
+        #{froze_eth_amnt,jdbcType=DECIMAL},
+      </if>
+      <if test="froze_etc_amnt != null">
+        #{froze_etc_amnt,jdbcType=DECIMAL},
       </if>
       <if test="froze_rmb_amnt != null">
         #{froze_rmb_amnt,jdbcType=DECIMAL},
@@ -539,8 +575,33 @@
     <!--申请提现扣减人民币到冻结余额 -->
   <update id="withDrawalSubMoney" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet 
-	set money = money - #{money},
-        froze_rmb_amnt = froze_rmb_amnt + #{money}
+	<set>
+	   <if test="coin_name == 'RMB'">
+	       money = money - #{money},
+	       froze_rmb_amnt = froze_rmb_amnt + #{money},
+	   </if>
+	   <if test="coin_name == 'BTC'">
+           btc_amnt = btc_amnt - #{money},
+           froze_btc_amnt = froze_btc_amnt + #{money},
+       </if>
+       <if test="coin_name == 'LTC'">
+           ltc_amnt = ltc_amnt - #{money},
+           froze_ltc_amnt = froze_ltc_amnt + #{money},
+       </if>
+       <if test="coin_name == 'ETH'">
+           eth_amnt = eth_amnt - #{money},
+           froze_eth_amnt = froze_eth_amnt + #{money},
+       </if>
+       <if test="coin_name == 'ETC'">
+           etc_amnt = etc_amnt - #{money},
+           froze_etc_amnt = froze_etc_amnt + #{money},
+       </if>
+       <if test="coin_name == 'HLC'">
+           hlc_amnt = hlc_amnt - #{money},
+           froze_hlc_amnt = froze_hlc_amnt + #{money},
+       </if>
+        
+    </set>
 	where 1 = 1
 	and user_id = #{user_id}
 	and money &gt;= #{money}
@@ -605,6 +666,7 @@
     </set>
     where 1=1
     and user_id = #{user_id}
+    and money &gt;= #{rmb_amnt} 
   </update>
   <update id="exchangeCoin2RMB" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet 
@@ -616,6 +678,9 @@
     </set>
     where 1=1
     and user_id = #{user_id}
+    <if test="coin_name != null and coin_name == 'BTC'">
+        and btc_amnt &gt;= #{coin_amnt} 
+    </if>
   </update>
   
   <!--公司主账号资金变动 -->
@@ -629,6 +694,9 @@
     </set>
     where 1=1
     and user_id = '1'
+    <if test="coin_name != null and coin_name == 'BTC'">
+        and btc_amnt &gt;= #{coin_amnt} 
+    </if>
   </update>
   <update id="companyAddCoin" parameterType="com.ecochain.ledger.model.PageData">
     update user_wallet 
@@ -640,6 +708,7 @@
     </set>
     where 1=1
     and user_id = '1'
+    and money &gt;= #{rmb_amnt} 
   </update>
    <!--申请提现扣减RMB/BTC/LTC等 -->
   <update id="withDrawalSub" parameterType="com.ecochain.ledger.model.PageData">

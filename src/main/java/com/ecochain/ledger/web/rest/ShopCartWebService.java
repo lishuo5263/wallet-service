@@ -1,4 +1,4 @@
-package com.ecochain.ledger.web.rest;
+/*package com.ecochain.ledger.web.rest;
 
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,9 +30,9 @@ import com.ecochain.ledger.service.ShopGoodsService;
 import com.ecochain.ledger.util.AjaxResponse;
 import com.ecochain.ledger.util.StringUtil;
 
-/**
+*//**
  * Created by LiShuo on 2016/10/26.
- */
+ *//*
 @RestController
 @RequestMapping(value = "/api/rest/mycart")
 public class ShopCartWebService extends BaseWebService {
@@ -45,22 +45,22 @@ public class ShopCartWebService extends BaseWebService {
     @Autowired
     private ShopGoodsService shopGoodsService;
 
-    /**
+    *//**
      * 新增购物车
-     */
+     *//*
     @PostMapping("/insertMyCat")
     public AjaxResponse insertMyCart(ShopCart shopCart){
         logger.info("**************************添加购物车参数为："+shopCart.toString()+"*****************");
         AjaxResponse ar= new AjaxResponse();
         Map<String,Object> map =new HashMap<String,Object>();
         //测试 insert
-        /*shopCart.setGoodsId(4146);
+        shopCart.setGoodsId(4146);
         shopCart.setSkuId(199);
         shopCart.setUserId(999);
         shopCart.setGoodsPrice(new BigDecimal("99.999"));
         shopCart.setNum(2);
         shopCart.setSkuValue("红色,700,3.0,发货,发个,返工后和,3.0000000030000000000000000344443");
-        shopCart.setSkuInfo("{\"颜色\":\"黑色\",\"规格\":\"个\",\"数量\":1,\"重量\":\"100g\"}");*/
+        shopCart.setSkuInfo("{\"颜色\":\"黑色\",\"规格\":\"个\",\"数量\":1,\"重量\":\"100g\"}");
     try{
         if(shopCart == null){
             return fastReturn(null,false,"接口参数异常，添加购物车失败！", CodeConstant.PARAM_ERROR);
@@ -68,9 +68,9 @@ public class ShopCartWebService extends BaseWebService {
             return fastReturn(null,false,"接口参数skuInfo异常，添加除购物车失败！",CodeConstant.PARAM_ERROR);
         }else if(shopCart.getGoodsId()==null){
             return fastReturn(null,false,"接口参数goodsId异常，添加除购物车失败！",CodeConstant.PARAM_ERROR);
-        }/*else if(shopCart.getSkuId()==null){
+        }else if(shopCart.getSkuId()==null){
             return fastReturn(null,false,"接口参数skuId异常，添加除购物车失败！",CodeConstant.PARAM_ERROR);
-        }*/else if(shopCart.getUserId()==null){
+        }else if(shopCart.getUserId()==null){
             return fastReturn(null,false,"接口参数userId异常，添加除购物车失败！",CodeConstant.PARAM_ERROR);
         }else if(shopCart.getNum()==null){
             return fastReturn(null,false,"接口参数num异常，添加除购物车失败！",CodeConstant.PARAM_ERROR);
@@ -111,13 +111,13 @@ public class ShopCartWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * 修改购物车
-     */
+     *//*
     @PostMapping("/updateMyCart")
     public String updateMyCart(ShopCart shopCart,HttpServletResponse response) throws  Exception{
         PageData accDetail = new PageData();
-        /*System.out.println(cacheManager.get("ShopHotGoods116"));
+        System.out.println(cacheManager.get("ShopHotGoods116"));
         cacheManager.set("A",1,1800);
         Integer A=(Integer)cacheManager.get("A");
         System.out.println(A);
@@ -126,27 +126,27 @@ public class ShopCartWebService extends BaseWebService {
         System.out.println(A1);
         cacheManager.set("A",(Integer)cacheManager.get("A")-1,1800);
         Integer A2=(Integer)cacheManager.get("A");
-        System.out.println(A2);*/
+        System.out.println(A2);
         Jedis jedis=new Jedis("139.224.65.73",6379);
         System.out.println(jedis.get("mobileCategoryCache2"));
         return null;
        // return "redirect:/return/toShowView/"+2+"?pay_no=2222&status=1&fee_type=1";
         //response.sendRedirect("redirect:/return/toShowView/"+2+"?pay_no=2222&status=1&fee_type=1");
-       /* AjaxResponse ar= new AjaxResponse();
+        AjaxResponse ar= new AjaxResponse();
         PageData pd =new PageData();
         pd.put("sanRate",this.r8SanRateService.getBestNewSanRate());
-        ar.setData(pd);*/
-        /*pd.put("store_order_sn","161119205744357092111121");
+        ar.setData(pd);
+        pd.put("store_order_sn","161119205744357092111121");
         pd.put("usercode","999");
         pd.put("phone","15011478695");
-        this.storeOrderInfoService.storeOrderPayCallBack(pd,"1.00");*/
+        this.storeOrderInfoService.storeOrderPayCallBack(pd,"1.00");
        // return ar;
     }
 
 
-    /**
+    *//**
      * 删除购物车
-     */
+     *//*
     @PostMapping("/deleteMyCart")
     public AjaxResponse deleteMyCart(HttpServletRequest request, Page page){
         PageData pd = new PageData();
@@ -184,9 +184,9 @@ public class ShopCartWebService extends BaseWebService {
         return ar;
     }
 
-    /**
+    *//**
      * 批量删除购物车
-     */
+     *//*
     @PostMapping("/batchDelete")
     public AjaxResponse batchDelete(HttpServletRequest request, Page page){
         PageData pd = new PageData();
@@ -227,9 +227,9 @@ public class ShopCartWebService extends BaseWebService {
     }
 
 
-    /**
+    *//**
      * 查询购物车
-     */
+     *//*
     @GetMapping("/serchMyCart")
     public AjaxResponse serchMyCart(HttpServletRequest request, Page page){
         PageData pd = new PageData();
@@ -239,11 +239,11 @@ public class ShopCartWebService extends BaseWebService {
         try{
             if(userId !=null && userId!=0){
                 List result =new ArrayList();
-                /*if(cacheManager.isExist(RedisConstantUtil.MYCAT+userId)){
+                if(cacheManager.isExist(RedisConstantUtil.MYCAT+userId)){
                     ar=fastReturn((List)cacheManager.get(RedisConstantUtil.MYCAT + userId),true,"查询购物车缓存成功！", CodeConstant.SC_OK);
                     logAfter(logger);
                 }else{
-                }*/
+                }
                 //TODO 若做缓存需要做数据和redis同步
                 result =this.shopGoodsService.serchMyCart(userId);
                 //cacheManager.set(RedisConstantUtil.MYCAT+userId,result,1800);
@@ -263,9 +263,9 @@ public class ShopCartWebService extends BaseWebService {
     }
 
 
-    /**
+    *//**
      * 购物车跳转生成订单必要信息查询
-     */
+     *//*
     @GetMapping("/myCartToGenerateOrder")
     @ApiOperation(nickname = "myCartToGenerateOrder", value = "购物车跳转生成订单必要信息查询", notes = "购物车跳转生成订单必要信息查询！！")
     @ApiImplicitParams({
@@ -350,3 +350,4 @@ public class ShopCartWebService extends BaseWebService {
         return ar;
     }
 }
+*/

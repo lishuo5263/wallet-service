@@ -91,7 +91,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="getBankList" parameterType="java.lang.Integer" resultType="com.ecochain.ledger.model.PageData">
-    select bank_name,right(bank_no,4)bank_no from user_bank where user_id = #{user_id}
+    select bank_name,right(bank_no,4)bank_no,icon from user_bank where user_id = #{user_id}
   </select>
   
   <update id="setDefault" parameterType="com.ecochain.ledger.model.PageData">

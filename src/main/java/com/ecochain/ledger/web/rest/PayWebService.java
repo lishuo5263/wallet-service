@@ -1,4 +1,4 @@
-package com.ecochain.ledger.web.rest;
+/*package com.ecochain.ledger.web.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -36,10 +36,10 @@ import com.ecochain.ledger.util.Logger;
 import com.ecochain.ledger.util.RequestUtils;
 import com.ecochain.ledger.util.SessionUtil;
 import com.ecochain.ledger.util.StringUtil;
-/**
+*//**
  * 支付控制类
  * @author zhangchunming
- */
+ *//*
 @RestController
 @RequestMapping(value = "/api/pay")
 @Api(value = "支付")
@@ -62,13 +62,13 @@ public class PayWebService extends BaseWebService{
     @Autowired
     private ShopOrderInfoService shopOrderInfoService;
 
-    /**
+    *//**
      * @param request
      * @describe:立即支付
      * @author: zhangchunming
      * @date: 2016年11月9日下午9:59:50
      * @return: AjaxResponse
-     */
+     *//*
     @LoginVerify
     @PostMapping("/payNow")
     @ApiOperation(nickname = "立即支付", value = "立即支付", notes = "立即支付！")
@@ -110,12 +110,12 @@ public class PayWebService extends BaseWebService{
                 ar.setSuccess(false);
                 return ar;
             }
-            /*if(StringUtil.isEmpty(pd.getString("order_amount"))){
+            if(StringUtil.isEmpty(pd.getString("order_amount"))){
                 ar.setSuccess(false);
                 ar.setMessage("付款金额不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }*/
+            }
 //            PageData shopOrderInfo = shopOrderInfoService.selectById(Integer.valueOf(pd.getString("order_id")), Constant.VERSION_NO);
             PageData shopOrderInfo = shopOrderInfoService.getShopOrderByOrderNo(pd, Constant.VERSION_NO);
             if ("2".equals(shopOrderInfo.getString("order_status"))) {//已支付
@@ -197,3 +197,4 @@ public class PayWebService extends BaseWebService{
         return ar;
     }
 }
+*/

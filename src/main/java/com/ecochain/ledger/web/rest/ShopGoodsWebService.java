@@ -1,4 +1,4 @@
-package com.ecochain.ledger.web.rest;
+/*package com.ecochain.ledger.web.rest;
 
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,9 +26,9 @@ import com.ecochain.ledger.util.JedisUtil;
 import com.ecochain.ledger.util.RedisConstantUtil;
 
 
-/**
+*//**
  * Created by LiShuo on 2016/10/24.
- */
+ *//*
 @RestController
 @RequestMapping(value = "/api/rest/goods")
 public class ShopGoodsWebService extends BaseWebService {
@@ -36,17 +36,17 @@ public class ShopGoodsWebService extends BaseWebService {
     @Autowired
     private ShopGoodsService shopGoodsService;
 
-    /*@Autowired
-    private CacheManager cacheManager;*/
+    @Autowired
+    private CacheManager cacheManager;
 
-    /**
+    *//**
      * 商城促销商品查询
      * @param request
      * @param page
      * @return
-     */
+     *//*
 
-   /* @RequestMapping("/getHotGoods")
+    @RequestMapping("/getHotGoods")
     public AjaxResponse getHotGoods(HttpServletRequest request, Page page){
         PageData pd = new PageData();
         logBefore(logger, "商城促销商品查询");
@@ -75,10 +75,10 @@ public class ShopGoodsWebService extends BaseWebService {
                         logAfter(logger);
                     } else {
                         //PHP 未接分页，接了直接放开
-                *//*List result=new ArrayList();
+                List result=new ArrayList();
                 result = this.shopGoodsService.getShopHotGoods();
                 cacheManager.set(RedisConstantUtil.SHOPHOTGOODS+RedisConstantUtil.CURRENTPAGE +currentPage, result, 1800);
-                ar = fastReturn(result, true, "商城促销商品查询成功！",CodeConstant.SC_OK);*//*
+                ar = fastReturn(result, true, "商城促销商品查询成功！",CodeConstant.SC_OK);
                         pageResult = this.shopGoodsService.getHotGoods(page);
                         cacheManager.set(RedisConstantUtil.SHOPHOTGOODS+RedisConstantUtil.ANDACTIVITYID+activityId+RedisConstantUtil.CURRENTPAGE +currentPage, pageResult, 1800);
                         ar = fastReturn(pageResult, true, "商城促销商品查询成功！",CodeConstant.SC_OK);
@@ -93,13 +93,13 @@ public class ShopGoodsWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，商城促销商品查询失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
-    /**
+    *//**
      *手机端按定位城市信息查询对应的  商城商品|店铺商品|店铺信息
-     */
+     *//*
 
-  /*  @RequestMapping(value="unionQueryByCity",method = RequestMethod.POST)
+    @RequestMapping(value="unionQueryByCity",method = RequestMethod.POST)
     public AjaxResponse unionQueryByCity(HttpServletRequest request, Page page){
         try{
             PageData pd = new PageData();
@@ -158,14 +158,14 @@ public class ShopGoodsWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，首页商品搜索失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
-    /**
+    *//**
      * 手机端本地搜索tag查询
      * @return
-     */
+     *//*
 
-   /* @RequestMapping(value="searchTagInfo",method = RequestMethod.POST)
+    @RequestMapping(value="searchTagInfo",method = RequestMethod.POST)
     public AjaxResponse searchTagInfo(HttpServletRequest request, Page page){
         AjaxResponse ar= new AjaxResponse();
         List resultList =new ArrayList();
@@ -185,15 +185,15 @@ public class ShopGoodsWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，首页商品搜索失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
-    /**
+    *//**
      *首页商品搜索
-     */
-    /*@RequestMapping(value="searchMsg/{searchMsg}/{currentPage}")
-    public AjaxResponse searchMsg(@PathVariable String searchMsg,@PathVariable String currentPage){*/
+     *//*
+    @RequestMapping(value="searchMsg/{searchMsg}/{currentPage}")
+    public AjaxResponse searchMsg(@PathVariable String searchMsg,@PathVariable String currentPage){
 
-   /* @RequestMapping(value="searchMsg",method = RequestMethod.GET)
+    @RequestMapping(value="searchMsg",method = RequestMethod.GET)
     public AjaxResponse searchMsg(HttpServletRequest request, Page page){
         PageData pd = new PageData();
         pd = this.getPageData();
@@ -223,12 +223,12 @@ public class ShopGoodsWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，首页商品搜索失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
-    /**
+    *//**
      *分类按品牌+类别搜索
-     */
-   /* @RequestMapping(value="showBySearchInfo",method = RequestMethod.GET)
+     *//*
+    @RequestMapping(value="showBySearchInfo",method = RequestMethod.GET)
 
     public AjaxResponse showBySearchInfo(@RequestParam(value="brandId",required = false) String brandId, @RequestParam(value="catId",required = false) String catId){
         AjaxResponse ar= new AjaxResponse();
@@ -272,12 +272,12 @@ public class ShopGoodsWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，分类按品牌+类别搜索失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
-    /**
+    *//**
      *分类按品牌+类别搜索(分页)
-     */
-    /*@RequestMapping(value="listPageShowBySearchInfo",method = RequestMethod.GET)
+     *//*
+    @RequestMapping(value="listPageShowBySearchInfo",method = RequestMethod.GET)
 
     public AjaxResponse listPageShowBySearchInfo(HttpServletRequest request, Page page){
         PageData pd = new PageData();
@@ -332,19 +332,19 @@ public class ShopGoodsWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，分类按品牌+类别分页搜索失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
-    /**
+    *//**
      * 商品详情页搜索
-     */
+     *//*
 
     @PostMapping("showGoodsDetail")
     @ApiOperation(nickname = "showGoodsDetail", value = "商品详情页搜索", notes = "商品详情页搜索！！")
     @ApiImplicitParams({
-           /* @ApiImplicitParam(name = "type", value = "查询类型", required = true, paramType = "body", dataType = "BlogArticleBeen"),
+            @ApiImplicitParam(name = "type", value = "查询类型", required = true, paramType = "body", dataType = "BlogArticleBeen"),
             @ApiImplicitParam(name = "path", value = "url上的数据", required = true, paramType = "path", dataType = "Long"),
             @ApiImplicitParam(name = "query", value = "query类型参数", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "apiKey", value = "header中的数据", required = true, paramType = "header", dataType = "String"),*/
+            @ApiImplicitParam(name = "apiKey", value = "header中的数据", required = true, paramType = "header", dataType = "String"),
 
             @ApiImplicitParam(name = "catId", value = "分类ID", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "goodsId", value = "商品ID", required = true, paramType = "query", dataType = "String"),
@@ -389,11 +389,11 @@ public class ShopGoodsWebService extends BaseWebService {
         return ar;
     }
 
-    /*
+    
      * 猜你喜欢 5个商品
     /*@RequestMapping(value="guessYourLike/{goodsId}")
-    public AjaxResponse guessYourLike(@PathVariable String goodsId){*/
-    /*@RequestMapping(value="guessYourLike")
+    public AjaxResponse guessYourLike(@PathVariable String goodsId){
+    @RequestMapping(value="guessYourLike")
 
     public AjaxResponse guessYourLike(HttpServletRequest request, Page page){
         PageData pd = new PageData();
@@ -432,8 +432,8 @@ public class ShopGoodsWebService extends BaseWebService {
     *//**
      * 猜你喜欢接口：查询商品当前最细分类下销售量前5的商品（除去当前商品）
      *//*
-    *//*@RequestMapping(value="goodsDetailGuessYourLike/{goodsId}/{type}")
-    public AjaxResponse goodsDetailGuessYourLike(@PathVariable String goodsId,@PathVariable String type){*//*
+    @RequestMapping(value="goodsDetailGuessYourLike/{goodsId}/{type}")
+    public AjaxResponse goodsDetailGuessYourLike(@PathVariable String goodsId,@PathVariable String type){
     @RequestMapping(value="goodsDetailGuessYourLike")
 
     public AjaxResponse goodsDetailGuessYourLike(HttpServletRequest request, Page page){
@@ -460,12 +460,12 @@ public class ShopGoodsWebService extends BaseWebService {
                         if (cacheManager.isExist(RedisConstantUtil.STOREGOODSDETAILGUESSYOURLIKE + goodsId)) {
                             ar = fastReturn((List) cacheManager.get(RedisConstantUtil.STOREGOODSDETAILGUESSYOURLIKE + goodsId), true, "查询"+ type+" 商品当前最细分类下销售量前5的商品（除去当前商品）缓存成功！",CodeConstant.SC_OK);
                             logAfter(logger);
-                        } *//*else {
+                        } else {
                             result = this.storeGoodsService.goodsDetailGuessYourLike(goodsId);
                             cacheManager.set(RedisConstantUtil.STOREGOODSDETAILGUESSYOURLIKE + goodsId, result, 1800);
                             ar = fastReturn(result, true, "查询"+ type+" 商品当前最细分类下销售量前5的商品（除去当前商品）成功！",CodeConstant.SC_OK);
                             logAfter(logger);
-                        }*//*
+                        }
                     }else{
                         ar=fastReturn(null,false,"系统异常，请求参数type有误！",CodeConstant.PARAM_ERROR);
                     }
@@ -483,7 +483,7 @@ public class ShopGoodsWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，当前最细分类下销售量前5的商品（除去当前商品）搜索失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
 
     public static boolean isNotEmpty(String parameter){
@@ -491,3 +491,4 @@ public class ShopGoodsWebService extends BaseWebService {
     }
 }
 
+*/

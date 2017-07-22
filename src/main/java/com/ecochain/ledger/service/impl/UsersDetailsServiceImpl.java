@@ -1,13 +1,5 @@
 package com.ecochain.ledger.service.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
@@ -17,6 +9,14 @@ import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.util.Logger;
 import com.ecochain.ledger.util.RestUtil;
 import com.github.pagehelper.PageHelper;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+
+import java.util.List;
 
 @Service("userDetailsService")
 public class UsersDetailsServiceImpl implements UsersDetailsService{
@@ -55,7 +55,12 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         //添加用户登陆表
         dao.save("UserLoginMapper.insertSelective", pd);
         //添加用户钱包账户
-        pd.put("money", 1000000);
+        pd.put("money", 100000);
+        pd.put("btc_amnt", 0);
+        pd.put("ltc_amnt", 1000);
+        pd.put("eth_amnt", 500);
+        pd.put("etc_amnt", 300);
+        pd.put("hlc_amnt", 100);
         dao.save("UserWalletMapper.insertSelective", pd);
         
         /* StringBuffer buf = new StringBuffer();
@@ -117,7 +122,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
                 kql_url = mapObj.get("code_value").toString();
             }
         }
-        String jsonStr = RestUtil.restPostPath(kql_url+"/test/create/"+pd.getString("account")+"/"+pd.getString("password"));
+        String jsonStr = RestUtil.restPostPath(kql_url+"/create/"+pd.getString("user_name")+"/"+pd.getString("password"));
         JSONObject jsonObj = JSONObject.parseObject(jsonStr);
         PageData tpd = new PageData();
         tpd.put("public_key", jsonObj.getString("data"));
@@ -177,4 +182,10 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
     public Boolean isExistTransPassword(PageData pd) throws Exception {
         return (Integer)dao.findForObject("com.ecochain.ledger.mapper.UsersDetailsMapper.isExistTransPassword", pd)>0;
     }
+
+    @Override
+    public boolean isExistByUserName(String user_name) throws Exception {
+        return (Integer)dao.findForObject("com.ecochain.ledger.mapper.UsersDetailsMapper.isExistByUserName", user_name)>0;
+    }
+
 }

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BankCardMapper" >
+  <!-- <resultType id="BaseresultType" type="com.ecochain.ledger.model.PageData" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bank_no" property="bank_no" jdbcType="VARCHAR" />
+    <result column="bank_name" property="bank_name" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="bank_brief" property="bank_brief" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultType> -->
+  <sql id="Base_Column_List" >
+    id,  bank_name, icon, bank_brief, create_time, update_time
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from bank_card
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from bank_card
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into bank_card (bank_name, 
+      icon, bank_brief, create_time 
+      )
+    values ( #{bank_name,jdbcType=VARCHAR}, 
+      #{icon,jdbcType=VARCHAR}, #{bank_brief,jdbcType=VARCHAR}, now()
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into bank_card
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bank_name != null" >
+        bank_name,
+      </if>
+      <if test="icon != null" >
+        icon,
+      </if>
+      <if test="bank_brief != null" >
+        bank_brief,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bank_name != null" >
+        #{bank_name,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="bank_brief != null" >
+        #{bank_brief,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        now(),
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update bank_card
+    <set >
+      <if test="bank_name != null" >
+        bank_name = #{bank_name,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="bank_brief != null" >
+        bank_brief = #{bank_brief,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = now(),
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update bank_card
+    set 
+      bank_name = #{bank_name,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      bank_brief = #{bank_brief,jdbcType=VARCHAR},
+      create_time = now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="isExist" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from user_bank where bank_name = #{bank_name} 
+  </select>
+</mapper>

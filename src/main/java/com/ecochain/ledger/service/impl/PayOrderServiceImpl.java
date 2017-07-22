@@ -174,26 +174,6 @@ public class PayOrderServiceImpl implements PayOrderService {
             withDrawalSub = userWalletService.withDrawalSub(userWallet);
         }
         logger.info("************申请提现*********总结果(addPayOrderResult&&withDrawalSubMoney):"+(addPayOrderResult&&withDrawalSub));
-        if(!"RMB".equals(pd.getString("coin_name"))){
-            logger.info("============提现========区块链钱包接口调用========start================");
-            String kql_url =null;
-            List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
-            for(PageData mapObj:codeList){
-                if("QKL_URL".equals(mapObj.get("code_name"))){
-                    kql_url = mapObj.get("code_value").toString();
-                }
-            }
-            PageData userLoginInfo = userLoginService.getUserLoginByAccount(pd.getString("account"), versionNo);
-            String jsonStr = RestUtil.restGetPath(kql_url+"/sendMoney/"+pd.getString("account")+"/"+userLoginInfo.getString("password")+"/"+pd.getString("amount")+"/"+pd.getString("address"));
-            JSONObject jsonObj = JSONObject.parseObject(jsonStr);
-           /* PageData tpd = new PageData();
-            tpd.put("public_key", jsonObj.getString("data"));
-            tpd.put("address", jsonObj.getString("data"));
-            tpd.put("id", pd.get("user_id"));
-            logger.info("调动态库tpd value="+tpd.toString());
-            this.updateByIdSelective(tpd, versionNo);*/
-            logger.info("==========提现==========区块链钱包接口调用========end================");
-        }
         return (addPayOrderResult&&withDrawalSub);
     }
 

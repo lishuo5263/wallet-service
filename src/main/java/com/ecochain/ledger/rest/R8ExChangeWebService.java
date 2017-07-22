@@ -1,4 +1,4 @@
-package com.ecochain.ledger.rest;
+/*package com.ecochain.ledger.rest;
 
 import com.ecochain.ledger.model.R8ExChangeDTO;
 import com.ecochain.ledger.util.JedisUtil;
@@ -21,20 +21,20 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+*//**
  * Created by Lisandro on 2017/5/15.
- */
+ *//*
 @RestController
 @RequestMapping("/api/rest/r8ExChange")
 public class R8ExChangeWebService {
 
     private Logger logger = Logger.getLogger(R8ExChangeWebService.class);
 
-    /**
+    *//**
      * @return
      * @author lishuo
      * describe 获取三界宝利率
-     */
+     *//*
     @PostMapping("getCurrencyRate/{currency}")
     @ApiOperation(nickname = "getThreeBabyRate", value = "获取数字资产当前价值", notes = "getCurrencyRate")
     @ApiImplicitParam(name = "currency", value = "币种类型 如SAN BTC LTC ", required = true, paramType = "path", dataType = "String")
@@ -105,3 +105,4 @@ public class R8ExChangeWebService {
     }
 
 }
+*/

@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ import com.ecochain.ledger.util.Logger;
 import com.ecochain.ledger.util.MD5Util;
 import com.ecochain.ledger.util.OrderGenerater;
 import com.ecochain.ledger.util.RequestUtils;
+import com.ecochain.ledger.util.RestUtil;
 import com.ecochain.ledger.util.SessionUtil;
 import com.ecochain.ledger.util.Validator;
 import com.github.pagehelper.PageInfo;
@@ -352,6 +354,7 @@ public class AccWebSerivce extends BaseWebService{
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             pd.put("account", user.getString("account"));
+            pd.put("user_name", user.getString("user_name"));
             pd.put("user_id", String.valueOf(user.get("id")));
 //            String userType = user.getString("user_type");
             /*boolean hasWithDrawaling = payOrderService.isHasWithDrawaling(String.valueOf(user.get("id")));
@@ -494,6 +497,7 @@ public class AccWebSerivce extends BaseWebService{
             }*/
             
             PageData userWallet = userWalletService.getWalletByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
+            
             if("RMB".equals(pd.getString("coin_name"))){
                 if((new BigDecimal(pd.getString("amount"))).compareTo(new BigDecimal(String.valueOf(userWallet.get("money"))))>0){
                     ar.setSuccess(false);
@@ -615,6 +619,31 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("confirm_time", pd.getString("txdate"));//确认时间（无需审核直接成功！）
             pd.put("operator", user.getString("account"));
             if(payOrderService.applyWithDrawal(pd, Constant.VERSION_NO)){
+                if(!"RMB".equals(pd.getString("coin_name"))){
+                    logger.info("============提现========区块链钱包接口调用========start================");
+                    String kql_url =null;
+                    List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
+                    for(PageData mapObj:codeList){
+                        if("QKL_URL".equals(mapObj.get("code_name"))){
+                            kql_url = mapObj.get("code_value").toString();
+                        }
+                    }
+                    PageData userLoginInfo = userLoginService.getUserLoginByAccount(pd.getString("account"), Constant.VERSION_NO);
+                    String jsonStr = RestUtil.restGetPath(kql_url+"/sendMoney/"+pd.getString("user_name")+"/"+userLoginInfo.getString("password")+"/"+pd.getString("amount")+"/"+pd.getString("address"));
+                    JSONObject jsonObj = JSONObject.parseObject(jsonStr);
+                    if(!jsonObj.getBoolean("success")){
+                        logger.info("message="+jsonObj.getString("message"));
+                        throw new Exception(jsonObj.getString("message"));
+                    }
+                    
+                   /* PageData tpd = new PageData();
+                    tpd.put("public_key", jsonObj.getString("data"));
+                    tpd.put("address", jsonObj.getString("data"));
+                    tpd.put("id", pd.get("user_id"));
+                    logger.info("调动态库tpd value="+tpd.toString());
+                    this.updateByIdSelective(tpd, versionNo);*/
+                    logger.info("==========提现==========区块链钱包接口调用========end================");
+                }
                 ar.setSuccess(true);
                 ar.setMessage("提现申请成功！");
             }
@@ -867,56 +896,96 @@ public class AccWebSerivce extends BaseWebService{
             BigDecimal etc_money = new BigDecimal("0");
             for(PageData coin:listCoin){
                 if("HLC".equals(coin.getString("coin_name"))){//合链币
-                    PageData hlb = new PageData();
                     String coinPrice  = coin.getString("coin_rate").split(":")[0];
-                    userWallet.put("hlc_rate", coinPrice);
                     String hlc_amnt =String.valueOf(userWallet.get("hlc_amnt"));
                     hlc_money = new BigDecimal(hlc_amnt).multiply(new BigDecimal(coinPrice));
                     totalMoney = hlc_money.add(totalMoney);
                 }else if("BTC".equals(coin.getString("coin_name"))){
                     String coinPrice  = coin.getString("coin_rate").split(":")[0];
-                    userWallet.put("btc_rate", coinPrice);
                     String btc_amnt =String.valueOf(userWallet.get("btc_amnt"));
                     btc_money = new BigDecimal(btc_amnt).multiply(new BigDecimal(coinPrice));
                     totalMoney = btc_money.add(totalMoney);
-                    userWallet.put("btc_address", user.getString("address"));
                 }else if("LTC".equals(coin.getString("coin_name"))){
                     String coinPrice  = coin.getString("coin_rate").split(":")[0];
-                    userWallet.put("ltc_rate", coinPrice);
                     String ltc_amnt =String.valueOf(userWallet.get("ltc_amnt"));
                     ltc_money = new BigDecimal(ltc_amnt).multiply(new BigDecimal(coinPrice));
                     totalMoney = ltc_money.add(totalMoney);
                 }else if("ETH".equals(coin.getString("coin_name"))){
                     String coinPrice  = coin.getString("coin_rate").split(":")[0];
-                    userWallet.put("eth_rate", coinPrice);
                     String eth_amnt =String.valueOf(userWallet.get("eth_amnt"));
                     eth_money = new BigDecimal(eth_amnt).multiply(new BigDecimal(coinPrice));
                     totalMoney = eth_money.add(totalMoney);
                 }else if("ETC".equals(coin.getString("coin_name"))){
                     String coinPrice  = coin.getString("coin_rate").split(":")[0];
-                    userWallet.put("etc_rate", coinPrice);
                     String etc_amnt =String.valueOf(userWallet.get("etc_amnt"));
                     etc_money = new BigDecimal(etc_amnt).multiply(new BigDecimal(coinPrice));
                     totalMoney = etc_money.add(totalMoney);
                 }
             }
-            String hlc_percent = hlc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
-            String btc_percent = btc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
-            String ltc_percent = ltc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
-            String eth_percent = eth_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
-            String etc_percent = etc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
-           
-            String money = String.valueOf(userWallet.get("money"));
-            String money_percent = new BigDecimal(money).multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%";
-            userWallet.put("hlc_percent", hlc_percent);
-            userWallet.put("btc_percent", btc_percent);
-            userWallet.put("ltc_percent", ltc_percent);
-            userWallet.put("eth_percent", eth_percent);
-            userWallet.put("etc_percent", etc_percent);
-            userWallet.put("money_percent", money_percent);
-            userWallet.put("totalMoney", totalMoney);
+            List<PageData> coinList = new ArrayList<PageData>();
+            //人民币
+            PageData coin1 = new PageData();
+            String money =String.valueOf(userWallet.get("money"));
+            coin1.put("address", "");
+            coin1.put("coin_name", "RMB");
+            coin1.put("coin_name_brief", "人民币");
+            coin1.put("coin_amnt", userWallet.get("money"));
+            coin1.put("froze_amnt", userWallet.get("froze_rmb_amnt"));
+            coin1.put("coin_price", "");
+            coin1.put("percent", new BigDecimal(money).multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%");
+            coinList.add(coin1);
+            for(PageData coin:listCoin){
+                if("HLC".equals(coin.getString("coin_name"))){//合链币
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    String hlc_amnt =String.valueOf(userWallet.get("hlc_amnt"));
+                    hlc_money = new BigDecimal(hlc_amnt).multiply(new BigDecimal(coinPrice));
+                    coin.put("address", "");
+                    coin.put("coin_amnt", userWallet.get("hlc_amnt"));
+                    coin.put("froze_amnt", userWallet.get("froze_hlc_amnt"));
+                    coin.put("coin_price", coinPrice);
+                    coin.put("percent", hlc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%");
+                }else if("BTC".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    String btc_amnt =String.valueOf(userWallet.get("btc_amnt"));
+                    btc_money = new BigDecimal(btc_amnt).multiply(new BigDecimal(coinPrice));
+                    coin.put("address", user.getString("address"));
+                    coin.put("coin_amnt", userWallet.get("btc_amnt"));
+                    coin.put("froze_amnt", userWallet.get("froze_btc_amnt"));
+                    coin.put("coin_price", coinPrice);
+                    coin.put("percent", btc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%");
+                }else if("LTC".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    String ltc_amnt =String.valueOf(userWallet.get("ltc_amnt"));
+                    ltc_money = new BigDecimal(ltc_amnt).multiply(new BigDecimal(coinPrice));
+                    coin.put("address", "");
+                    coin.put("coin_amnt", userWallet.get("ltc_amnt"));
+                    coin.put("froze_amnt", userWallet.get("froze_ltc_amnt"));
+                    coin.put("coin_price", coinPrice);
+                    coin.put("percent", ltc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%");
+                }else if("ETH".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    String eth_amnt =String.valueOf(userWallet.get("eth_amnt"));
+                    eth_money = new BigDecimal(eth_amnt).multiply(new BigDecimal(coinPrice));
+                    coin.put("address", "");
+                    coin.put("coin_amnt", userWallet.get("eth_amnt"));
+                    coin.put("froze_amnt", userWallet.get("froze_eth_amnt"));
+                    coin.put("coin_price", coinPrice);
+                    coin.put("percent", eth_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%");
+                }else if("ETC".equals(coin.getString("coin_name"))){
+                    String coinPrice  = coin.getString("coin_rate").split(":")[0];
+                    String etc_amnt =String.valueOf(userWallet.get("etc_amnt"));
+                    etc_money = new BigDecimal(etc_amnt).multiply(new BigDecimal(coinPrice));
+                    coin.put("address", "");
+                    coin.put("coin_amnt", userWallet.get("etc_amnt"));
+                    coin.put("froze_amnt", userWallet.get("froze_etc_amnt"));
+                    coin.put("coin_price", coinPrice);
+                    coin.put("percent", etc_money.multiply(new BigDecimal("100")).divide(totalMoney, 2, RoundingMode.HALF_UP).toString()+"%");
+                }
+                coinList.add(coin);
+            }
             
-            data.put("userWallet", userWallet);
+            data.put("coinList", coinList);
+            data.put("totalMoney", totalMoney);
             ar.setData(data);
             ar.setSuccess(true);
             ar.setMessage("查询成功！");
@@ -965,6 +1034,12 @@ public class AccWebSerivce extends BaseWebService{
             pd.put("account", user.getString("account"));
             pd.put("revbankaccno", pd.getString("revbankaccno")==null?"":pd.getString("revbankaccno").trim());
             pd.put("money", pd.getString("money")==null?"":pd.getString("money").trim());
+            if(StringUtil.isEmpty(pd.getString("revbankaccno"))){
+                ar.setSuccess(false);
+                ar.setMessage("请输入对方账户");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
             if(StringUtil.isEmpty(pd.getString("money"))){
                 ar.setSuccess(false);
                 ar.setMessage("请输入转账金额");
@@ -983,12 +1058,21 @@ public class AccWebSerivce extends BaseWebService{
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            if(StringUtil.isEmpty(pd.getString("revbankaccno"))){
+            
+            if(StringUtil.isEmpty(pd.getString("coin_name"))){
                 ar.setSuccess(false);
-                ar.setMessage("请输入对方账户");
+                ar.setMessage("请输入币种名称！");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
+            
+            if(!"BTC".equals(pd.getString("coin_name"))){
+                ar.setSuccess(false);
+                ar.setMessage("目前仅支持比特币！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            
             /*if(!usersDetailsService.findIsExist(pd.getString("revbankaccno"), Constant.VERSION_NO)){//revbankaccno对方账户即对方手机号
                 ar.setSuccess(false);
                 ar.setMessage("对方账户不存在，请重新输入");
@@ -1742,13 +1826,15 @@ public class AccWebSerivce extends BaseWebService{
             String coinPrice  = map.get("coin_rate").toString().split(":")[0];
             String exchange_num =String.valueOf(pd.getString("exchange_num"));
             if("1".equals(pd.getString("buy_in_out"))){ //RMB->BTC
-                if(new BigDecimal(exchange_num).multiply(new BigDecimal(coinPrice)).compareTo(new BigDecimal(String.valueOf(userWallet.get("money").toString()))) > 0){
+                pd.put("rmb_amnt",new BigDecimal(coinPrice).multiply(new BigDecimal(pd.get("exchange_num").toString())).setScale(2,BigDecimal.ROUND_UP));
+                if(new BigDecimal(exchange_num).multiply(new BigDecimal(coinPrice)).setScale(2,BigDecimal.ROUND_UP).compareTo(new BigDecimal(String.valueOf(userWallet.get("money").toString()))) > 0){
                     ar.setMessage("账户余额不足，兑换失败！");
                     ar.setSuccess(false);
                     ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                     return ar;
                 }
             }else if("2".equals(pd.getString("buy_in_out"))){ //HLB->RMB
+                pd.put("rmb_amnt",new BigDecimal(coinPrice).multiply(new BigDecimal(pd.get("exchange_num").toString())).setScale(2,BigDecimal.ROUND_DOWN));
                 if("BTC".equals(pd.getString("exchangeCoin"))){
                     if(new BigDecimal(pd.getString("exchange_num")).compareTo(new BigDecimal(String.valueOf(userWallet.get("btc_amnt"))))>0){
                         ar.setMessage("账户余额不足，请重新输入！");
@@ -1769,7 +1855,7 @@ public class AccWebSerivce extends BaseWebService{
 //            pd.put("coinPrice", new BigDecimal(coinPrice).multiply(new BigDecimal(pd.get("exchange_num").toString())));
             pd.put("buy_in_out",pd.getString("buy_in_out"));
             pd.put("coin_amnt",pd.getString("exchange_num"));
-            pd.put("rmb_amnt",new BigDecimal(coinPrice).multiply(new BigDecimal(pd.get("exchange_num").toString())));
+            
             pd.put("status","6");
             pd.put("cntflag","1");
             pd.put("remark1","币种兑换");
@@ -2066,5 +2152,19 @@ public class AccWebSerivce extends BaseWebService{
             logAfter(logger);
         }   
         return ar;
+    }
+    
+    public static void main(String[] args) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+        headers.setContentType(type);
+        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+        HttpEntity<String> formEntity = new HttpEntity<String>("mmdtv1ZWS1GWcRdoieMVNYcKS9u3azvoki", headers);
+        String result = null;
+        for (int i = 0; i < 5; i++) {
+            result = restTemplate.postForObject("http://faucet.xeno-genesis.com/", formEntity, String.class);
+        }
+        System.out.println("result="+result);
     }
 }

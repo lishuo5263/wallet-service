@@ -1,4 +1,4 @@
-package com.ecochain.ledger.web.rest;
+/*package com.ecochain.ledger.web.rest;
 
  
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,4 +30,4 @@ public class WalletWebService {
 	    }
 	
  
-}
+}*/

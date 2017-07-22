@@ -123,5 +123,15 @@ public interface UsersDetailsService {
      * @return: Boolean
      */
     Boolean isExistTransPassword(PageData pd)throws Exception;
+    /**
+     * @describe:判断用户名是否已存在
+     * @author: zhangchunming
+     * @date: 2017年7月21日下午2:58:15
+     * @param user_name
+     * @throws Exception
+     * @return: boolean
+     */
+    public boolean isExistByUserName(String user_name) throws Exception;
+    
     
 }

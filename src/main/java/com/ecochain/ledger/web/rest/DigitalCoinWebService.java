@@ -89,7 +89,7 @@ public class DigitalCoinWebService extends BaseWebService {
     /**
      * 获取买家账户信息
      */
-    @LoginVerify
+   /* @LoginVerify
     @GetMapping("getBuyerInfo")
     @ApiOperation(nickname = "getBuyerInfo", value = "获取买家账户信息", notes = "获取买家账户信息！！")
     @ApiImplicitParams({
@@ -106,5 +106,5 @@ public class DigitalCoinWebService extends BaseWebService {
             ar=fastReturn(null,false,"系统异常，获取买家账户信息失败！",CodeConstant.SYS_ERROR);
         }
         return ar;
-    }
+    }*/
 }

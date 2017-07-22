@@ -21,6 +21,7 @@ public class RestUtil {
         HttpHeaders headers = new HttpHeaders();
         MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
         headers.setContentType(type);
+        System.out.println("url="+url);
         String result = restTemplate.postForObject(url, null, String.class);
         System.out.println("url="+url);
         System.out.println("result="+result);

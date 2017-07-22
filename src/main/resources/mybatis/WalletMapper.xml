@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="WalletMapper" >
+  <!-- <resultType id="BaseresultType" type="com.ecochain.ledger.model.PageData" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="userName" property="username" jdbcType="VARCHAR" />
+    <result column="passWord" property="password" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="bitcoin" property="bitcoin" jdbcType="DECIMAL" />
+    <result column="walletAddress" property="walletaddress" jdbcType="VARCHAR" />
+    <result column="privateKey" property="privatekey" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+  </resultType> -->
+  <sql id="Base_Column_List" >
+    id, userName, passWord, money, bitcoin, walletAddress, privateKey, createTime, updateTime
+  </sql>
+  <select id="selectById" resultType="com.ecochain.ledger.model.PageData" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_wallet
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_wallet
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into t_wallet (id, userName, passWord, 
+      money, bitcoin, walletAddress, 
+      privateKey, createTime, updateTime
+      )
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{money,jdbcType=DECIMAL}, #{bitcoin,jdbcType=DECIMAL}, #{walletaddress,jdbcType=VARCHAR}, 
+      #{privatekey,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    insert into t_wallet
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="username != null" >
+        userName,
+      </if>
+      <if test="password != null" >
+        passWord,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="bitcoin != null" >
+        bitcoin,
+      </if>
+      <if test="walletaddress != null" >
+        walletAddress,
+      </if>
+      <if test="privatekey != null" >
+        privateKey,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="bitcoin != null" >
+        #{bitcoin,jdbcType=DECIMAL},
+      </if>
+      <if test="walletaddress != null" >
+        #{walletaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="privatekey != null" >
+        #{privatekey,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByIdSelective" parameterType="com.ecochain.ledger.model.PageData" >
+    update t_wallet
+    <set >
+      <if test="username != null" >
+        userName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        passWord = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="bitcoin != null" >
+        bitcoin = #{bitcoin,jdbcType=DECIMAL},
+      </if>
+      <if test="walletaddress != null" >
+        walletAddress = #{walletaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="privatekey != null" >
+        privateKey = #{privatekey,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
+    update t_wallet
+    set userName = #{username,jdbcType=VARCHAR},
+      passWord = #{password,jdbcType=VARCHAR},
+      money = #{money,jdbcType=DECIMAL},
+      bitcoin = #{bitcoin,jdbcType=DECIMAL},
+      walletAddress = #{walletaddress,jdbcType=VARCHAR},
+      privateKey = #{privatekey,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
